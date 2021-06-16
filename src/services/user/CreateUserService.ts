@@ -1,0 +1,74 @@
+import { PrismaClient } from '@prisma/client'
+import { hash } from 'bcryptjs'
+
+import { AppError } from '../../errors/AppError'
+
+interface Request {
+  email: string,
+  name?: string,
+  password: string
+}
+
+interface Response {
+  id: number,
+  email: string,
+  name: string | null,
+  created_at: Date,
+  updated_at: Date
+}
+
+class CreateUserService {
+  public async execute ({ email = '', password = '', name }: Request): Promise<Response> {
+    const prisma = new PrismaClient()
+
+    if (email.length < 3) {
+      throw new AppError('Invalid email')
+    }
+
+    if (name) {
+      if (name.length < 3) {
+        throw new AppError('Name too short')
+      }
+    }
+
+    if (password.length < 8) {
+      throw new AppError('Password too short')
+    }
+
+    const checkUserExists = await prisma.user.findUnique({
+      where: {
+        email
+      }
+    })
+
+    if (checkUserExists) {
+      throw new AppError('Email address already used')
+    }
+
+    const hashedPassword = await hash(password, 8)
+
+    const user = await prisma.user.create({
+      data: {
+        email,
+        name,
+        password: hashedPassword,
+        profile: {
+          create: {
+            bio: ''
+          }
+        }
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        created_at: true,
+        updated_at: true
+      }
+    })
+
+    return user
+  }
+}
+
+export { CreateUserService }
