@@ -28,6 +28,12 @@ class DeleteUserService {
       throw new AppError('User not found')
     }
 
+    await prisma.profile.delete({
+      where: {
+        userId: id
+      }
+    })
+
     const deletedUser = await prisma.user.delete({
       where: {
         id
