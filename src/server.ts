@@ -27,5 +27,6 @@ app.use((err: Error, request: Request, response: Response, _: NextFunction) => {
 })
 
 app.listen(3333, () => {
+  // process.stdout.write('\x1Bc')
   console.log('Server up at port 3333')
 })
