@@ -46,7 +46,7 @@ class GetVideoCommentsService {
         }
       } while (pageToken)
     } catch (err) {
-      throw new AppError('Video not found')
+      throw new AppError('Video not found.')
     }
 
     const filteredComments = comments.map(comment => {
