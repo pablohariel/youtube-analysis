@@ -10,7 +10,7 @@ interface Request {
 }
 
 class GetVideoCommentsService {
-  public async execute ({ videoId } : Request): Promise<Array<String | null | undefined>> {
+  public async execute ({ videoId } : Request): Promise<Array<string | null | undefined>> {
     let pageToken: string | null | undefined = null
     let comments: youtube_v3.Schema$CommentThread[] | undefined = []
 
