@@ -10,7 +10,7 @@ import { ensureAuthenticated, secureUserPermission } from '../middlewares/usersA
 
 const usersRouter = Router()
 
-usersRouter.get('/:id', ensureAuthenticated, async (request, response) => {
+usersRouter.get('/:id', ensureAuthenticated, secureUserPermission, async (request, response) => {
   const { id } = request.params
 
   const getUser = new GetUserService()
@@ -37,18 +37,20 @@ usersRouter.post('/', async (request, response) => {
 
   const user = await createUser.execute({ email, password, name })
 
-  return response.json(user)
+  return response.status(201).json(user)
 })
 
 usersRouter.put('/:id', ensureAuthenticated, secureUserPermission, async (request, response) => {
   const { id } = request.params
   const { name } = request.body
 
+  console.log(id, name)
+
   const updateUser = new UpdateUserService()
 
   const updatedUser = await updateUser.execute({ id: Number(id), name })
 
-  return response.json(updatedUser)
+  return response.status(201).json(updatedUser)
 })
 
 usersRouter.delete('/:id', ensureAuthenticated, secureUserPermission, async (request, response) => {

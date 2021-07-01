@@ -18,6 +18,10 @@ class DeleteUserService {
   public async execute ({ id }: Request): Promise<Response> {
     const prisma = new PrismaClient()
 
+    if (/^\d+$/.test(String(id)) === false) {
+      throw new AppError('User not found')
+    }
+
     const checkUserExists = await prisma.user.findUnique({
       where: {
         id

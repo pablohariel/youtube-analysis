@@ -19,6 +19,10 @@ class UpdateUserService {
   public async execute ({ id, name }: Request): Promise<Response> {
     const prisma = new PrismaClient()
 
+    if (/^\d+$/.test(String(id)) === false) {
+      throw new AppError('User not found')
+    }
+
     const checkUserExists = await prisma.user.findUnique({
       where: {
         id
@@ -29,12 +33,8 @@ class UpdateUserService {
       throw new AppError('User not found')
     }
 
-    if (!name) {
-      throw new AppError('Invalid name')
-    }
-
     if (name.length < 3) {
-      throw new AppError('Name too short')
+      throw new AppError('Name too short', 422)
     }
 
     const user = await prisma.user.update({

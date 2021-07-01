@@ -21,18 +21,22 @@ class CreateUserService {
   public async execute ({ email = '', password = '', name }: Request): Promise<Response> {
     const prisma = new PrismaClient()
 
+    if (email.length < 1 || password.length < 1) {
+      throw new AppError('Required field not informed')
+    }
+
     if (email.length < 3) {
-      throw new AppError('Invalid email')
+      throw new AppError('Invalid email', 422)
     }
 
     if (name) {
       if (name.length < 3) {
-        throw new AppError('Name too short')
+        throw new AppError('Name too short', 422)
       }
     }
 
     if (password.length < 8) {
-      throw new AppError('Password too short')
+      throw new AppError('Password too short', 422)
     }
 
     const checkUserExists = await prisma.user.findUnique({
@@ -42,7 +46,7 @@ class CreateUserService {
     })
 
     if (checkUserExists) {
-      throw new AppError('Email address already used')
+      throw new AppError('Email address already used', 409)
     }
 
     const hashedPassword = await hash(password, 8)

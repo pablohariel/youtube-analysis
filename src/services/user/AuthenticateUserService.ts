@@ -29,6 +29,14 @@ class AuthenticateUserService {
       throw new AppError('Incorrect email/password combination.', 401)
     }
 
+    if (email.length < 3) {
+      throw new AppError('Incorrect email/password combination.', 401)
+    }
+
+    if (password.length < 8) {
+      throw new AppError('Incorrect email/password combination.', 401)
+    }
+
     const user = await prisma.user.findUnique({
       where: {
         email

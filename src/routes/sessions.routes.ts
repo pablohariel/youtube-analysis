@@ -11,7 +11,7 @@ sessionsRouter.post('/', async (request, response) => {
 
   const { token, user } = await authenticateUser.execute({ email, password })
 
-  return response.json({
+  return response.status(201).json({
     token,
     user
   })
