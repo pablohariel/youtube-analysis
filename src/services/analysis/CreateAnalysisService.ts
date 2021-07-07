@@ -1,35 +1,29 @@
-
-import { GetVideoInfoService } from '../video/GetVideoInfoService'
 import { GetVideoCommentsService } from '../video/GetVideoCommentsService'
-
-import { getWords, getWordsSum } from './utils/filters'
+import { getVideoData } from './utils/getVideoData'
+import { getWordsFromComments } from './utils/getWordsFromComments'
+import { getUsersMood } from './utils/getUsersMood'
 
 interface Request {
-  recommended: true | false,
-  videoId: string
+  videoId: string,
+  getMood: true | false,
 }
 
 class CreateAnalysisService {
-  public async execute ({ recommended, videoId } : Request): Promise<any> {
-    const getVideoInfo = new GetVideoInfoService()
+  public async execute ({ videoId, getMood }: Request) {
+    const videoData = await getVideoData(videoId)
+
     const getVideoComments = new GetVideoCommentsService()
 
-    const videoInfo = await getVideoInfo.execute({ videoId })
     const videoComments = await getVideoComments.execute({ videoId })
+    const { words } = getWordsFromComments(videoComments)
 
-    if (videoInfo) {
-      console.log('vidnfo')
+    if (getMood) {
+      const { mood } = getUsersMood(words)
+
+      return { videoData, usersMood: mood }
     }
 
-    if (recommended) {
-      const commentsWords = getWords(videoComments)
-
-      const wordsSum = getWordsSum(commentsWords)
-
-      return wordsSum
-    }
-
-    return {}
+    return { videoData }
   }
 }
 
