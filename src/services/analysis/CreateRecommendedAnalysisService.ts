@@ -3,7 +3,7 @@ import { GetVideoCommentsService } from '../video/GetVideoCommentsService'
 
 import { getVideoData } from './utils/getVideoData'
 import { getWordsFromComments } from './utils/getWordsFromComments'
-import { getWordsSum } from './utils/getWordsSum'
+import { getWordsDetails } from './utils/getWordsDetails'
 import { getUsersMood } from './utils/getUsersMood'
 
 interface Request {
@@ -17,15 +17,13 @@ class CreateRecommendedAnalysisService {
     const videoData = await getVideoData(videoId)
     const videoComments = await getVideoComments.execute({ videoId })
 
-    const { words, wordsAndBrothers } = getWordsFromComments(videoComments)
+    const { words } = getWordsFromComments(videoComments)
 
-    const wordsSum = getWordsSum(words)
+    const wordsDetails = getWordsDetails(words, 'pt-br')
 
-    const mostCommentedWords = wordsSum.slice(0, 10)
+    const mostCommentedWords = wordsDetails.slice(0, 10)
 
     const { mood } = getUsersMood(words)
-
-    if (wordsAndBrothers) console.log('')
 
     return { videoData, mostCommentedWords, usersMood: mood }
   }

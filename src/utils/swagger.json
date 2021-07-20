@@ -233,7 +233,7 @@
       "post": {
         "summary": "Create session",
         "description": "This route creates a user session",
-        "tags": ["Users"],
+        "tags": ["Sessions"],
         "requestBody": {
           "content": {
             "application/json": {
@@ -281,6 +281,131 @@
           },
           "401": {
             "description": "Incorrect email/password combination"
+          }
+        }
+      }
+    },
+    "/analysis": {
+      "post": {
+        "parameters": [
+          {
+            "name": "videoId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "recommended",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["complete", "mining", "analysis"]
+            }
+          },
+          {
+            "name": "usersMood",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Only available for complete and analysis types"
+          },
+          {
+            "name": "mostCommentedWords",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Only available for complete and mining types"
+          }
+        ],
+        "tags": ["Analysis"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "words": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "description": "Analysis created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "videoData": {
+                      "type": "object",
+                      "properties": {
+                        "channelTitle": {
+                          "type": "string"
+                        },
+                        "videoTitle": {
+                          "type": "string"
+                        },
+                        "publishedAt": {
+                          "type": "string"
+                        },
+                        "viewCount": {
+                          "type": "string"
+                        },
+                        "likeCount": {
+                          "type": "string"
+                        },
+                        "dislikeCount": {
+                          "type": "string"
+                        },
+                        "commentCount": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "mostCommentedWords": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "word": {
+                            "type": "string"
+                          },
+                          "timesUsed": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    },
+                    "usersMood": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query"
           }
         }
       }

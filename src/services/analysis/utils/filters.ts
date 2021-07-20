@@ -1,32 +1,34 @@
 import { stopWords } from './wordList'
 
-interface WordAndBrothers {
+interface Word {
   word: string,
-  wordBrothers: string[]
+  brothers: string[]
 }
 
-const filterWordsAndBrothers = (words: WordAndBrothers[]): WordAndBrothers[] => {
-  const filteredWordsAndBrothers: WordAndBrothers[] = []
+const filterWords = (words: Word[]): Word[] => {
+  const filteredWords: Word[] = []
 
-  for (const { word, wordBrothers } of words) {
-    if (word.length > 2) {
-      let filteredWordBrothers: string[] = []
+  for (let { word, brothers } of words) {
+    word = filterNonStopWords([word])[0]
 
-      if (wordBrothers.length > 1) {
-        filteredWordBrothers = filterWords(wordBrothers)
+    if (word && word.length > 2) {
+      let filteredBrothers: string[] = []
+
+      if (brothers.length > 1) {
+        filteredBrothers = filterNonStopWords(brothers)
       }
 
-      filteredWordsAndBrothers.push({
+      filteredWords.push({
         word,
-        wordBrothers: filteredWordBrothers
+        brothers: filteredBrothers
       })
     }
   }
 
-  return filteredWordsAndBrothers
+  return filteredWords
 }
 
-const filterWords = (words: string[]): string[] => {
+const filterNonStopWords = (words: string[]): string[] => {
   const common = stopWords
 
   const sentence = words.join(' ')
@@ -54,4 +56,4 @@ const filterWords = (words: string[]): string[] => {
   return uncommonArr
 }
 
-export { filterWords, filterWordsAndBrothers }
+export { filterWords }

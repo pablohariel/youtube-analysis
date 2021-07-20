@@ -1,6 +1,6 @@
 import { GetVideoCommentsService } from '../video/GetVideoCommentsService'
 import { getVideoData } from './utils/getVideoData'
-import { getWordsSum } from './utils/getWordsSum'
+import { getWordsDetails } from './utils/getWordsDetails'
 import { getWordsFromComments } from './utils/getWordsFromComments'
 import { getUsersMood } from './utils/getUsersMood'
 
@@ -20,9 +20,9 @@ class CreateCompleteAnalysisService {
     const videoComments = await getVideoComments.execute({ videoId })
     const { words } = getWordsFromComments(videoComments)
 
-    const wordsSum = getWordsSum(words)
+    const wordsDetails = getWordsDetails(words, 'pt-br')
 
-    const requestedWordsSum = wordsSum.filter(item => {
+    const requestedWordsSum = wordsDetails.filter(item => {
       if (requestedWords.includes(item.word)) {
         return true
       } else {
@@ -31,7 +31,7 @@ class CreateCompleteAnalysisService {
     })
 
     if (getMostCommentedWords) {
-      const mostCommentedWords = wordsSum.slice(0, 10)
+      const mostCommentedWords = wordsDetails.slice(0, 10)
 
       if (getMood) {
         const { mood } = getUsersMood(words)

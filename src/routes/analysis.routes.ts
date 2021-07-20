@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-// import { GetVideoInfoService } from '../services/video/GetVideoInfoService'
+import { AppError } from '../errors/AppError'
 import { CreateRecommendedAnalysisService } from '../services/analysis/CreateRecommendedAnalysisService'
 import { CreateCompleteAnalysisService } from '../services/analysis/CreateCompleteAnalysisService'
 import { CreateMiningAnalysisService } from '../services/analysis/CreateMiningAnalysisService'
@@ -8,7 +8,7 @@ import { CreateAnalysisService } from '../services/analysis/CreateAnalysisServic
 
 const analysisRouter = Router()
 
-analysisRouter.get('/', async (request, response) => {
+analysisRouter.post('/', async (request, response) => {
   const { recommended = 'true', videoId = '' } = request.query
 
   if (typeof (videoId) === 'string') {
@@ -52,12 +52,10 @@ analysisRouter.get('/', async (request, response) => {
 
         return response.json(analysis)
       }
-
-      return response.json({})
     }
   }
 
-  return response.json({ message: false })
+  throw new AppError('Invalid query')
 })
 
 export { analysisRouter }

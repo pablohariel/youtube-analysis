@@ -1,45 +1,40 @@
-import { filterWords, filterWordsAndBrothers } from './filters'
+import { filterWords } from './filters'
 
-interface WordAndBrothers {
+interface Word {
   word: string,
-  wordBrothers: string[]
+  brothers: string[]
 }
 
 interface Response {
-  wordsAndBrothers: WordAndBrothers[],
-  words: string[]
+  words: Word[]
 }
 
 const getWordsFromComments = (comments: (string | null | undefined)[]): Response => {
-  let wordsAndBrothers: WordAndBrothers[] = []
-  let words: string[] = []
+  let words: Word[] = []
 
   for (const comment of comments) {
     if (comment) {
-      for (const primaryWord of comment?.split(' ')) {
-        if (primaryWord.length > 2) {
-          const result: WordAndBrothers = {
-            word: primaryWord.toLowerCase(),
-            wordBrothers: []
+      for (const word of comment?.split(' ')) {
+        if (word.length > 2) {
+          const result: Word = {
+            word: word.toLowerCase(),
+            brothers: []
           }
 
           for (const secondaryWord of comment?.split(' ')) {
-            if (secondaryWord.length > 2 && secondaryWord !== primaryWord) {
-              result.wordBrothers.push(secondaryWord.toLowerCase())
+            if (secondaryWord.length > 2 && secondaryWord !== word) {
+              result.brothers.push(secondaryWord.toLowerCase())
             }
           }
-          wordsAndBrothers.push(result)
-          words.push(primaryWord)
+          words.push(result)
         }
       }
     }
   }
 
-  wordsAndBrothers = filterWordsAndBrothers(wordsAndBrothers)
-
   words = filterWords(words)
 
-  return { wordsAndBrothers, words }
+  return { words }
 }
 
 export { getWordsFromComments }
