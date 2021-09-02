@@ -5,8 +5,9 @@ import { CreateCustomAnalysisService } from '../services/analysis/CreateCustomAn
 import { CreateMiningAnalysisService } from '../services/analysis/CreateMiningAnalysisService'
 import { CreateDefaultAnalysisService } from '../services/analysis/CreateDefaultAnalysisService'
 import { GetAnalysisService } from '../services/analysis/GetAnalysisService'
+import { DeleteAnalysisService } from '../services/analysis/DeleteAnalysisService'
 
-import { ensureAuthenticated } from '../middlewares/usersAuth'
+import { ensureAuthenticated, secureUserPermissionToDelete } from '../middlewares/usersAuth'
 
 const analysisRouter = Router()
 
@@ -62,6 +63,15 @@ analysisRouter.get('/:id', async (request, response) => {
   const analysis = await getAnalysis.execute({ id })
 
   return response.json(analysis)
+})
+
+analysisRouter.delete('/:id', ensureAuthenticated, secureUserPermissionToDelete, async (request, response) => {
+  const { id } = request.params
+  const deleteAnalysis = new DeleteAnalysisService()
+
+  const deletedAnalysis = await deleteAnalysis.execute({ id })
+
+  return response.json(deletedAnalysis)
 })
 
 export { analysisRouter }

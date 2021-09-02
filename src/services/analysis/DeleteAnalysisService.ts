@@ -8,7 +8,7 @@ interface Request {
   id: string
 }
 
-class GetAnalysisService {
+class DeleteAnalysisService {
   public async execute ({ id } : Request): Promise<Analysis> {
     try {
       id = new ObjectId(id).toHexString()
@@ -16,18 +16,24 @@ class GetAnalysisService {
       throw new AppError('Analysis not found')
     }
 
-    const analysis = await prisma.analysis.findUnique({
+    const toDeleteAnalysis = await prisma.analysis.findUnique({
       where: {
         id
       }
     })
 
-    if (!analysis) {
+    if (!toDeleteAnalysis) {
       throw new AppError('Analysis not found')
     }
 
-    return analysis
+    const deletedAnalysis = await prisma.analysis.delete({
+      where: {
+        id
+      }
+    })
+
+    return deletedAnalysis
   }
 }
 
-export { GetAnalysisService }
+export { DeleteAnalysisService }

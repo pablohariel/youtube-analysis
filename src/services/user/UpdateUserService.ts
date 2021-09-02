@@ -1,5 +1,4 @@
-import { PrismaClient } from '@prisma/client'
-
+import { prisma } from '../../database/connection'
 import { AppError } from '../../errors/AppError'
 
 interface Request {
@@ -17,8 +16,6 @@ interface Response {
 
 class UpdateUserService {
   public async execute ({ id, name }: Request): Promise<Response> {
-    const prisma = new PrismaClient()
-
     const checkUserExists = await prisma.user.findUnique({
       where: {
         id

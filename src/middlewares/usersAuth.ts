@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-
+import { PrismaClient } from '@prisma/client'
 import { verify } from 'jsonwebtoken'
 
 import authConfig from '../config/auth'
@@ -47,4 +47,27 @@ const secureUserPermission = (request: Request, response: Response, next: NextFu
   return next()
 }
 
-export { ensureAuthenticated, secureUserPermission }
+const secureUserPermissionToDelete = async (request: Request, response: Response, next: NextFunction): Promise<any> => {
+  const { user } = request
+  const { id } = request.params
+
+  const prisma = new PrismaClient()
+
+  const analysis = await prisma.analysis.findUnique({
+    where: {
+      id
+    }
+  })
+
+  if (!analysis) {
+    throw new AppError('Analysis not found')
+  }
+
+  if (analysis?.userId !== user.id) {
+    throw new AppError('Access denied', 401)
+  }
+
+  return next()
+}
+
+export { ensureAuthenticated, secureUserPermission, secureUserPermissionToDelete }

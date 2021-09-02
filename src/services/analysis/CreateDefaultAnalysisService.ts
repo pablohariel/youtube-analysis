@@ -2,8 +2,8 @@ import { GetVideoCommentsService } from '../video/GetVideoCommentsService'
 import { getVideoData } from './utils/getVideoData'
 import { getWordsFromComments } from './utils/getWordsFromComments'
 import { getUsersMood } from './utils/getUsersMood'
-import { PrismaClient } from '@prisma/client'
 
+import { prisma } from '../../database/connection'
 import { VideoData } from './types'
 
 interface Request {
@@ -32,8 +32,6 @@ class CreateDefaultAnalysisService {
       const { mood } = getUsersMood(words)
 
       if (save) {
-        const prisma = new PrismaClient()
-
         await prisma.analysis.create({
           data: {
             type: 'DEFAULT',
@@ -48,7 +46,6 @@ class CreateDefaultAnalysisService {
     }
 
     if (save) {
-      const prisma = new PrismaClient()
       await prisma.user.update({
         where: {
           id: userId

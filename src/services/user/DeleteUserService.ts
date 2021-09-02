@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client'
 
+import { prisma } from '../../database/connection'
 import { AppError } from '../../errors/AppError'
 
 interface Request {
@@ -16,8 +16,6 @@ interface Response {
 
 class DeleteUserService {
   public async execute ({ id }: Request): Promise<Response> {
-    const prisma = new PrismaClient()
-
     const checkUserExists = await prisma.user.findUnique({
       where: {
         id
@@ -27,6 +25,12 @@ class DeleteUserService {
     if (!checkUserExists) {
       throw new AppError('User not found')
     }
+
+    await prisma.analysis.deleteMany({
+      where: {
+        userId: id
+      }
+    })
 
     const deletedUser = await prisma.user.delete({
       where: {

@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client'
 import { compare } from 'bcryptjs'
 import { sign } from 'jsonwebtoken'
 
+import { prisma } from '../../database/connection'
 import authConfig from '../../config/auth'
 import { AppError } from '../../errors/AppError'
 
@@ -23,8 +23,6 @@ interface Response {
 
 class AuthenticateUserService {
   public async execute ({ email, password }: Request): Promise<Response> {
-    const prisma = new PrismaClient()
-
     if (!email || !password) {
       throw new AppError('Incorrect email/password combination.', 401)
     }

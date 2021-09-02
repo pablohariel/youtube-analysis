@@ -2,8 +2,9 @@ import { GetVideoCommentsService } from '../video/GetVideoCommentsService'
 import { getVideoData } from './utils/getVideoData'
 import { getWordsDetails } from './utils/getWordsDetails'
 import { getWordsFromComments } from './utils/getWordsFromComments'
-import { Prisma, PrismaClient } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 
+import { prisma } from '../../database/connection'
 import { VideoData, WordDetails } from './types'
 
 interface Request {
@@ -44,7 +45,6 @@ class CreateMiningAnalysisService {
       const mostCommentedWords = wordsDetails.slice(0, 10)
 
       if (save) {
-        const prisma = new PrismaClient()
         await prisma.user.update({
           where: {
             id: userId
@@ -66,7 +66,6 @@ class CreateMiningAnalysisService {
     }
 
     if (save) {
-      const prisma = new PrismaClient()
       await prisma.user.update({
         where: {
           id: userId

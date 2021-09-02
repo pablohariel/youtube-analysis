@@ -3,8 +3,9 @@ import { getVideoData } from './utils/getVideoData'
 import { getWordsDetails } from './utils/getWordsDetails'
 import { getWordsFromComments } from './utils/getWordsFromComments'
 import { getUsersMood } from './utils/getUsersMood'
-import { PrismaClient, Prisma } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 
+import { prisma } from '../../database/connection'
 import { VideoData, WordDetails } from './types'
 
 interface Request {
@@ -50,7 +51,6 @@ class CreateCustomAnalysisService {
         const { mood } = getUsersMood(words)
 
         if (save) {
-          const prisma = new PrismaClient()
           await prisma.user.update({
             where: {
               id: userId
@@ -73,7 +73,6 @@ class CreateCustomAnalysisService {
       }
 
       if (save) {
-        const prisma = new PrismaClient()
         await prisma.user.update({
           where: {
             id: userId
@@ -98,7 +97,6 @@ class CreateCustomAnalysisService {
       const { mood } = getUsersMood(words)
 
       if (save) {
-        const prisma = new PrismaClient()
         await prisma.user.update({
           where: {
             id: userId
@@ -120,7 +118,6 @@ class CreateCustomAnalysisService {
     }
 
     if (save) {
-      const prisma = new PrismaClient()
       await prisma.user.update({
         where: {
           id: userId

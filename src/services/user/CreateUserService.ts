@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client'
 import { hash } from 'bcryptjs'
 
+import { prisma } from '../../database/connection'
 import { AppError } from '../../errors/AppError'
 
 interface Request {
@@ -19,8 +19,6 @@ interface Response {
 
 class CreateUserService {
   public async execute ({ email = '', password = '', name }: Request): Promise<Response> {
-    const prisma = new PrismaClient()
-
     if (email.length < 1 || password.length < 1) {
       throw new AppError('Required field not informed')
     }

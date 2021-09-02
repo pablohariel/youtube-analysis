@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../../database/connection'
 
 interface Response {
   id: string,
@@ -10,8 +10,6 @@ interface Response {
 
 class GetUsersService {
   public async execute (): Promise<Response[]> {
-    const prisma = new PrismaClient()
-
     const users = await prisma.user.findMany({
       select: {
         id: true,

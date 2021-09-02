@@ -1,15 +1,15 @@
-import { PrismaClient } from '@prisma/client'
+import { Analysis } from '@prisma/client'
 import { AppError } from '../../errors/AppError'
 import { ObjectId } from 'bson'
+
+import { prisma } from '../../database/connection'
 
 interface Request {
   userId: string
 }
 
 class GetAnalysisHistoryService {
-  public async execute ({ userId } : Request): Promise<any> {
-    const prisma = new PrismaClient()
-
+  public async execute ({ userId } : Request): Promise<Analysis[]> {
     try {
       userId = new ObjectId(userId).toHexString()
     } catch (error) {

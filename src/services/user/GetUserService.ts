@@ -1,5 +1,4 @@
-import { PrismaClient } from '@prisma/client'
-
+import { prisma } from '../../database/connection'
 import { AppError } from '../../errors/AppError'
 
 interface Request {
@@ -16,8 +15,6 @@ interface Response {
 
 class GetUserService {
   public async execute ({ id }: Request): Promise<Response> {
-    const prisma = new PrismaClient()
-
     const user = await prisma.user.findUnique({
       where: {
         id
