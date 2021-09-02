@@ -5,6 +5,7 @@ import { UpdateUserService } from '../services/user/UpdateUserService'
 import { GetUserService } from '../services/user/GetUserService'
 import { GetUsersService } from '../services/user/GetUsersService'
 import { DeleteUserService } from '../services/user/DeleteUserService'
+import { GetAnalysisHistoryService } from '../services/analysis/GetAnalysisHistoryService'
 
 import { ensureAuthenticated, secureUserPermission } from '../middlewares/usersAuth'
 
@@ -16,7 +17,7 @@ usersRouter.get('/:id', ensureAuthenticated, secureUserPermission, async (reques
   const getUser = new GetUserService()
 
   const user = await getUser.execute({
-    id: Number(id)
+    id
   })
 
   return response.json(user)
@@ -44,11 +45,9 @@ usersRouter.put('/:id', ensureAuthenticated, secureUserPermission, async (reques
   const { id } = request.params
   const { name } = request.body
 
-  console.log(id, name)
-
   const updateUser = new UpdateUserService()
 
-  const updatedUser = await updateUser.execute({ id: Number(id), name })
+  const updatedUser = await updateUser.execute({ id, name })
 
   return response.status(201).json(updatedUser)
 })
@@ -59,10 +58,22 @@ usersRouter.delete('/:id', ensureAuthenticated, secureUserPermission, async (req
   const deleteUser = new DeleteUserService()
 
   const deletedUser = await deleteUser.execute({
-    id: Number(id)
+    id
   })
 
   return response.json(deletedUser)
+})
+
+usersRouter.get('/:id/history', async (request, response) => {
+  const { id } = request.params
+
+  const getHistory = new GetAnalysisHistoryService()
+
+  const history = await getHistory.execute({
+    userId: id
+  })
+
+  return response.json(history)
 })
 
 export { usersRouter }

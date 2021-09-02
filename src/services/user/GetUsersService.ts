@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 
 interface Response {
-  id: number,
+  id: string,
   email: string,
   name: string | null,
   created_at: Date,

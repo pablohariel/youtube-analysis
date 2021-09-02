@@ -3,12 +3,12 @@ import { PrismaClient } from '@prisma/client'
 import { AppError } from '../../errors/AppError'
 
 interface Request {
-  id: number,
+  id: string,
   name: string,
 }
 
 interface Response {
-  id: number,
+  id: string,
   email: string,
   name: string | null,
   created_at: Date,
@@ -18,10 +18,6 @@ interface Response {
 class UpdateUserService {
   public async execute ({ id, name }: Request): Promise<Response> {
     const prisma = new PrismaClient()
-
-    if (/^\d+$/.test(String(id)) === false) {
-      throw new AppError('User not found')
-    }
 
     const checkUserExists = await prisma.user.findUnique({
       where: {
@@ -33,8 +29,10 @@ class UpdateUserService {
       throw new AppError('User not found')
     }
 
-    if (name.length < 3) {
-      throw new AppError('Name too short', 422)
+    if (name) {
+      if (name.length < 3) {
+        throw new AppError('Name too short', 422)
+      }
     }
 
     const user = await prisma.user.update({

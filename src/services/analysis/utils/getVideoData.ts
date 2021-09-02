@@ -1,14 +1,5 @@
 import { GetVideoInfoService } from '../../video/GetVideoInfoService'
-
-interface VideoData {
-  channelTitle: string | null | undefined,
-  videoTitle: string | null | undefined,
-  publishedAt: string | null | undefined,
-  viewCount: string | null | undefined,
-  likeCount: string | null | undefined,
-  dislikeCount: string | null | undefined,
-  commentCount: string | null | undefined
-}
+import { VideoData } from '../types'
 
 const getVideoData = async (videoId: string): Promise<VideoData> => {
   const getVideoInfo = new GetVideoInfoService()

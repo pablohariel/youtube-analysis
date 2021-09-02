@@ -12,7 +12,7 @@ interface Request {
 
 interface Response {
   user: {
-    id: number,
+    id: string,
     email: string,
     name: string | null,
     created_at: Date,

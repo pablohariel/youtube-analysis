@@ -2,29 +2,41 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
-}
-
-model Profile {
-  id            Int         @id @default(autoincrement()) 
-  user          User        @relation(fields: [userId], references: [id])
-  userId        Int         @unique
-  bio           String?
-  created_at    DateTime    @default(now())
-  updated_at    DateTime    @updatedAt
+  previewFeatures = ["mongoDb"]
 }
 
 model User {
-  id            Int         @id @default(autoincrement())  
+  id            String      @id @default(dbgenerated()) @map("_id") @db.ObjectId 
   email         String      @unique
   name          String?
-  password      String      
-  profile       Profile?
+  password      String    
+  history       Analysis[]
   created_at    DateTime    @default(now())
   updated_at    DateTime    @updatedAt
 }
+
+model Analysis {
+  id            String      @id @default(dbgenerated()) @map("_id") @db.ObjectId 
+  userId        String      @db.ObjectId 
+  user          User        @relation(fields: [userId], references: [id])
+  type          Type
+  videoData     Json
+  mostCommentedWords Json?
+  usersMood     Json?
+  requestedWords Json?
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
+}
+
+enum Type {
+  DEFAULT
+  MINING
+  CUSTOM
+}
+

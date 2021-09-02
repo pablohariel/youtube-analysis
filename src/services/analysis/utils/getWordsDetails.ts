@@ -2,36 +2,16 @@
 import { getWordPolarity } from './getWordPolarity'
 import { getWordClass } from './getWordClass'
 
-interface WordDetails {
-  word: string,
-  timesUsed: number,
-  polarity: 'positive' | 'negative' | 'neutral',
-  class: 'adjective' | 'noun' | 'verb' | 'undefined',
-  brothers: string[]
-}
+import { Brother, WordDetails, Word } from '../types'
 
-interface Brother {
-  word: string,
-  timesUsed: number,
-  polarity: 'positive' | 'negative' | 'neutral',
-  class: 'adjective' | 'noun' | 'verb' | 'undefined'
-}
-
-interface Response {
-  word: string,
-  timesUsed: number,
-  polarity: 'positive' | 'negative' | 'neutral',
-  class: 'adjective' | 'noun' | 'verb' | 'undefined',
-  brothers: Brother[]
-}
-
-interface Word {
-  word: string,
-  brothers: string[]
-}
-
-const getWordsDetails = (words: Word[], language: 'pt-br'): Response[] => {
-  const wordsDetails: WordDetails[] = []
+const getWordsDetails = (words: Word[], language: 'pt-br'): WordDetails[] => {
+  const wordsDetails: {
+    word: string,
+    timesUsed: number,
+    polarity: 'positive' | 'negative' | 'neutral',
+    class: 'adjective' | 'noun' | 'verb' | 'undefined',
+    brothers: string[]
+  }[] = []
 
   for (const item of words) {
     const { word, brothers } = item
@@ -59,7 +39,7 @@ const getWordsDetails = (words: Word[], language: 'pt-br'): Response[] => {
     }
   }
 
-  let wordDetailsFiltered: Response[] = []
+  let wordDetailsFiltered: WordDetails[] = []
 
   for (const item of wordsDetails) {
     const { brothers } = item

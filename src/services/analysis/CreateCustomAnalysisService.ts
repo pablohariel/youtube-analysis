@@ -2,13 +2,15 @@ import { GetVideoCommentsService } from '../video/GetVideoCommentsService'
 import { getVideoData } from './utils/getVideoData'
 import { getWordsDetails } from './utils/getWordsDetails'
 import { getWordsFromComments } from './utils/getWordsFromComments'
-import { Prisma, PrismaClient } from '@prisma/client'
+import { getUsersMood } from './utils/getUsersMood'
+import { PrismaClient, Prisma } from '@prisma/client'
 
 import { VideoData, WordDetails } from './types'
 
 interface Request {
   videoId: string,
   requestedWords: string[],
+  getMood: true | false,
   getMostCommentedWords: true | false,
   save: true | false,
   userId: string
@@ -19,10 +21,11 @@ interface Response {
   videoData: VideoData;
   mostCommentedWords?: WordDetails[];
   requestedWords?: WordDetails[];
+  usersMood?: string
 }
 
-class CreateMiningAnalysisService {
-  public async execute ({ videoId, requestedWords, getMostCommentedWords, userId, save }: Request): Promise<Response> {
+class CreateCustomAnalysisService {
+  public async execute ({ videoId, requestedWords, getMood, getMostCommentedWords, save, userId } : Request): Promise<Response> {
     const videoData = await getVideoData(videoId)
 
     const getVideoComments = new GetVideoCommentsService()
@@ -43,6 +46,32 @@ class CreateMiningAnalysisService {
     if (getMostCommentedWords) {
       const mostCommentedWords = wordsDetails.slice(0, 10)
 
+      if (getMood) {
+        const { mood } = getUsersMood(words)
+
+        if (save) {
+          const prisma = new PrismaClient()
+          await prisma.user.update({
+            where: {
+              id: userId
+            },
+            data: {
+              history: {
+                create: {
+                  type: 'CUSTOM',
+                  videoData: { ...videoData },
+                  mostCommentedWords: [...mostCommentedWords] as unknown as Prisma.JsonArray,
+                  requestedWords: [...requestedWordsSum] as unknown as Prisma.JsonArray,
+                  usersMood: mood
+                }
+              }
+            }
+          })
+        }
+
+        return { type: 'CUSTOM', videoData, mostCommentedWords, requestedWords: requestedWordsSum, usersMood: mood }
+      }
+
       if (save) {
         const prisma = new PrismaClient()
         await prisma.user.update({
@@ -52,7 +81,7 @@ class CreateMiningAnalysisService {
           data: {
             history: {
               create: {
-                type: 'MINING',
+                type: 'CUSTOM',
                 videoData: { ...videoData },
                 mostCommentedWords: [...mostCommentedWords] as unknown as Prisma.JsonArray,
                 requestedWords: [...requestedWordsSum] as unknown as Prisma.JsonArray
@@ -62,7 +91,32 @@ class CreateMiningAnalysisService {
         })
       }
 
-      return { type: 'MINING', videoData, mostCommentedWords, requestedWords: requestedWordsSum }
+      return { type: 'CUSTOM', videoData, mostCommentedWords, requestedWords: requestedWordsSum }
+    }
+
+    if (getMood) {
+      const { mood } = getUsersMood(words)
+
+      if (save) {
+        const prisma = new PrismaClient()
+        await prisma.user.update({
+          where: {
+            id: userId
+          },
+          data: {
+            history: {
+              create: {
+                type: 'CUSTOM',
+                videoData: { ...videoData },
+                requestedWords: [...requestedWordsSum] as unknown as Prisma.JsonArray,
+                usersMood: mood
+              }
+            }
+          }
+        })
+      }
+
+      return { type: 'CUSTOM', videoData, requestedWords: requestedWordsSum, usersMood: mood }
     }
 
     if (save) {
@@ -74,7 +128,7 @@ class CreateMiningAnalysisService {
         data: {
           history: {
             create: {
-              type: 'MINING',
+              type: 'CUSTOM',
               videoData: { ...videoData },
               requestedWords: [...requestedWordsSum] as unknown as Prisma.JsonArray
             }
@@ -83,8 +137,8 @@ class CreateMiningAnalysisService {
       })
     }
 
-    return { type: 'MINING', videoData, requestedWords: requestedWordsSum }
+    return { type: 'CUSTOM', videoData, requestedWords: requestedWordsSum }
   }
 }
 
-export { CreateMiningAnalysisService }
+export { CreateCustomAnalysisService }

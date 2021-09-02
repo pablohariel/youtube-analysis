@@ -8,7 +8,7 @@ import { AppError } from '../errors/AppError'
 interface TokenPayload {
   iat: number;
   exp: number;
-  id: number;
+  id: string;
 }
 
 const ensureAuthenticated = (request: Request, response: Response, next: NextFunction): void => {
@@ -40,7 +40,7 @@ const ensureAuthenticated = (request: Request, response: Response, next: NextFun
 const secureUserPermission = (request: Request, response: Response, next: NextFunction): void => {
   const { id } = request.params
 
-  if (Number(request.user.id) !== Number(id)) {
+  if (request.user.id !== id) {
     throw new AppError('Access denied', 401)
   }
 

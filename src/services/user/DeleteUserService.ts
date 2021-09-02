@@ -3,11 +3,11 @@ import { PrismaClient } from '@prisma/client'
 import { AppError } from '../../errors/AppError'
 
 interface Request {
-  id: number
+  id: string
 }
 
 interface Response {
-  id: number,
+  id: string,
   email: string,
   name: string | null,
   created_at: Date,
@@ -18,10 +18,6 @@ class DeleteUserService {
   public async execute ({ id }: Request): Promise<Response> {
     const prisma = new PrismaClient()
 
-    if (/^\d+$/.test(String(id)) === false) {
-      throw new AppError('User not found')
-    }
-
     const checkUserExists = await prisma.user.findUnique({
       where: {
         id
@@ -31,12 +27,6 @@ class DeleteUserService {
     if (!checkUserExists) {
       throw new AppError('User not found')
     }
-
-    await prisma.profile.delete({
-      where: {
-        userId: id
-      }
-    })
 
     const deletedUser = await prisma.user.delete({
       where: {

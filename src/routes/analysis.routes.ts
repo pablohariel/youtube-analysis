@@ -1,61 +1,67 @@
 import { Router } from 'express'
 
 import { AppError } from '../errors/AppError'
-import { CreateRecommendedAnalysisService } from '../services/analysis/CreateRecommendedAnalysisService'
-import { CreateCompleteAnalysisService } from '../services/analysis/CreateCompleteAnalysisService'
+import { CreateCustomAnalysisService } from '../services/analysis/CreateCustomAnalysisService'
 import { CreateMiningAnalysisService } from '../services/analysis/CreateMiningAnalysisService'
-import { CreateAnalysisService } from '../services/analysis/CreateAnalysisService'
+import { CreateDefaultAnalysisService } from '../services/analysis/CreateDefaultAnalysisService'
+import { GetAnalysisService } from '../services/analysis/GetAnalysisService'
+
+import { ensureAuthenticated } from '../middlewares/usersAuth'
 
 const analysisRouter = Router()
 
-analysisRouter.post('/', async (request, response) => {
-  const { recommended = 'true', videoId = '' } = request.query
+analysisRouter.post('/', ensureAuthenticated, async (request, response) => {
+  const { type = 'default', videoId = '', save = 'false' } = request.query
+
+  const { id: userId } = request.user
+  const isToSave = save === 'true'
 
   if (typeof (videoId) === 'string') {
-    if (recommended === 'true') {
-      const createAnalysis = new CreateRecommendedAnalysisService()
+    const { usersMood = 'true', mostCommentedWords = 'true' } = request.query
+    const { words = [] } = request.body
 
-      const analysis = await createAnalysis.execute({ videoId })
+    if (type === 'custom') {
+      const createAnalysis = new CreateCustomAnalysisService()
+
+      const getMood = usersMood === 'true'
+      const getMostCommentedWords = mostCommentedWords === 'true'
+
+      const analysis = await createAnalysis.execute({ videoId, requestedWords: words, getMood, getMostCommentedWords, save: isToSave, userId })
+
       return response.json(analysis)
     }
-    if (recommended === 'false') {
-      const { type = 'complete', usersMood = 'false', mostCommentedWords = 'true' } = request.query
-      const { words = [] } = request.body
 
-      if (type === 'complete') {
-        const createAnalysis = new CreateCompleteAnalysisService()
+    if (type === 'mining') {
+      const createAnalysis = new CreateMiningAnalysisService()
 
-        const getMood = usersMood === 'true'
-        const getMostCommentedWords = mostCommentedWords === 'true'
+      const getMostCommentedWords = mostCommentedWords === 'true'
 
-        const analysis = await createAnalysis.execute({ videoId, requestedWords: words, getMood, getMostCommentedWords })
+      const analysis = await createAnalysis.execute({ videoId, requestedWords: words, getMostCommentedWords, save: isToSave, userId })
 
-        return response.json(analysis)
-      }
+      return response.json(analysis)
+    }
 
-      if (type === 'mining') {
-        const createAnalysis = new CreateMiningAnalysisService()
+    if (type === 'default') {
+      const createAnalysis = new CreateDefaultAnalysisService()
 
-        const getMostCommentedWords = mostCommentedWords === 'true'
+      const getMood = usersMood === 'true'
 
-        const analysis = await createAnalysis.execute({ videoId, requestedWords: words, getMostCommentedWords })
+      const analysis = await createAnalysis.execute({ videoId, getMood, save: isToSave, userId })
 
-        return response.json(analysis)
-      }
-
-      if (type === 'analysis') {
-        const createAnalysis = new CreateAnalysisService()
-
-        const getMood = usersMood === 'true'
-
-        const analysis = await createAnalysis.execute({ videoId, getMood })
-
-        return response.json(analysis)
-      }
+      return response.json(analysis)
     }
   }
 
   throw new AppError('Invalid query')
+})
+
+analysisRouter.get('/:id', async (request, response) => {
+  const { id } = request.params
+  const getAnalysis = new GetAnalysisService()
+
+  const analysis = await getAnalysis.execute({ id })
+
+  return response.json(analysis)
 })
 
 export { analysisRouter }

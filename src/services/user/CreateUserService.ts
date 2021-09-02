@@ -10,7 +10,7 @@ interface Request {
 }
 
 interface Response {
-  id: number,
+  id: string,
   email: string,
   name: string | null,
   created_at: Date,
@@ -55,12 +55,7 @@ class CreateUserService {
       data: {
         email,
         name,
-        password: hashedPassword,
-        profile: {
-          create: {
-            bio: ''
-          }
-        }
+        password: hashedPassword
       },
       select: {
         id: true,
