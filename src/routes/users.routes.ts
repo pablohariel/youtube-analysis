@@ -5,7 +5,6 @@ import { UpdateUserService } from '../services/user/UpdateUserService'
 import { GetUserService } from '../services/user/GetUserService'
 import { GetUsersService } from '../services/user/GetUsersService'
 import { DeleteUserService } from '../services/user/DeleteUserService'
-import { GetAnalysisHistoryService } from '../services/analysis/GetAnalysisHistoryService'
 
 import { ensureAuthenticated, secureUserPermission } from '../middlewares/usersAuth'
 
@@ -62,18 +61,6 @@ usersRouter.delete('/:id', ensureAuthenticated, secureUserPermission, async (req
   })
 
   return response.json(deletedUser)
-})
-
-usersRouter.get('/:id/history', async (request, response) => {
-  const { id } = request.params
-
-  const getHistory = new GetAnalysisHistoryService()
-
-  const history = await getHistory.execute({
-    userId: id
-  })
-
-  return response.json(history)
 })
 
 export { usersRouter }

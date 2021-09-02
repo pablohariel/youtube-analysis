@@ -6,6 +6,7 @@ import { CreateMiningAnalysisService } from '../services/analysis/CreateMiningAn
 import { CreateDefaultAnalysisService } from '../services/analysis/CreateDefaultAnalysisService'
 import { GetAnalysisService } from '../services/analysis/GetAnalysisService'
 import { DeleteAnalysisService } from '../services/analysis/DeleteAnalysisService'
+import { GetAnalysisHistoryService } from '../services/analysis/GetAnalysisHistoryService'
 
 import { ensureAuthenticated, secureUserPermissionToDelete } from '../middlewares/usersAuth'
 
@@ -54,6 +55,18 @@ analysisRouter.post('/', ensureAuthenticated, async (request, response) => {
   }
 
   throw new AppError('Invalid query')
+})
+
+analysisRouter.get('/history', ensureAuthenticated, async (request, response) => {
+  const { id } = request.user
+
+  const getHistory = new GetAnalysisHistoryService()
+
+  const history = await getHistory.execute({
+    userId: id
+  })
+
+  return response.json(history)
 })
 
 analysisRouter.get('/:id', async (request, response) => {

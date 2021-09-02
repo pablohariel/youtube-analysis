@@ -110,7 +110,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type":"number"
+              "type":"string"
             }
           }
         ],
@@ -145,7 +145,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type":"number"
+              "type":"string"
             }
           }
         ],
@@ -204,7 +204,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type":"number"
+              "type":"string"
             }
           }
         ],
@@ -287,6 +287,8 @@
     },
     "/analysis": {
       "post": {
+        "summary": "Create analysis",
+        "description": "This route creates a new analysis",
         "parameters": [
           {
             "name": "videoId",
@@ -297,19 +299,11 @@
             }
           },
           {
-            "name": "recommended",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
             "name": "type",
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["complete", "mining", "analysis"]
+              "enum": ["default", "mining", "custom"]
             }
           },
           {
@@ -318,7 +312,7 @@
             "schema": {
               "type": "boolean"
             },
-            "description": "Only available for complete and analysis types"
+            "description": "Only available for default and custom types"
           },
           {
             "name": "mostCommentedWords",
@@ -326,7 +320,7 @@
             "schema": {
               "type": "boolean"
             },
-            "description": "Only available for complete and mining types"
+            "description": "Only available for mining and custom types"
           }
         ],
         "tags": ["Analysis"],
@@ -409,7 +403,106 @@
           }
         }
       }
+    },
+    "/analysis/history": {
+      "get": {
+        "summary": "Get user analysis history",
+        "description": "This route returns the analysis history from the authenticated user",
+        "tags": ["Analysis"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Analysis found successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Analysis"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Analysis not found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/analysis/{id}": {
+      "get": {
+        "summary": "Get analysis",
+        "description": "This route returns an analysis",
+        "tags": ["Analysis"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type":"string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Analysis found successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Analysis"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Analysis not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete analysis",
+        "description": "This route deletes an analysis",
+        "tags": ["Analysis"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type":"string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Analysis deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Analysis"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Analysis not found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
     }
+    
   },
   "components": {
     "schemas": {
@@ -417,7 +510,7 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "number"
+            "type": "string"
           },
           "email": {
             "type": "string"
@@ -433,6 +526,125 @@
             "type": "string",
             "format": "date"
           }
+        }
+      },
+      "Analysis": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "videoData": {
+            "type": "object",
+            "properties": {
+              "channelTitle": {
+                "type": "string"
+              },
+              "videoTitle": {
+                "type": "string"
+              },
+              "publishedAt": {
+                "type": "string"
+              },
+              "viewCount": {
+                "type": "string"
+              },
+              "likeCount": {
+                "type": "string"
+              },
+              "dislikeCount": {
+                "type": "string"
+              },
+              "commentCount": {
+                "type": "string"
+              }
+            }
+          },
+          "mostCommentedWords": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "word": {
+                  "type": "string"
+                },
+                "timesUsed": {
+                  "type": "number"
+                },
+                "polarity": {
+                  "type": "string"
+                },
+                "class": {
+                  "type": "string"
+                },
+                "brothers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "word": {
+                        "type": "string"
+                      },
+                      "timesUsed": {
+                        "type": "number"
+                      },
+                      "polarity": {
+                        "type": "string"
+                      },
+                      "class": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "requestedWords": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "word": {
+                  "type": "string"
+                },
+                "timesUsed": {
+                  "type": "number"
+                },
+                "polarity": {
+                  "type": "string"
+                },
+                "class": {
+                  "type": "string"
+                },
+                "brothers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "word": {
+                        "type": "string"
+                      },
+                      "timesUsed": {
+                        "type": "number"
+                      },
+                      "polarity": {
+                        "type": "string"
+                      },
+                      "class": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          
+          },
+          "usersMood": {
+            "type": "string"
+          }
+          
         }
       }
     },

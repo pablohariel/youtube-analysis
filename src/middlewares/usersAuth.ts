@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
-import { PrismaClient } from '@prisma/client'
 import { verify } from 'jsonwebtoken'
+import { ObjectId } from 'bson'
 
+import { prisma } from '../database/connection'
 import authConfig from '../config/auth'
 import { AppError } from '../errors/AppError'
 
@@ -49,9 +50,13 @@ const secureUserPermission = (request: Request, response: Response, next: NextFu
 
 const secureUserPermissionToDelete = async (request: Request, response: Response, next: NextFunction): Promise<any> => {
   const { user } = request
-  const { id } = request.params
+  let { id } = request.params
 
-  const prisma = new PrismaClient()
+  try {
+    id = new ObjectId(id).toHexString()
+  } catch (error) {
+    throw new AppError('Analysis not found')
+  }
 
   const analysis = await prisma.analysis.findUnique({
     where: {
