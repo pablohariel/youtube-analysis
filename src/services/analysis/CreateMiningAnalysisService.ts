@@ -53,6 +53,7 @@ class CreateMiningAnalysisService {
             history: {
               create: {
                 type: 'MINING',
+                videoId,
                 videoData: { ...videoData },
                 mostCommentedWords: [...mostCommentedWords] as unknown as Prisma.JsonArray,
                 requestedWords: [...requestedWordsSum] as unknown as Prisma.JsonArray
@@ -74,6 +75,7 @@ class CreateMiningAnalysisService {
           history: {
             create: {
               type: 'MINING',
+              videoId,
               videoData: { ...videoData },
               requestedWords: [...requestedWordsSum] as unknown as Prisma.JsonArray
             }

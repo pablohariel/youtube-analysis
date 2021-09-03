@@ -35,6 +35,7 @@ class CreateDefaultAnalysisService {
         await prisma.analysis.create({
           data: {
             type: 'DEFAULT',
+            videoId,
             videoData: { ...videoData },
             usersMood: mood,
             userId
@@ -54,6 +55,7 @@ class CreateDefaultAnalysisService {
           history: {
             create: {
               type: 'DEFAULT',
+              videoId,
               videoData: { ...videoData }
             }
           }

@@ -8,7 +8,7 @@ interface Response {
   updated_at: Date
 }
 
-class GetUsersService {
+class ListUserService {
   public async execute (): Promise<Response[]> {
     const users = await prisma.user.findMany({
       select: {
@@ -24,4 +24,4 @@ class GetUsersService {
   }
 }
 
-export { GetUsersService }
+export { ListUserService }

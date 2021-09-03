@@ -59,6 +59,7 @@ class CreateCustomAnalysisService {
               history: {
                 create: {
                   type: 'CUSTOM',
+                  videoId,
                   videoData: { ...videoData },
                   mostCommentedWords: [...mostCommentedWords] as unknown as Prisma.JsonArray,
                   requestedWords: [...requestedWordsSum] as unknown as Prisma.JsonArray,
@@ -81,6 +82,7 @@ class CreateCustomAnalysisService {
             history: {
               create: {
                 type: 'CUSTOM',
+                videoId,
                 videoData: { ...videoData },
                 mostCommentedWords: [...mostCommentedWords] as unknown as Prisma.JsonArray,
                 requestedWords: [...requestedWordsSum] as unknown as Prisma.JsonArray
@@ -105,6 +107,7 @@ class CreateCustomAnalysisService {
             history: {
               create: {
                 type: 'CUSTOM',
+                videoId,
                 videoData: { ...videoData },
                 requestedWords: [...requestedWordsSum] as unknown as Prisma.JsonArray,
                 usersMood: mood
@@ -126,6 +129,7 @@ class CreateCustomAnalysisService {
           history: {
             create: {
               type: 'CUSTOM',
+              videoId,
               videoData: { ...videoData },
               requestedWords: [...requestedWordsSum] as unknown as Prisma.JsonArray
             }

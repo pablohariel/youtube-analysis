@@ -286,9 +286,57 @@
       }
     },
     "/analysis": {
+      "get": {
+        "summary": "Get analysis",
+        "description": "This route get all analysis or the ones matched with the query",
+        "tags": ["Analysis"],
+        "parameters": [
+          {
+            "name": "videoId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "videoTitle",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "channelTitle",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Analysis found successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Analysis"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No analysis found"
+          }
+        }
+      },
       "post": {
         "summary": "Create analysis",
         "description": "This route creates a new analysis",
+        "tags": ["Analysis"],
+        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "name": "videoId",
@@ -323,7 +371,6 @@
             "description": "Only available for mining and custom types"
           }
         ],
-        "tags": ["Analysis"],
         "requestBody": {
           "content": {
             "application/json": {

@@ -3,7 +3,7 @@ import { Router } from 'express'
 import { CreateUserService } from '../services/user/CreateUserService'
 import { UpdateUserService } from '../services/user/UpdateUserService'
 import { GetUserService } from '../services/user/GetUserService'
-import { GetUsersService } from '../services/user/GetUsersService'
+import { ListUserService } from '../services/user/ListUserService'
 import { DeleteUserService } from '../services/user/DeleteUserService'
 
 import { ensureAuthenticated, secureUserPermission } from '../middlewares/usersAuth'
@@ -23,9 +23,9 @@ usersRouter.get('/:id', ensureAuthenticated, secureUserPermission, async (reques
 })
 
 usersRouter.get('/', ensureAuthenticated, async (request, response) => {
-  const getUsers = new GetUsersService()
+  const listUsers = new ListUserService()
 
-  const users = await getUsers.execute()
+  const users = await listUsers.execute()
 
   return response.json(users)
 })

@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { Analysis } from '@prisma/client'
 
 import { AppError } from '../errors/AppError'
 import { CreateCustomAnalysisService } from '../services/analysis/CreateCustomAnalysisService'
@@ -7,10 +8,31 @@ import { CreateDefaultAnalysisService } from '../services/analysis/CreateDefault
 import { GetAnalysisService } from '../services/analysis/GetAnalysisService'
 import { DeleteAnalysisService } from '../services/analysis/DeleteAnalysisService'
 import { GetAnalysisHistoryService } from '../services/analysis/GetAnalysisHistoryService'
+import { ListAnalysisService } from '../services/analysis/ListAnalysisService'
 
 import { ensureAuthenticated, secureUserPermissionToDelete } from '../middlewares/usersAuth'
 
 const analysisRouter = Router()
+
+analysisRouter.get('/', async (request, response) => {
+  const { videoId, videoTitle, channelTitle } = request.query
+  const listAnalysis = new ListAnalysisService()
+
+  let analysis: Analysis[] = []
+  if (typeof (videoId) === 'string' || typeof (videoId) === 'undefined') {
+    if (typeof (videoTitle) === 'string' || typeof (videoTitle) === 'undefined') {
+      if (typeof (channelTitle) === 'string' || typeof (channelTitle) === 'undefined') {
+        analysis = await listAnalysis.execute({ videoId, videoTitle, channelTitle })
+      }
+    }
+  }
+
+  if (analysis.length < 1) {
+    throw new AppError('No analysis found', 404)
+  }
+
+  return response.json(analysis)
+})
 
 analysisRouter.post('/', ensureAuthenticated, async (request, response) => {
   const { type = 'default', videoId = '', save = 'false' } = request.query
