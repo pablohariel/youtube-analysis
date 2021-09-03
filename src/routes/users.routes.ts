@@ -6,11 +6,11 @@ import { GetUserService } from '../services/user/GetUserService'
 import { ListUserService } from '../services/user/ListUserService'
 import { DeleteUserService } from '../services/user/DeleteUserService'
 
-import { ensureAuthenticated, secureUserPermission } from '../middlewares/usersAuth'
+import { ensureAuthenticated, ensureIsTheUser, ensureIsAdmin } from '../middlewares/usersAuth'
 
 const usersRouter = Router()
 
-usersRouter.get('/:id', ensureAuthenticated, secureUserPermission, async (request, response) => {
+usersRouter.get('/:id', ensureAuthenticated, ensureIsTheUser, async (request, response) => {
   const { id } = request.params
 
   const getUser = new GetUserService()
@@ -22,7 +22,7 @@ usersRouter.get('/:id', ensureAuthenticated, secureUserPermission, async (reques
   return response.json(user)
 })
 
-usersRouter.get('/', ensureAuthenticated, async (request, response) => {
+usersRouter.get('/', ensureAuthenticated, ensureIsAdmin, async (request, response) => {
   const listUsers = new ListUserService()
 
   const users = await listUsers.execute()
@@ -40,7 +40,7 @@ usersRouter.post('/', async (request, response) => {
   return response.status(201).json(user)
 })
 
-usersRouter.put('/:id', ensureAuthenticated, secureUserPermission, async (request, response) => {
+usersRouter.put('/:id', ensureAuthenticated, ensureIsTheUser, async (request, response) => {
   const { id } = request.params
   const { name } = request.body
 
@@ -51,7 +51,7 @@ usersRouter.put('/:id', ensureAuthenticated, secureUserPermission, async (reques
   return response.status(201).json(updatedUser)
 })
 
-usersRouter.delete('/:id', ensureAuthenticated, secureUserPermission, async (request, response) => {
+usersRouter.delete('/:id', ensureAuthenticated, ensureIsTheUser, async (request, response) => {
   const { id } = request.params
 
   const deleteUser = new DeleteUserService()

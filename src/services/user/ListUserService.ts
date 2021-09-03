@@ -2,6 +2,7 @@ import { prisma } from '../../database/connection'
 
 interface Response {
   id: string,
+  isAdmin: boolean,
   email: string,
   name: string | null,
   created_at: Date,
@@ -13,6 +14,7 @@ class ListUserService {
     const users = await prisma.user.findMany({
       select: {
         id: true,
+        isAdmin: true,
         email: true,
         name: true,
         created_at: true,

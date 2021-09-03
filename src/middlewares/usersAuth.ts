@@ -12,7 +12,7 @@ interface TokenPayload {
   id: string;
 }
 
-const ensureAuthenticated = (request: Request, response: Response, next: NextFunction): void => {
+const ensureAuthenticated = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
   const authHeader = request.headers.authorization
 
   if (!authHeader) {
@@ -28,8 +28,19 @@ const ensureAuthenticated = (request: Request, response: Response, next: NextFun
 
     const { id } = decode as TokenPayload
 
+    const user = await prisma.user.findUnique({
+      where: {
+        id
+      }
+    })
+
+    if (!user) {
+      throw new AppError('Invalid JWT token', 401)
+    }
+
     request.user = {
-      id: String(id)
+      id: String(id),
+      isAdmin: user.isAdmin
     }
 
     return next()
@@ -38,29 +49,40 @@ const ensureAuthenticated = (request: Request, response: Response, next: NextFun
   }
 }
 
-const secureUserPermission = (request: Request, response: Response, next: NextFunction): void => {
-  const { id } = request.params
+const ensureIsAdmin = (request: Request, response: Response, next: NextFunction): void => {
+  const { isAdmin } = request.user
 
-  if (request.user.id !== id) {
+  if (!isAdmin) {
     throw new AppError('Access denied', 401)
   }
 
   return next()
 }
 
-const secureUserPermissionToDelete = async (request: Request, response: Response, next: NextFunction): Promise<any> => {
-  const { user } = request
-  let { id } = request.params
+const ensureIsTheUser = (request: Request, response: Response, next: NextFunction): void => {
+  const { id: userId, isAdmin } = request.user
+  const { id } = request.params
+
+  if (userId !== id && !isAdmin) {
+    throw new AppError('Access denied', 401)
+  }
+
+  return next()
+}
+
+const ensureCanDeleteAnalysis = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+  const { id: userId, isAdmin } = request.user
+  let { id: analysisId } = request.params
 
   try {
-    id = new ObjectId(id).toHexString()
+    analysisId = new ObjectId(analysisId).toHexString()
   } catch (error) {
     throw new AppError('Analysis not found')
   }
 
   const analysis = await prisma.analysis.findUnique({
     where: {
-      id
+      id: analysisId
     }
   })
 
@@ -68,11 +90,11 @@ const secureUserPermissionToDelete = async (request: Request, response: Response
     throw new AppError('Analysis not found')
   }
 
-  if (analysis?.userId !== user.id) {
+  if (analysis.userId !== userId && !isAdmin) {
     throw new AppError('Access denied', 401)
   }
 
   return next()
 }
 
-export { ensureAuthenticated, secureUserPermission, secureUserPermissionToDelete }
+export { ensureAuthenticated, ensureIsAdmin, ensureIsTheUser, ensureCanDeleteAnalysis }

@@ -10,7 +10,7 @@ import { DeleteAnalysisService } from '../services/analysis/DeleteAnalysisServic
 import { GetAnalysisHistoryService } from '../services/analysis/GetAnalysisHistoryService'
 import { ListAnalysisService } from '../services/analysis/ListAnalysisService'
 
-import { ensureAuthenticated, secureUserPermissionToDelete } from '../middlewares/usersAuth'
+import { ensureAuthenticated, ensureCanDeleteAnalysis } from '../middlewares/usersAuth'
 
 const analysisRouter = Router()
 
@@ -100,7 +100,7 @@ analysisRouter.get('/:id', async (request, response) => {
   return response.json(analysis)
 })
 
-analysisRouter.delete('/:id', ensureAuthenticated, secureUserPermissionToDelete, async (request, response) => {
+analysisRouter.delete('/:id', ensureAuthenticated, ensureCanDeleteAnalysis, async (request, response) => {
   const { id } = request.params
   const deleteAnalysis = new DeleteAnalysisService()
 

@@ -8,6 +8,7 @@ interface Request {
 
 interface Response {
   id: string,
+  isAdmin: boolean,
   email: string,
   name: string | null,
   created_at: Date,
@@ -41,6 +42,7 @@ class UpdateUserService {
       },
       select: {
         id: true,
+        isAdmin: true,
         email: true,
         name: true,
         created_at: true,

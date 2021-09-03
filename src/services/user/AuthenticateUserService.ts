@@ -13,6 +13,7 @@ interface Request {
 interface Response {
   user: {
     id: string,
+    isAdmin: boolean,
     email: string,
     name: string | null,
     created_at: Date,
@@ -57,6 +58,7 @@ class AuthenticateUserService {
 
     const filteredUser = {
       id: user.id,
+      isAdmin: user.isAdmin,
       email: user.email,
       name: user.name,
       created_at: user.created_at,
