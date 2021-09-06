@@ -17,7 +17,7 @@
   "paths": {
     "/users": {
       "get": {
-        "summary": "Get users",
+        "summary": "List users",
         "description": "This route returns all the registered users",
         "tags": ["Users"],
         "security": [{ "bearerAuth": [] }],
@@ -287,7 +287,7 @@
     },
     "/analysis": {
       "get": {
-        "summary": "Get analysis",
+        "summary": "List analysis",
         "description": "This route get all analysis or the ones matched with the query",
         "tags": ["Analysis"],
         "parameters": [
@@ -423,6 +423,15 @@
                         }
                       }
                     },
+                    "usersMood": {
+                      "type": "string"
+                    },
+                    "messages": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
                     "mostCommentedWords": {
                       "type": "array",
                       "items": {
@@ -433,12 +442,75 @@
                           },
                           "timesUsed": {
                             "type": "number"
+                          },
+                          "polarity": {
+                            "type": "string"
+                          },
+                          "class": {
+                            "type": "string"
+                          },
+                          "brothers": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "word": {
+                                  "type": "string"
+                                },
+                                "timesUsed": {
+                                  "type": "number"
+                                },
+                                "polarity": {
+                                  "type": "string"
+                                },
+                                "class": {
+                                  "type": "string"
+                                }
+                              }
+                            }
                           }
                         }
                       }
                     },
-                    "usersMood": {
-                      "type": "string"
+                    "requestedWords": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "word": {
+                            "type": "string"
+                          },
+                          "timesUsed": {
+                            "type": "number"
+                          },
+                          "polarity": {
+                            "type": "string"
+                          },
+                          "class": {
+                            "type": "string"
+                          },
+                          "brothers": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "word": {
+                                  "type": "string"
+                                },
+                                "timesUsed": {
+                                  "type": "number"
+                                },
+                                "polarity": {
+                                  "type": "string"
+                                },
+                                "class": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }
@@ -447,6 +519,9 @@
           },
           "400": {
             "description": "Invalid query"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
@@ -581,6 +656,15 @@
           "id": {
             "type": "string"
           },
+          "userId": {
+            "type": "string"
+          },
+          "videoId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
           "videoData": {
             "type": "object",
             "properties": {
@@ -690,8 +774,19 @@
           },
           "usersMood": {
             "type": "string"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
           }
-          
         }
       }
     },

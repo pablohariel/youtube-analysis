@@ -35,13 +35,19 @@ analysisRouter.get('/', async (request, response) => {
 })
 
 analysisRouter.post('/', ensureAuthenticated, async (request, response) => {
-  const { type = 'default', videoId = '', save = 'false' } = request.query
+  const {
+    type = 'default',
+    videoId,
+    usersMood = 'true',
+    mostCommentedWords = 'true',
+    messages = 'true',
+    save = 'false'
+  } = request.query
 
   const { id: userId } = request.user
   const isToSave = save === 'true'
 
   if (typeof (videoId) === 'string') {
-    const { usersMood = 'true', mostCommentedWords = 'true' } = request.query
     const { words = [] } = request.body
 
     if (type === 'custom') {
@@ -49,8 +55,9 @@ analysisRouter.post('/', ensureAuthenticated, async (request, response) => {
 
       const getMood = usersMood === 'true'
       const getMostCommentedWords = mostCommentedWords === 'true'
+      const getMessages = messages === 'true'
 
-      const analysis = await createAnalysis.execute({ videoId, requestedWords: words, getMood, getMostCommentedWords, save: isToSave, userId })
+      const analysis = await createAnalysis.execute({ videoId, requestedWords: words, getMood, getMessages, getMostCommentedWords, save: isToSave, userId })
 
       return response.json(analysis)
     }
@@ -69,8 +76,9 @@ analysisRouter.post('/', ensureAuthenticated, async (request, response) => {
       const createAnalysis = new CreateDefaultAnalysisService()
 
       const getMood = usersMood === 'true'
+      const getMessages = messages === 'true'
 
-      const analysis = await createAnalysis.execute({ videoId, getMood, save: isToSave, userId })
+      const analysis = await createAnalysis.execute({ videoId, getMood, getMessages, save: isToSave, userId })
 
       return response.json(analysis)
     }

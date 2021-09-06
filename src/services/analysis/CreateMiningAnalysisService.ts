@@ -18,12 +18,12 @@ interface Request {
 interface Response {
   type: 'DEFAULT' | 'MINING' | 'CUSTOM';
   videoData: VideoData;
-  mostCommentedWords?: WordDetails[];
-  requestedWords?: WordDetails[];
+  mostCommentedWords: WordDetails[];
+  requestedWords: WordDetails[];
 }
 
 class CreateMiningAnalysisService {
-  public async execute ({ videoId, requestedWords, getMostCommentedWords, userId, save }: Request): Promise<Response> {
+  public async execute ({ videoId, getMostCommentedWords, requestedWords, userId, save }: Request): Promise<Response> {
     const videoData = await getVideoData(videoId)
 
     const getVideoComments = new GetVideoCommentsService()
@@ -32,6 +32,7 @@ class CreateMiningAnalysisService {
     const { words } = getWordsFromComments(videoComments)
 
     const wordsDetails = getWordsDetails(words, 'pt-br')
+    const mostCommentedWords = wordsDetails.slice(0, 10)
 
     const requestedWordsSum = wordsDetails.filter(item => {
       if (requestedWords.includes(item.word)) {
@@ -40,31 +41,6 @@ class CreateMiningAnalysisService {
         return false
       }
     })
-
-    if (getMostCommentedWords) {
-      const mostCommentedWords = wordsDetails.slice(0, 10)
-
-      if (save) {
-        await prisma.user.update({
-          where: {
-            id: userId
-          },
-          data: {
-            history: {
-              create: {
-                type: 'MINING',
-                videoId,
-                videoData: { ...videoData },
-                mostCommentedWords: [...mostCommentedWords] as unknown as Prisma.JsonArray,
-                requestedWords: [...requestedWordsSum] as unknown as Prisma.JsonArray
-              }
-            }
-          }
-        })
-      }
-
-      return { type: 'MINING', videoData, mostCommentedWords, requestedWords: requestedWordsSum }
-    }
 
     if (save) {
       await prisma.user.update({
@@ -77,14 +53,20 @@ class CreateMiningAnalysisService {
               type: 'MINING',
               videoId,
               videoData: { ...videoData },
-              requestedWords: [...requestedWordsSum] as unknown as Prisma.JsonArray
+              mostCommentedWords: getMostCommentedWords ? mostCommentedWords as unknown as Prisma.JsonArray : [],
+              requestedWords: requestedWordsSum as unknown as Prisma.JsonArray
             }
           }
         }
       })
     }
 
-    return { type: 'MINING', videoData, requestedWords: requestedWordsSum }
+    return {
+      type: 'MINING',
+      videoData,
+      mostCommentedWords: getMostCommentedWords ? mostCommentedWords : [],
+      requestedWords: requestedWordsSum
+    }
   }
 }
 

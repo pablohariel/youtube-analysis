@@ -32,6 +32,7 @@ model Analysis {
   mostCommentedWords Json?
   usersMood     Json?
   requestedWords Json?
+  messages      String[]
   created_at    DateTime    @default(now())
   updated_at    DateTime    @updatedAt
 }

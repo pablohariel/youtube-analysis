@@ -1,32 +1,35 @@
+import { Prisma } from '@prisma/client'
+
 import { GetVideoCommentsService } from '../video/GetVideoCommentsService'
 import { getVideoData } from './utils/getVideoData'
 import { getWordsDetails } from './utils/getWordsDetails'
 import { getWordsFromComments } from './utils/getWordsFromComments'
 import { getUsersMood } from './utils/getUsersMood'
-import { Prisma } from '@prisma/client'
-
+import { getGeneratedMessages } from './utils/getGeneratedMessages'
 import { prisma } from '../../database/connection'
 import { VideoData, WordDetails } from './types'
 
 interface Request {
-  videoId: string,
-  requestedWords: string[],
-  getMood: true | false,
-  getMostCommentedWords: true | false,
-  save: true | false,
-  userId: string
+  videoId: string;
+  requestedWords: string[];
+  getMood: true | false;
+  getMostCommentedWords: true | false;
+  getMessages: true | false;
+  save: true | false;
+  userId: string;
 }
 
 interface Response {
   type: 'DEFAULT' | 'MINING' | 'CUSTOM';
   videoData: VideoData;
-  mostCommentedWords?: WordDetails[];
-  requestedWords?: WordDetails[];
-  usersMood?: string
+  usersMood: string | null;
+  messages: string[];
+  mostCommentedWords: WordDetails[];
+  requestedWords: WordDetails[];
 }
 
 class CreateCustomAnalysisService {
-  public async execute ({ videoId, requestedWords, getMood, getMostCommentedWords, save, userId } : Request): Promise<Response> {
+  public async execute ({ videoId, requestedWords, getMood, getMostCommentedWords, getMessages, save, userId } : Request): Promise<Response> {
     const videoData = await getVideoData(videoId)
 
     const getVideoComments = new GetVideoCommentsService()
@@ -34,7 +37,11 @@ class CreateCustomAnalysisService {
     const videoComments = await getVideoComments.execute({ videoId })
     const { words } = getWordsFromComments(videoComments)
 
+    const { mood } = getUsersMood(words)
     const wordsDetails = getWordsDetails(words, 'pt-br')
+    const mostCommentedWords = wordsDetails.slice(0, 10)
+
+    const messages = getGeneratedMessages({ words: wordsDetails, mood })
 
     const requestedWordsSum = wordsDetails.filter(item => {
       if (requestedWords.includes(item.word)) {
@@ -43,82 +50,6 @@ class CreateCustomAnalysisService {
         return false
       }
     })
-
-    if (getMostCommentedWords) {
-      const mostCommentedWords = wordsDetails.slice(0, 10)
-
-      if (getMood) {
-        const { mood } = getUsersMood(words)
-
-        if (save) {
-          await prisma.user.update({
-            where: {
-              id: userId
-            },
-            data: {
-              history: {
-                create: {
-                  type: 'CUSTOM',
-                  videoId,
-                  videoData: { ...videoData },
-                  mostCommentedWords: [...mostCommentedWords] as unknown as Prisma.JsonArray,
-                  requestedWords: [...requestedWordsSum] as unknown as Prisma.JsonArray,
-                  usersMood: mood
-                }
-              }
-            }
-          })
-        }
-
-        return { type: 'CUSTOM', videoData, mostCommentedWords, requestedWords: requestedWordsSum, usersMood: mood }
-      }
-
-      if (save) {
-        await prisma.user.update({
-          where: {
-            id: userId
-          },
-          data: {
-            history: {
-              create: {
-                type: 'CUSTOM',
-                videoId,
-                videoData: { ...videoData },
-                mostCommentedWords: [...mostCommentedWords] as unknown as Prisma.JsonArray,
-                requestedWords: [...requestedWordsSum] as unknown as Prisma.JsonArray
-              }
-            }
-          }
-        })
-      }
-
-      return { type: 'CUSTOM', videoData, mostCommentedWords, requestedWords: requestedWordsSum }
-    }
-
-    if (getMood) {
-      const { mood } = getUsersMood(words)
-
-      if (save) {
-        await prisma.user.update({
-          where: {
-            id: userId
-          },
-          data: {
-            history: {
-              create: {
-                type: 'CUSTOM',
-                videoId,
-                videoData: { ...videoData },
-                requestedWords: [...requestedWordsSum] as unknown as Prisma.JsonArray,
-                usersMood: mood
-              }
-            }
-          }
-        })
-      }
-
-      return { type: 'CUSTOM', videoData, requestedWords: requestedWordsSum, usersMood: mood }
-    }
 
     if (save) {
       await prisma.user.update({
@@ -131,14 +62,24 @@ class CreateCustomAnalysisService {
               type: 'CUSTOM',
               videoId,
               videoData: { ...videoData },
-              requestedWords: [...requestedWordsSum] as unknown as Prisma.JsonArray
+              usersMood: getMood ? mood : null,
+              messages: getMessages ? messages : [],
+              mostCommentedWords: getMostCommentedWords ? mostCommentedWords as unknown as Prisma.JsonArray : [],
+              requestedWords: requestedWordsSum as unknown as Prisma.JsonArray
             }
           }
         }
       })
     }
 
-    return { type: 'CUSTOM', videoData, requestedWords: requestedWordsSum }
+    return {
+      type: 'CUSTOM',
+      videoData,
+      usersMood: getMood ? mood : null,
+      messages: getMessages ? messages : [],
+      mostCommentedWords: getMostCommentedWords ? mostCommentedWords : [],
+      requestedWords: requestedWordsSum
+    }
   }
 }
 
