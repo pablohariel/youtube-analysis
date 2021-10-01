@@ -24,7 +24,7 @@ class GetVideoCommentsService {
         if (!pageToken) {
           const response = await service.commentThreads.list({
             key: process.env.API_KEY,
-            part: ['id', 'snippet'],
+            part: ['id', 'snippet', 'replies'],
             videoId: videoId,
             maxResults: 100
           })
@@ -62,19 +62,34 @@ class GetVideoCommentsService {
         const snippet = item.snippet
 
         if (commentData && snippet) {
-          const { textDisplay, likeCount, authorDisplayName, authorProfileImageUrl, publishedAt } = commentData
+          const { textDisplay, likeCount, authorDisplayName, authorProfileImageUrl, authorChannelId, publishedAt } = commentData
           const { totalReplyCount } = snippet
           const { replies } = item
+
+          const filteredReplies = replies?.comments || []
+          const finalReplies = filteredReplies.map(item => {
+            return {
+              content: item.snippet?.textDisplay || '',
+              author: {
+                id: item.snippet?.authorChannelId || '',
+                name: item.snippet?.authorDisplayName || '',
+                profileImage: item.snippet?.authorProfileImageUrl || ''
+              },
+              likeCount: item.snippet?.likeCount || 0,
+              published_at: item.snippet?.publishedAt || ''
+            }
+          })
 
           const comment = {
             content: textDisplay || '',
             author: {
+              id: authorChannelId?.value || '',
               name: authorDisplayName || '',
               profileImage: authorProfileImageUrl || ''
             },
             likeCount: likeCount || 0,
             replyCount: totalReplyCount || 0,
-            replies: replies || [],
+            replies: finalReplies || [],
             published_at: publishedAt || ''
           } as Comment
 
@@ -82,8 +97,6 @@ class GetVideoCommentsService {
         }
       }
     }
-
-    console.log(comments[0])
 
     return { comments }
   }

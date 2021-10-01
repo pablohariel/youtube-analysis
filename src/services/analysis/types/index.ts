@@ -27,12 +27,22 @@ interface VideoData {
 interface Comment {
   content: String,
   author: {
+    id: string,
     name: String,
     profileImage: String
   },
   likeCount: Number,
   replyCount: Number,
-  replies: Array<String>,
+  replies: Array<{
+    content: String,
+    author: {
+      id: String,
+      name: String,
+      profileImage: String
+    },
+    likeCount: Number,
+    published_at: String
+  }>,
   published_at: String
 }
 

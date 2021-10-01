@@ -38,7 +38,8 @@ usersRouter.post('/', async (request, response) => {
   // test
   const getComments = new GetVideoCommentsService()
 
-  await getComments.execute({ videoId: 'walIJVOwS1k' })
+  const test = await getComments.execute({ videoId: 'walIJVOwS1k' })
+  return response.json(test)
   //
 
   const { email, password, name } = request.body
