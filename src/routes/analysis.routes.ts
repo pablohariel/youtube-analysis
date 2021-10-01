@@ -34,7 +34,8 @@ analysisRouter.get('/', async (request, response) => {
   return response.json(analysis)
 })
 
-analysisRouter.post('/', ensureAuthenticated, async (request, response) => {
+// put ensureAuthenticated on release
+analysisRouter.post('/', async (request, response) => {
   const {
     type = 'default',
     videoId,
@@ -44,7 +45,9 @@ analysisRouter.post('/', ensureAuthenticated, async (request, response) => {
     save = 'false'
   } = request.query
 
-  const { id: userId } = request.user
+  // const { id: userId } = request.user
+  const userId = 1
+
   const isToSave = save === 'true'
 
   if (typeof (videoId) === 'string') {

@@ -49,6 +49,8 @@ class GetVideoCommentsService {
       throw new AppError('Video not found.')
     }
 
+    console.log(comments[0].snippet?.topLevelComment?.snippet)
+
     const filteredComments = comments.map(comment => {
       return comment.snippet?.topLevelComment?.snippet?.textDisplay
     })

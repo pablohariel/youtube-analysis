@@ -15,9 +15,10 @@ model User {
   id            String      @id @default(dbgenerated()) @map("_id") @db.ObjectId 
   isAdmin       Boolean     @default(false)
   email         String      @unique
-  name          String?
+  name          String
   password      String    
   history       Analysis[]
+  profileImage  String?
   created_at    DateTime    @default(now())
   updated_at    DateTime    @updatedAt
 }
@@ -26,13 +27,12 @@ model Analysis {
   id            String      @id @default(dbgenerated()) @map("_id") @db.ObjectId 
   userId        String      @db.ObjectId 
   user          User        @relation(fields: [userId], references: [id])
-  videoId       String
   type          Type
   videoData     Json
-  mostCommentedWords Json?
-  usersMood     Json?
-  requestedWords Json?
-  messages      String[]
+  content       Json
+  requestData   Json
+  viewCount     Int
+  privacy       String
   created_at    DateTime    @default(now())
   updated_at    DateTime    @updatedAt
 }

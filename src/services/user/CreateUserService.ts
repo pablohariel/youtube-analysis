@@ -13,13 +13,13 @@ interface Response {
   id: string,
   isAdmin: boolean,
   email: string,
-  name: string | null,
+  name: string,
   created_at: Date,
   updated_at: Date
 }
 
 class CreateUserService {
-  public async execute ({ email = '', password = '', name }: Request): Promise<Response> {
+  public async execute ({ email = '', password = '', name = '' }: Request): Promise<Response> {
     if (email.length < 1 || password.length < 1) {
       throw new AppError('Required field not informed')
     }
