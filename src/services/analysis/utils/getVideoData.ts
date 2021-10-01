@@ -1,38 +1,15 @@
-import { GetVideoInfoService } from '../../video/GetVideoInfoService'
+import { GetVideoDataService } from '../../video/GetVideoDataService'
 import { VideoData } from '../types'
 
-const getVideoData = async (videoId: string): Promise<VideoData> => {
-  const getVideoInfo = new GetVideoInfoService()
-  const videoInfo = await getVideoInfo.execute({ videoId })
+interface Response {
+  videoData: VideoData
+}
 
-  const videoData: VideoData = {
-    channelTitle: null,
-    videoTitle: null,
-    publishedAt: null,
-    viewCount: null,
-    likeCount: null,
-    dislikeCount: null,
-    commentCount: null
-  }
+const getVideoData = async (videoId: string): Promise<Response> => {
+  const getVideoData = new GetVideoDataService()
+  const { videoData } = await getVideoData.execute({ videoId })
 
-  if (videoInfo) {
-    const { snippet, statistics } = videoInfo
-    if (snippet) {
-      const { channelTitle, title, publishedAt } = snippet
-      videoData.channelTitle = channelTitle
-      videoData.videoTitle = title
-      videoData.publishedAt = publishedAt
-    }
-    if (statistics) {
-      const { viewCount, likeCount, dislikeCount, commentCount } = statistics
-      videoData.viewCount = viewCount
-      videoData.likeCount = likeCount
-      videoData.dislikeCount = dislikeCount
-      videoData.commentCount = commentCount
-    }
-  }
-
-  return videoData
+  return { videoData }
 }
 
 export { getVideoData }

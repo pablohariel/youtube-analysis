@@ -1,11 +1,27 @@
 interface VideoData {
-  channelTitle: string | null | undefined,
-  videoTitle: string | null | undefined,
-  publishedAt: string | null | undefined,
-  viewCount: string | null | undefined,
-  likeCount: string | null | undefined,
-  dislikeCount: string | null | undefined,
-  commentCount: string | null | undefined
+  id: string,
+  title: string,
+  description?: string,
+  thumbnail: string,
+  details: {
+    duration: string,
+    definition: string,
+    caption: string
+  },
+  statistics: {
+    viewCount: string,
+    likeCount: string,
+    dislikeCount: string,
+    commentCount: string,
+    favoriteCount: string
+  },
+  channelDetails: {
+    id: string,
+    title: string,
+    thumbnail: string
+  },
+  defaultLanguage: string,
+  published_at: string
 }
 
 interface Word {
