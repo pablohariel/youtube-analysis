@@ -7,7 +7,7 @@ import { ListUserService } from '../services/user/ListUserService'
 import { DeleteUserService } from '../services/user/DeleteUserService'
 
 // test
-import { GetVideoDataService } from '../services/video/GetVideoDataService'
+import { GetVideoCommentsService } from '../services/video/GetVideoCommentsService'
 //
 
 import { ensureAuthenticated, ensureIsTheUser, ensureIsAdmin } from '../middlewares/usersAuth'
@@ -36,11 +36,9 @@ usersRouter.get('/', ensureAuthenticated, ensureIsAdmin, async (request, respons
 
 usersRouter.post('/', async (request, response) => {
   // test
-  const getVideo = new GetVideoDataService()
-  console.log('hi')
+  const getComments = new GetVideoCommentsService()
 
-  const test = await getVideo.execute({ videoId: 'walIJVOwS1k' })
-  console.log(test)
+  await getComments.execute({ videoId: 'walIJVOwS1k' })
   //
 
   const { email, password, name } = request.body

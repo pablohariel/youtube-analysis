@@ -1,32 +1,44 @@
 interface VideoData {
-  id: string,
-  title: string,
-  description?: string,
-  thumbnail: string,
+  id: String,
+  title: String,
+  description?: String,
+  thumbnail: String,
   details: {
-    duration: string,
-    definition: string,
-    caption: string
+    duration: String,
+    definition: String,
+    caption: String
   },
   statistics: {
-    viewCount: string,
-    likeCount: string,
-    dislikeCount: string,
-    commentCount: string,
-    favoriteCount: string
+    viewCount: String,
+    likeCount: String,
+    dislikeCount: String,
+    commentCount: String,
+    favoriteCount: String
   },
   channelDetails: {
-    id: string,
-    title: string,
-    thumbnail: string
+    id: String,
+    title: String,
+    thumbnail: String
   },
-  defaultLanguage: string,
-  published_at: string
+  defaultLanguage: String,
+  published_at: String
+}
+
+interface Comment {
+  content: String,
+  author: {
+    name: String,
+    profileImage: String
+  },
+  likeCount: Number,
+  replyCount: Number,
+  replies: Array<String>,
+  published_at: String
 }
 
 interface Word {
-  word: string,
-  brothers: string[]
+  word: String,
+  brothers: String[]
 }
 
 interface Words {
@@ -34,18 +46,18 @@ interface Words {
 }
 
 interface Brother {
-  word: string,
-  timesUsed: number,
+  word: String,
+  timesUsed: Number,
   polarity: 'positive' | 'negative' | 'neutral',
   class: 'adjective' | 'noun' | 'verb' | 'undefined'
 }
 
 interface WordDetails {
-  word: string,
-  timesUsed: number,
+  word: String,
+  timesUsed: Number,
   polarity: 'positive' | 'negative' | 'neutral',
   class: 'adjective' | 'noun' | 'verb' | 'undefined',
   brothers: Brother[]
 }
 
-export { VideoData, Word, Words, WordDetails, Brother }
+export { VideoData, Word, Words, WordDetails, Brother, Comment }
