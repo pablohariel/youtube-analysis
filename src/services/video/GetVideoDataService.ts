@@ -1,7 +1,7 @@
 import { google } from 'googleapis'
 
 import { AppError } from '../../errors/AppError'
-import { VideoData } from '../analysis/types/index'
+import { VideoData } from '../../interfaces/videoData'
 
 const service = google.youtube('v3')
 

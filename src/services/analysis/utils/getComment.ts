@@ -1,11 +1,15 @@
-import { Comment } from '../types'
+import { Comment } from '../../../interfaces/comment'
 
 interface Request {
-  comments: Array<Comment>,
+  comments: Comment[],
   filter: 'mostLikes' | 'mostDislikes' | 'mostReplies' | 'oldest' | 'newest'
 }
 
-const getComment = ({ comments, filter = 'mostLikes' } : Request) => {
+interface Response {
+  comment?: Comment
+}
+
+const getComment = ({ comments, filter = 'mostLikes' } : Request): Response => {
   switch (filter) {
     case 'mostLikes': {
       const comment = comments.sort((commentL, commentR) => {
@@ -18,7 +22,7 @@ const getComment = ({ comments, filter = 'mostLikes' } : Request) => {
         return 0
       })[0]
 
-      return comment
+      return { comment }
     }
 
     case 'oldest': {
@@ -35,7 +39,7 @@ const getComment = ({ comments, filter = 'mostLikes' } : Request) => {
         return 0
       })[0]
 
-      return comment
+      return { comment }
     }
 
     case 'newest': {
@@ -52,7 +56,7 @@ const getComment = ({ comments, filter = 'mostLikes' } : Request) => {
         return 0
       })[0]
 
-      return comment
+      return { comment }
     }
 
     case 'mostReplies': {
@@ -66,11 +70,11 @@ const getComment = ({ comments, filter = 'mostLikes' } : Request) => {
         return 0
       })[0]
 
-      return comment
+      return { comment }
     }
 
     default:
-      break
+      return { comment: undefined }
   }
 }
 

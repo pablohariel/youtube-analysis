@@ -2,7 +2,7 @@ import { google } from 'googleapis'
 import { youtube_v3 } from 'googleapis/build/src/apis/youtube'
 
 import { AppError } from '../../errors/AppError'
-import { Comment } from '../analysis/types/index'
+import { Comment } from '../../interfaces/comment'
 
 const service = google.youtube('v3')
 
@@ -11,7 +11,7 @@ interface Request {
 }
 
 interface Response {
-  comments: Array<Comment>
+  comments: Comment[]
 }
 
 class GetVideoCommentsService {

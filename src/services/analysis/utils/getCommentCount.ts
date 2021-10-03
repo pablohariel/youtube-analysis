@@ -1,4 +1,4 @@
-import { Comment } from '../types'
+import { Comment } from '../../../interfaces/comment'
 
 interface Request {
   comments: Array<Comment>,
