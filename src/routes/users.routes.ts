@@ -8,8 +8,10 @@ import { DeleteUserService } from '../services/user/DeleteUserService'
 
 // test
 import { GetVideoCommentsService } from '../services/video/GetVideoCommentsService'
-import { getCommentCount } from '../services/analysis/utils/getCommentCount'
-import { getComment } from '../services/analysis/utils/getComment'
+import { getCommentCount } from '../services/analysis/utils/comment/getCommentCount'
+import { getComment } from '../services/analysis/utils/comment/getComment'
+import { getUsers } from '../services/analysis/utils/comment/getUsers'
+import { getUserWithMostComment } from '../services/analysis/utils/comment/getUserWithMostComment'
 //
 
 import { ensureAuthenticated, ensureIsTheUser, ensureIsAdmin } from '../middlewares/usersAuth'
@@ -40,10 +42,11 @@ usersRouter.post('/', async (request, response) => {
   // test
   const getComments = new GetVideoCommentsService()
   const { comments } = await getComments.execute({ videoId: 'walIJVOwS1k' })
-  console.log(getComment({ comments, filter: 'newest' }))
+  const { users } = getUsers({ comments })
+  const userWithMostComment = getUserWithMostComment({ users })
 
   const { commentCount } = getCommentCount({ comments, includeReplies: false })
-  return response.json({ commentCount, comments })
+  return response.json({ userWithMostComment })
   //
 
   const { email, password, name } = request.body

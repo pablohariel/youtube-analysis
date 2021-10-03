@@ -1,4 +1,4 @@
-import { polarity } from './wordList'
+import { polarity } from './word/wordList'
 
 interface getUsersmoodResponse {
   mood: 'good' | 'very good' | 'neutral' | 'bad' | 'very bad' | 'no mood'

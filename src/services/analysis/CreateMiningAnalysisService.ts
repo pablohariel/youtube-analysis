@@ -1,11 +1,12 @@
 import { GetVideoCommentsService } from '../video/GetVideoCommentsService'
-import { getVideoData } from './utils/getVideoData'
-import { getWordsDetails } from './utils/getWordsDetails'
-import { getWordsFromComments } from './utils/getWordsFromComments'
+import { getVideoData } from './utils/video/getVideoData'
+import { getWordsDetails } from './utils/word/getWordsDetails'
+import { getWordsFromComments } from './utils/word/getWordsFromComments'
 import { Prisma } from '@prisma/client'
 
 import { prisma } from '../../database/connection'
-import { VideoData, WordDetails } from './types'
+import { WordDetails } from './types'
+import { VideoData } from '../../interfaces/videoData'
 
 interface Request {
   videoId: string,

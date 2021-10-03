@@ -1,5 +1,5 @@
-import { GetVideoDataService } from '../../video/GetVideoDataService'
-import { VideoData } from '../../../interfaces/videoData'
+import { GetVideoDataService } from '../../../video/GetVideoDataService'
+import { VideoData } from '../../../../interfaces/videoData'
 
 interface Response {
   videoData: VideoData

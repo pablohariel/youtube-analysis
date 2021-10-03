@@ -1,12 +1,12 @@
-import { Comment } from '../../../interfaces/comment'
+import { Comment } from '../../../../interfaces/comment'
 
 interface Request {
-  comments: Array<Comment>,
-  includeReplies: Boolean
+  comments: Comment[],
+  includeReplies: boolean
 }
 
 interface Response {
-  commentCount: Number
+  commentCount: number
 }
 
 const getCommentCount = ({ comments, includeReplies = false } : Request): Response => {
@@ -14,7 +14,7 @@ const getCommentCount = ({ comments, includeReplies = false } : Request): Respon
     let count = 0
     for (const comment of comments) {
       ++count
-      count = count + (comment.replyCount as number)
+      count = count + comment.replyCount
     }
 
     return { commentCount: count }

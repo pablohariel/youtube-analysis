@@ -93,7 +93,6 @@ class GetVideoCommentsService {
             published_at: publishedAt || ''
           } as Comment
 
-          console.log(comment.published_at)
           comments.push(comment)
         }
       }

@@ -1,4 +1,4 @@
-import { filterWords } from './filters'
+import { filterWords } from '../filters'
 
 interface Word {
   word: string,

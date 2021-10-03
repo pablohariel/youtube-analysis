@@ -2,7 +2,7 @@
 import { getWordPolarity } from './getWordPolarity'
 import { getWordClass } from './getWordClass'
 
-import { Brother, WordDetails, Word } from '../types'
+import { Brother, WordDetails, Word } from '../../types'
 
 const getWordsDetails = (words: Word[], language: 'pt-br'): WordDetails[] => {
   const wordsDetails: {
