@@ -62,9 +62,11 @@ class GetVideoCommentsService {
         const snippet = item.snippet
 
         if (commentData && snippet) {
-          const { textDisplay, likeCount, authorDisplayName, authorProfileImageUrl, authorChannelId, publishedAt } = commentData
+          const { textDisplay, likeCount, viewerRating, authorDisplayName, authorProfileImageUrl, authorChannelId, publishedAt } = commentData
           const { totalReplyCount } = snippet
           const { replies } = item
+
+          console.log(viewerRating)
 
           const filteredReplies = replies?.comments || []
           const finalReplies = filteredReplies.map(item => {

@@ -14,6 +14,8 @@ import { getUsers } from '../services/analysis/utils/comment/getUsers'
 import { getUserWithMostComment } from '../services/analysis/utils/comment/getUserWithMostComment'
 import { getWords } from '../services/analysis/utils/word/getWords'
 import { getJoinedWords } from '../services/analysis/utils/word/getJoinedWords'
+import { getMostUsedWords } from '../services/analysis/utils/word/getMostUsedWords'
+import { getWordCount } from '../services/analysis/utils/word/getWordCount'
 //
 
 import { ensureAuthenticated, ensureIsTheUser, ensureIsAdmin } from '../middlewares/usersAuth'
@@ -43,11 +45,14 @@ usersRouter.get('/', ensureAuthenticated, ensureIsAdmin, async (request, respons
 usersRouter.post('/', async (request, response) => {
   // test
   const getComments = new GetVideoCommentsService()
-  const { comments } = await getComments.execute({ videoId: 'Hnk1OYbyDHQ' })
+  const { comments } = await getComments.execute({ videoId: 'zdaVn-yXsek' })
+  console.log(comments.length)
   const { users } = getUsers({ comments })
   const userWithMostComment = getUserWithMostComment({ users })
-  const { words } = getWords({ comments, videoId: 'Hnk1OYbyDHQ', includeReplies: false })
-  const { joinedWords } = getJoinedWords({ words, videoId: 'Hnk1OYbyDHQ' })
+  const { words } = getWords({ comments, videoId: 'zdaVn-yXsek', includeReplies: true })
+  const { joinedWords } = getJoinedWords({ words, videoId: 'zdaVn-yXsek' })
+  const { mostUsedWords } = getMostUsedWords({ words: joinedWords })
+  const { wordCount } = getWordCount({ words })
 
   // const { joinedWords } = getJoinedWords({
   //   words:
@@ -110,7 +115,8 @@ usersRouter.post('/', async (request, response) => {
   // })
 
   const { commentCount } = getCommentCount({ comments, includeReplies: true })
-  return response.json({ joinedWords })
+
+  return response.json({ commentCount, comments })
   //
 
   const { email, password, name } = request.body

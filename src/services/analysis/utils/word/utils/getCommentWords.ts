@@ -11,7 +11,6 @@ interface Response {
 
 const getCommentWords = ({ comment, videoId }: Request): Response => {
   const words = comment.match(/[A-Za-záàâãéèêíïóôõöúçqQñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ0-9-]+/g)?.map(word => word.toLocaleLowerCase())
-
   const filteredWords = [] as string[]
 
   if (words) {

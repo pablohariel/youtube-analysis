@@ -19,6 +19,7 @@ const getWords = ({ comments, videoId, includeReplies = false }: Request): Respo
 
   for (const comment of comments) {
     const { words: commentWords } = getCommentWords({ comment: comment.content, videoId })
+
     for (const word of commentWords) {
       if (!stopWords.includes(word)) {
         words.push({
@@ -33,7 +34,7 @@ const getWords = ({ comments, videoId, includeReplies = false }: Request): Respo
 
     if (includeReplies) {
       for (const reply of comment.replies) {
-        const { words: replyWords } = getCommentWords({ comment: reply.content })
+        const { words: replyWords } = getCommentWords({ comment: reply.content, videoId })
 
         for (const word of replyWords) {
           if (!stopWords.includes(word)) {
