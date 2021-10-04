@@ -1,33 +1,36 @@
+import { Comment, Reply } from '../comment'
+
 interface SimpleJoinedWord {
   content: string,
-  timesUsed: string,
-  languages: string,
+  timesUsed: number,
+  languages: string[],
   polarity: string,
   class: string,
 }
 
 interface JoinedWord {
   content: string,
-  timesUsed: string,
-  languages: string,
+  timesUsed: number,
+  languages: string[],
   polarity: string,
   class: string,
-  brothers: SimpleJoinedWord[]
+  brothers: SimpleJoinedWord[],
+  comments: (Comment | Reply) []
 }
 
 interface SimpleWord {
   content: string,
-  languages: string,
+  languages: string[],
   polarity: string,
   class: string,
 }
 
 interface Word {
   content: string,
-  languages: string,
+  languages: string[],
   polarity: string,
   class: string,
-  brothers: SimpleWord[]
+  comment: Comment | Reply
 }
 
 export { SimpleJoinedWord, JoinedWord, Word, SimpleWord }

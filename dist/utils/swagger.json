@@ -1,0 +1,798 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Youtube comment analysis API",
+        "description": "The API goal is to provide analysis of Youtube videos comments",
+        "contact": {
+            "email": "pablohhdr@gmail.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3333",
+            "description": "Test API"
+        }
+    ],
+    "paths": {
+        "/users": {
+            "get": {
+                "summary": "List users",
+                "description": "This route returns all the registered users",
+                "tags": ["Users"],
+                "security": [{ "bearerAuth": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Users found successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/User"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create user",
+                "description": "This route creates a new user",
+                "tags": ["Users"],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": ["email", "password"]
+                            },
+                            "examples": {
+                                "user": {
+                                    "value": {
+                                        "email": "name@gmail.com",
+                                        "name": "First name",
+                                        "password": "EFd7/mTFH}8`"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Required field not informed"
+                    },
+                    "409": {
+                        "description": "Email already used"
+                    },
+                    "422": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "summary": "Get user",
+                "description": "This route returns an user",
+                "tags": ["Users"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User found successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "User not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update user",
+                "description": "This route updates an user",
+                "tags": ["Users"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "user": {
+                                    "value": {
+                                        "name": "New Name"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "User not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Invalid input"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete user",
+                "description": "This route deletes an user",
+                "tags": ["Users"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "User not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/sessions": {
+            "post": {
+                "summary": "Create session",
+                "description": "This route creates a user session",
+                "tags": ["Sessions"],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": ["email", "password"]
+                            },
+                            "examples": {
+                                "user": {
+                                    "value": {
+                                        "email": "email@gmail.com",
+                                        "password": "EFd7/mTFH}8`"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User session created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        },
+                                        "user": {
+                                            "type": "object",
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Incorrect email/password combination"
+                    }
+                }
+            }
+        },
+        "/analysis": {
+            "get": {
+                "summary": "List analysis",
+                "description": "This route get all analysis or the ones matched with the query",
+                "tags": ["Analysis"],
+                "parameters": [
+                    {
+                        "name": "videoId",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "videoTitle",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "channelTitle",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Analysis found successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Analysis"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No analysis found"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create analysis",
+                "description": "This route creates a new analysis",
+                "tags": ["Analysis"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "videoId",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": ["default", "mining", "custom"]
+                        }
+                    },
+                    {
+                        "name": "usersMood",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        },
+                        "description": "Only available for default and custom types"
+                    },
+                    {
+                        "name": "mostCommentedWords",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        },
+                        "description": "Only available for mining and custom types"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "words": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Analysis created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "videoData": {
+                                            "type": "object",
+                                            "properties": {
+                                                "channelTitle": {
+                                                    "type": "string"
+                                                },
+                                                "videoTitle": {
+                                                    "type": "string"
+                                                },
+                                                "publishedAt": {
+                                                    "type": "string"
+                                                },
+                                                "viewCount": {
+                                                    "type": "string"
+                                                },
+                                                "likeCount": {
+                                                    "type": "string"
+                                                },
+                                                "dislikeCount": {
+                                                    "type": "string"
+                                                },
+                                                "commentCount": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "usersMood": {
+                                            "type": "string"
+                                        },
+                                        "messages": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "mostCommentedWords": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "word": {
+                                                        "type": "string"
+                                                    },
+                                                    "timesUsed": {
+                                                        "type": "number"
+                                                    },
+                                                    "polarity": {
+                                                        "type": "string"
+                                                    },
+                                                    "class": {
+                                                        "type": "string"
+                                                    },
+                                                    "brothers": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "word": {
+                                                                    "type": "string"
+                                                                },
+                                                                "timesUsed": {
+                                                                    "type": "number"
+                                                                },
+                                                                "polarity": {
+                                                                    "type": "string"
+                                                                },
+                                                                "class": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "requestedWords": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "word": {
+                                                        "type": "string"
+                                                    },
+                                                    "timesUsed": {
+                                                        "type": "number"
+                                                    },
+                                                    "polarity": {
+                                                        "type": "string"
+                                                    },
+                                                    "class": {
+                                                        "type": "string"
+                                                    },
+                                                    "brothers": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "word": {
+                                                                    "type": "string"
+                                                                },
+                                                                "timesUsed": {
+                                                                    "type": "number"
+                                                                },
+                                                                "polarity": {
+                                                                    "type": "string"
+                                                                },
+                                                                "class": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid query"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/analysis/history": {
+            "get": {
+                "summary": "Get user analysis history",
+                "description": "This route returns the analysis history from the authenticated user",
+                "tags": ["Analysis"],
+                "security": [{ "bearerAuth": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Analysis found successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Analysis"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Analysis not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/analysis/{id}": {
+            "get": {
+                "summary": "Get analysis",
+                "description": "This route returns an analysis",
+                "tags": ["Analysis"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Analysis found successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Analysis"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Analysis not found"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete analysis",
+                "description": "This route deletes an analysis",
+                "tags": ["Analysis"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Analysis deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Analysis"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Analysis not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date"
+                    }
+                }
+            },
+            "Analysis": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "string"
+                    },
+                    "videoId": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "videoData": {
+                        "type": "object",
+                        "properties": {
+                            "channelTitle": {
+                                "type": "string"
+                            },
+                            "videoTitle": {
+                                "type": "string"
+                            },
+                            "publishedAt": {
+                                "type": "string"
+                            },
+                            "viewCount": {
+                                "type": "string"
+                            },
+                            "likeCount": {
+                                "type": "string"
+                            },
+                            "dislikeCount": {
+                                "type": "string"
+                            },
+                            "commentCount": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "mostCommentedWords": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "word": {
+                                    "type": "string"
+                                },
+                                "timesUsed": {
+                                    "type": "number"
+                                },
+                                "polarity": {
+                                    "type": "string"
+                                },
+                                "class": {
+                                    "type": "string"
+                                },
+                                "brothers": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "word": {
+                                                "type": "string"
+                                            },
+                                            "timesUsed": {
+                                                "type": "number"
+                                            },
+                                            "polarity": {
+                                                "type": "string"
+                                            },
+                                            "class": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "requestedWords": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "word": {
+                                    "type": "string"
+                                },
+                                "timesUsed": {
+                                    "type": "number"
+                                },
+                                "polarity": {
+                                    "type": "string"
+                                },
+                                "class": {
+                                    "type": "string"
+                                },
+                                "brothers": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "word": {
+                                                "type": "string"
+                                            },
+                                            "timesUsed": {
+                                                "type": "number"
+                                            },
+                                            "polarity": {
+                                                "type": "string"
+                                            },
+                                            "class": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "usersMood": {
+                        "type": "string"
+                    },
+                    "messages": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    }
+}

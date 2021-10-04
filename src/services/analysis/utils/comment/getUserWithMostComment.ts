@@ -8,7 +8,7 @@ interface Response {
   user: CommentUser
 }
 
-const getUserWithMostComments = ({ users }: Request): Response => {
+const getUserWithMostComment = ({ users }: Request): Response => {
   const topUsers = users.sort((userL, userR) => {
     if (userL.commentCount > userR.commentCount) {
       return -1
@@ -24,4 +24,4 @@ const getUserWithMostComments = ({ users }: Request): Response => {
   return { user: topUser }
 }
 
-export { getUserWithMostComments }
+export { getUserWithMostComment }

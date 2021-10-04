@@ -1,3 +1,14 @@
+interface Reply {
+  content: string,
+  author: {
+    id: string,
+    name: string,
+    profileImage: string
+  },
+  likeCount: number,
+  published_at: string
+}
+
 interface Comment {
   content: string,
   author: {
@@ -20,4 +31,4 @@ interface Comment {
   published_at: string
 }
 
-export { Comment }
+export { Comment, Reply }

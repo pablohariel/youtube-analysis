@@ -12,6 +12,8 @@ import { getCommentCount } from '../services/analysis/utils/comment/getCommentCo
 import { getComment } from '../services/analysis/utils/comment/getComment'
 import { getUsers } from '../services/analysis/utils/comment/getUsers'
 import { getUserWithMostComment } from '../services/analysis/utils/comment/getUserWithMostComment'
+import { getWords } from '../services/analysis/utils/word/getWords'
+import { getJoinedWords } from '../services/analysis/utils/word/getJoinedWords'
 //
 
 import { ensureAuthenticated, ensureIsTheUser, ensureIsAdmin } from '../middlewares/usersAuth'
@@ -41,12 +43,74 @@ usersRouter.get('/', ensureAuthenticated, ensureIsAdmin, async (request, respons
 usersRouter.post('/', async (request, response) => {
   // test
   const getComments = new GetVideoCommentsService()
-  const { comments } = await getComments.execute({ videoId: 'walIJVOwS1k' })
+  const { comments } = await getComments.execute({ videoId: 'Hnk1OYbyDHQ' })
   const { users } = getUsers({ comments })
   const userWithMostComment = getUserWithMostComment({ users })
+  const { words } = getWords({ comments, videoId: 'Hnk1OYbyDHQ', includeReplies: false })
+  const { joinedWords } = getJoinedWords({ words, videoId: 'Hnk1OYbyDHQ' })
 
-  const { commentCount } = getCommentCount({ comments, includeReplies: false })
-  return response.json({ userWithMostComment })
+  // const { joinedWords } = getJoinedWords({
+  //   words:
+  // [
+  //   {
+  //     content: 'ice',
+  //     languages: [],
+  //     polarity: '',
+  //     class: '',
+  //     comment: {
+  //       content: 'Plz eat green tea ice cream cake and make any green tea party',
+  //       author: {
+  //         id: 'string',
+  //         name: 'string',
+  //         profileImage: 'string'
+  //       },
+  //       likeCount: 0,
+  //       replyCount: 0,
+  //       replies: [],
+  //       published_at: 'string'
+  //     }
+  //   },
+  //   {
+  //     content: 'ice',
+  //     languages: [],
+  //     polarity: '',
+  //     class: '',
+  //     comment: {
+  //       content: 'angun tidur langsung lihat ice cream sebesar itu',
+  //       author: {
+  //         id: 'string',
+  //         name: 'string',
+  //         profileImage: 'string'
+  //       },
+  //       likeCount: 0,
+  //       replyCount: 0,
+  //       replies: [],
+  //       published_at: 'string'
+  //     }
+  //   },
+  //   {
+  //     content: 'cream',
+  //     languages: [],
+  //     polarity: '',
+  //     class: '',
+  //     comment: {
+  //       content: 'Plz eat green tea ice cream cake and make any green tea party',
+  //       author: {
+  //         id: 'string',
+  //         name: 'string',
+  //         profileImage: 'string'
+  //       },
+  //       likeCount: 0,
+  //       replyCount: 0,
+  //       replies: [],
+  //       published_at: 'string'
+  //     }
+  //   }
+  // ]
+  // })
+
+  const { commentCount } = getCommentCount({ comments, includeReplies: true })
+  return response.json({ joinedWords })
   //
 
   const { email, password, name } = request.body
