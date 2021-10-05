@@ -66,8 +66,6 @@ class GetVideoCommentsService {
           const { totalReplyCount } = snippet
           const { replies } = item
 
-          console.log(viewerRating)
-
           const filteredReplies = replies?.comments || []
           const finalReplies = filteredReplies.map(item => {
             return {

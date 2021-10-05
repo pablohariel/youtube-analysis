@@ -8,6 +8,7 @@
     "strictPropertyInitialization": false, 
     "skipLibCheck": true,   
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "downlevelIteration": true
   }
 }

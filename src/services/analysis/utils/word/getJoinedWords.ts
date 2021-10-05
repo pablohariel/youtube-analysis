@@ -15,6 +15,7 @@ const getJoinedWords = ({ words, videoId }: Request): Response => {
 
   for (const word of words) {
     const { words: commentWords } = getCommentWords({ comment: word.comment.content, videoId })
+    const uniqueCommentWords = [...new Set(commentWords)]
     let wordFound = false
 
     for (const joinedWord of joinedWords) {
@@ -24,7 +25,7 @@ const getJoinedWords = ({ words, videoId }: Request): Response => {
 
         let joinedWordCommentFound = false
         for (const joinedWordComment of joinedWord.comments) {
-          if (joinedWordComment === word.comment) {
+          if (joinedWordComment.content === word.comment.content) {
             joinedWordCommentFound = true
           }
         }
@@ -32,13 +33,13 @@ const getJoinedWords = ({ words, videoId }: Request): Response => {
         if (!joinedWordCommentFound) {
           joinedWord.comments.push(word.comment)
 
-          for (const commentWord of commentWords) {
+          for (const commentWord of uniqueCommentWords) {
             let brotherFound = false
             if (commentWord !== joinedWord.content) {
               for (const brother of joinedWord.brothers) {
                 if (brother.content === commentWord) {
                   brotherFound = true
-                  ++brother.timesUsed
+                  brother.timesUsed++
                 }
               }
               if (!brotherFound) {
@@ -65,13 +66,12 @@ const getJoinedWords = ({ words, videoId }: Request): Response => {
       newJoinedWord.comments = [word.comment]
       newJoinedWord.brothers = []
 
-      for (const commentWord of commentWords) {
+      for (const commentWord of uniqueCommentWords) {
         let brotherFound = false
         if (commentWord !== newJoinedWord.content) {
           for (const brother of newJoinedWord.brothers) {
             if (brother.content === commentWord) {
               brotherFound = true
-              ++brother.timesUsed
             }
           }
           if (!brotherFound) {

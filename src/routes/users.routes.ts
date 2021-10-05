@@ -16,6 +16,8 @@ import { getWords } from '../services/analysis/utils/word/getWords'
 import { getJoinedWords } from '../services/analysis/utils/word/getJoinedWords'
 import { getMostUsedWords } from '../services/analysis/utils/word/getMostUsedWords'
 import { getWordCount } from '../services/analysis/utils/word/getWordCount'
+import { sortJoinedWords } from '../services/analysis/utils/word/utils/sortJoinedWords'
+import { getWordsMostUsedTogether } from '../services/analysis/utils/word/getWordsMostUsedTogether'
 //
 
 import { ensureAuthenticated, ensureIsTheUser, ensureIsAdmin } from '../middlewares/usersAuth'
@@ -45,14 +47,15 @@ usersRouter.get('/', ensureAuthenticated, ensureIsAdmin, async (request, respons
 usersRouter.post('/', async (request, response) => {
   // test
   const getComments = new GetVideoCommentsService()
-  const { comments } = await getComments.execute({ videoId: 'zdaVn-yXsek' })
-  console.log(comments.length)
+  const { comments } = await getComments.execute({ videoId: 'Xedqo18PLds' })
   const { users } = getUsers({ comments })
   const userWithMostComment = getUserWithMostComment({ users })
-  const { words } = getWords({ comments, videoId: 'zdaVn-yXsek', includeReplies: true })
-  const { joinedWords } = getJoinedWords({ words, videoId: 'zdaVn-yXsek' })
+  const { words } = getWords({ comments, videoId: 'Xedqo18PLds', includeReplies: true })
+  const { joinedWords } = getJoinedWords({ words, videoId: 'Xedqo18PLds' })
   const { mostUsedWords } = getMostUsedWords({ words: joinedWords })
   const { wordCount } = getWordCount({ words })
+  const { sortedJoinedWords } = sortJoinedWords({ words: joinedWords, sortBrothers: true })
+  const { wordsMostUsedTogether } = getWordsMostUsedTogether({ words: sortedJoinedWords })
 
   // const { joinedWords } = getJoinedWords({
   //   words:
@@ -116,7 +119,7 @@ usersRouter.post('/', async (request, response) => {
 
   const { commentCount } = getCommentCount({ comments, includeReplies: true })
 
-  return response.json({ commentCount, comments })
+  return response.json({ joinedWords })
   //
 
   const { email, password, name } = request.body
