@@ -1,22 +1,25 @@
 import { JoinedWord } from '../../../../interfaces/word'
 
 interface Request {
-  wordToFind: string,
+  wordsToFind: string[],
   words: JoinedWord[]
 }
 
 interface Response {
-  wordFound: JoinedWord | undefined
+  words: JoinedWord[]
 }
 
-const getWord = ({ wordToFind, words }: Request): Response => {
-  const wordFound = words.filter(word => word.content === wordToFind.toLocaleLowerCase())[0]
+const getWord = ({ wordsToFind, words }: Request): Response => {
+  const wordsFound = [] as JoinedWord[]
 
-  if (wordFound) {
-    return { wordFound }
+  for (const wordToFind of wordsToFind) {
+    const wordFound = words.filter(word => word.content === wordToFind.toLocaleLowerCase())[0]
+    if (wordFound) {
+      wordsFound.push(wordFound)
+    }
   }
 
-  return { wordFound: undefined }
+  return { words: wordsFound }
 }
 
 export { getWord }
