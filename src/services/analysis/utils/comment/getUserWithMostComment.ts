@@ -5,11 +5,11 @@ interface Request {
 }
 
 interface Response {
-  user: CommentUser
+  userWithMostComment: CommentUser
 }
 
 const getUserWithMostComment = ({ users }: Request): Response => {
-  const topUsers = users.sort((userL, userR) => {
+  const usersWithMostComment = users.sort((userL, userR) => {
     if (userL.commentCount > userR.commentCount) {
       return -1
     }
@@ -19,9 +19,9 @@ const getUserWithMostComment = ({ users }: Request): Response => {
     return 0
   })
 
-  const topUser = topUsers[0]
+  const userWithMostComment = usersWithMostComment[0]
 
-  return { user: topUser }
+  return { userWithMostComment }
 }
 
 export { getUserWithMostComment }

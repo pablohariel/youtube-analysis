@@ -18,6 +18,7 @@ import { getMostUsedWords } from '../services/analysis/utils/word/getMostUsedWor
 import { getWordCount } from '../services/analysis/utils/word/getWordCount'
 import { sortJoinedWords } from '../services/analysis/utils/word/utils/sortJoinedWords'
 import { getWordsMostUsedTogether } from '../services/analysis/utils/word/getWordsMostUsedTogether'
+import { getWordsRelatedToVideoTitle } from '../services/analysis/utils/word/getWordsRelatedToVideoTitle'
 //
 
 import { ensureAuthenticated, ensureIsTheUser, ensureIsAdmin } from '../middlewares/usersAuth'
@@ -56,6 +57,9 @@ usersRouter.post('/', async (request, response) => {
   const { wordCount } = getWordCount({ words })
   const { sortedJoinedWords } = sortJoinedWords({ words: joinedWords, sortBrothers: true })
   const { wordsMostUsedTogether } = getWordsMostUsedTogether({ words: sortedJoinedWords })
+
+  const videoTitle = 'ATLÉTICO-MG 1 x 0 INTERNACIONAL | MELHORES MOMENTOS | 23ª RODADA BRASILEIRÃO 2021 | ge.globo'
+  const { wordsRelatedToVideoTitle } = getWordsRelatedToVideoTitle({ videoTitle: videoTitle.toLocaleLowerCase(), words: joinedWords })
 
   // const { joinedWords } = getJoinedWords({
   //   words:
@@ -119,7 +123,7 @@ usersRouter.post('/', async (request, response) => {
 
   const { commentCount } = getCommentCount({ comments, includeReplies: true })
 
-  return response.json({ joinedWords })
+  return response.json({ wordsRelatedToVideoTitle })
   //
 
   const { email, password, name } = request.body
