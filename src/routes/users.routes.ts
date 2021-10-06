@@ -19,8 +19,9 @@ import { getWordCount } from '../services/analysis/utils/word/getWordCount'
 import { sortJoinedWords } from '../services/analysis/utils/word/utils/sortJoinedWords'
 import { getWordsMostUsedTogether } from '../services/analysis/utils/word/getWordsMostUsedTogether'
 import { getWordsRelatedToVideoTitle } from '../services/analysis/utils/word/getWordsRelatedToVideoTitle'
-import { getWord } from '../services/analysis/utils/word/getWord'
+import { getRequestedWords } from '../services/analysis/utils/word/getRequestedWords'
 import { getPhrases } from '../services/analysis/utils/getPhrases'
+import { getRequestedComments } from '../services/analysis/utils/comment/getRequestedComments'
 //
 
 import { ensureAuthenticated, ensureIsTheUser, ensureIsAdmin } from '../middlewares/usersAuth'
@@ -59,8 +60,9 @@ usersRouter.post('/', async (request, response) => {
   const { wordCount } = getWordCount({ words })
   const { sortedJoinedWords } = sortJoinedWords({ words: joinedWords, sortBrothers: true })
   const { wordsMostUsedTogether } = getWordsMostUsedTogether({ words: sortedJoinedWords })
-  const { words: wordsMined } = getWord({ wordsToFind: ['inter', 'internacional', 'pedro'], words: joinedWords })
+  const { words: wordsMined } = getRequestedWords({ wordsToFind: ['inter', 'internacional', 'pedro'], words: joinedWords })
   const { phrases: phrasesMined } = getPhrases({ phrasesToFind: ['inter foi melhor', ' ', 'galo campeão'], comments, includeReplies: true })
+  const { dataFound } = getRequestedComments({ comments: comments, phrasesToFind: ['galo campeão', 'bunda'], type: 'fromPhrases', includeReplies: true })
 
   const videoTitle = 'ATLÉTICO-MG 1 x 0 INTERNACIONAL | MELHORES MOMENTOS | 23ª RODADA BRASILEIRÃO 2021 | ge.globo'
   const { wordsRelatedToVideoTitle } = getWordsRelatedToVideoTitle({ videoTitle: videoTitle.toLocaleLowerCase(), words: joinedWords })
@@ -127,7 +129,7 @@ usersRouter.post('/', async (request, response) => {
 
   const { commentCount } = getCommentCount({ comments, includeReplies: true })
 
-  return response.json({ phrasesMined, wordsMined })
+  return response.json({ dataFound })
   //
 
   const { email, password, name } = request.body

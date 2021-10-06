@@ -9,7 +9,7 @@ interface Response {
   words: JoinedWord[]
 }
 
-const getWord = ({ wordsToFind, words }: Request): Response => {
+const getRequestedWords = ({ wordsToFind, words }: Request): Response => {
   const wordsFound = [] as JoinedWord[]
 
   for (const wordToFind of wordsToFind) {
@@ -22,4 +22,4 @@ const getWord = ({ wordsToFind, words }: Request): Response => {
   return { words: wordsFound }
 }
 
-export { getWord }
+export { getRequestedWords }
