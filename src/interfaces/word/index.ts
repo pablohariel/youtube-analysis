@@ -33,4 +33,11 @@ interface Word {
   comment: Comment | Reply
 }
 
-export { SimpleJoinedWord, JoinedWord, Word, SimpleWord }
+interface WordDetails {
+  word: String,
+  timesUsed: Number,
+  polarity: 'positive' | 'negative' | 'neutral',
+  class: 'adjective' | 'noun' | 'verb' | 'undefined',
+}
+
+export { SimpleJoinedWord, JoinedWord, Word, SimpleWord, WordDetails }
