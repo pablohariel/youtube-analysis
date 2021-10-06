@@ -1,4 +1,4 @@
-import { Word } from '../../../../interfaces/word'
+import { Word } from '../../../../../interfaces/word'
 
 interface Request {
   words: Word[]

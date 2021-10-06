@@ -1,4 +1,4 @@
-import { Comment, Reply } from '../../../../interfaces/comment'
+import { Comment, Reply } from '../../../../../interfaces/comment'
 
 interface Request {
   wordsToFind?: string[],
@@ -19,7 +19,7 @@ interface Response {
   dataFound: Data[]
 }
 
-const getRequestedComments = ({ phrasesToFind, wordsToFind, comments, type, includeReplies = false }: Request): Response => {
+const getComments = ({ phrasesToFind, wordsToFind, comments, type, includeReplies = false }: Request): Response => {
   const dataFound = [] as Data[]
 
   switch (type) {
@@ -133,4 +133,4 @@ const getRequestedComments = ({ phrasesToFind, wordsToFind, comments, type, incl
   return { dataFound }
 }
 
-export { getRequestedComments }
+export { getComments }

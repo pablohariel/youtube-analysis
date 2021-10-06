@@ -1,7 +1,7 @@
 import { Comment } from '../../../../interfaces/comment'
 import { Word } from '../../../../interfaces/word'
 
-import { stopWords } from './wordList'
+import { stopWords } from './utils/wordList'
 import { getCommentWords } from './utils/getCommentWords'
 
 interface Request {

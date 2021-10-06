@@ -1,21 +1,21 @@
-import { Comment } from '../../../../interfaces/comment'
-import { CommentUser } from '../../../../interfaces/commentUser'
+import { Comment } from '../../../../../interfaces/comment'
+import { CommentUser } from '../../../../../interfaces/commentUser'
 
 interface Request {
   comments: Comment[]
 }
 
 interface Response {
-  users: CommentUser[]
+  commentsUsers: CommentUser[]
 }
 
-const getUsers = ({ comments }: Request): Response => {
-  const users = [] as CommentUser[]
+const getCommentsUsers = ({ comments }: Request): Response => {
+  const commentsUsers = [] as CommentUser[]
 
   for (const comment of comments) {
     const { author } = comment
     let userFound = false
-    for (const user of users) {
+    for (const user of commentsUsers) {
       if (user.id === author.id) {
         userFound = true
         user.commentCount++
@@ -23,7 +23,7 @@ const getUsers = ({ comments }: Request): Response => {
       }
     }
     if (!userFound) {
-      users.push({
+      commentsUsers.push({
         id: author.id,
         name: author.name,
         profileImage: author.profileImage,
@@ -33,7 +33,7 @@ const getUsers = ({ comments }: Request): Response => {
     }
   }
 
-  return { users }
+  return { commentsUsers }
 }
 
-export { getUsers }
+export { getCommentsUsers }

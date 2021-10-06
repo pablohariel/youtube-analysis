@@ -1,6 +1,6 @@
-import { JoinedWord } from '../../../../interfaces/word'
-import { WordsTogether } from '../../../../interfaces/wordsTogether'
-import { getCommentWords } from './utils/getCommentWords'
+import { JoinedWord } from '../../../../../interfaces/word'
+import { WordsTogether } from '../../../../../interfaces/wordsTogether'
+import { getCommentWords } from '../../words/utils/getCommentWords'
 
 interface Request {
   words: JoinedWord[]

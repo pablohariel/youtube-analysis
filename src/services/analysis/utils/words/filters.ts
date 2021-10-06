@@ -1,4 +1,4 @@
-import { stopWords } from './word/wordList'
+import { stopWords } from './utils/wordList'
 
 interface Word {
   word: string,

@@ -1,4 +1,4 @@
-import { Comment, Reply } from '../../../../interfaces/comment'
+import { Comment, Reply } from '../../../../../interfaces/comment'
 
 interface Request {
   usersName: string[],
@@ -20,7 +20,7 @@ interface Response {
   dataFound: Data[]
 }
 
-const getCommentsFromUser = ({ usersName, comments, includeReplies }: Request): Response => {
+const getUsersComments = ({ usersName, comments, includeReplies }: Request): Response => {
   const dataFound = [] as Data[]
 
   for (const comment of comments) {
@@ -71,4 +71,4 @@ const getCommentsFromUser = ({ usersName, comments, includeReplies }: Request): 
   return { dataFound }
 }
 
-export { getCommentsFromUser }
+export { getUsersComments }

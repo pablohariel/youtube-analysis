@@ -1,4 +1,4 @@
-import { Comment, Reply } from '../../../interfaces/comment'
+import { Comment, Reply } from '../../../../../interfaces/comment'
 
 interface JoinedPhrase {
   content: string,
@@ -13,17 +13,18 @@ interface Request {
 }
 
 interface Response {
-  phrases: JoinedPhrase[]
+  dataFound: JoinedPhrase[]
 }
 
 const getPhrases = ({ phrasesToFind, comments, includeReplies = false }: Request): Response => {
-  const phrasesFound = [] as JoinedPhrase[]
+  const dataFound = [] as JoinedPhrase[]
 
   for (const comment of comments) {
     for (const phrase of phrasesToFind) {
       if (comment.content.toLowerCase().includes(phrase.toLowerCase())) {
         let phraseAlreadyFound = false
-        for (const joinedPhrase of phrasesFound) {
+
+        for (const joinedPhrase of dataFound) {
           if (joinedPhrase.content === phrase) {
             phraseAlreadyFound = true
             joinedPhrase.timesUsed++
@@ -31,7 +32,7 @@ const getPhrases = ({ phrasesToFind, comments, includeReplies = false }: Request
           }
         }
         if (!phraseAlreadyFound) {
-          phrasesFound.push({
+          dataFound.push({
             content: phrase,
             timesUsed: 1,
             comments: [comment]
@@ -42,7 +43,8 @@ const getPhrases = ({ phrasesToFind, comments, includeReplies = false }: Request
         for (const reply of comment.replies) {
           if (reply.content.toLowerCase().includes(phrase.toLowerCase())) {
             let phraseAlreadyFound = false
-            for (const joinedPhrase of phrasesFound) {
+
+            for (const joinedPhrase of dataFound) {
               if (joinedPhrase.content === phrase) {
                 phraseAlreadyFound = true
                 joinedPhrase.timesUsed++
@@ -50,7 +52,7 @@ const getPhrases = ({ phrasesToFind, comments, includeReplies = false }: Request
               }
             }
             if (!phraseAlreadyFound) {
-              phrasesFound.push({
+              dataFound.push({
                 content: phrase,
                 timesUsed: 1,
                 comments: [reply]
@@ -62,7 +64,7 @@ const getPhrases = ({ phrasesToFind, comments, includeReplies = false }: Request
     }
   }
 
-  return { phrases: phrasesFound }
+  return { dataFound }
 }
 
 export { getPhrases }
