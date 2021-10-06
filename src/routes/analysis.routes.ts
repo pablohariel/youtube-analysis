@@ -37,54 +37,21 @@ analysisRouter.get('/', async (request, response) => {
 // put ensureAuthenticated on release
 analysisRouter.post('/', async (request, response) => {
   const {
-    type = 'default',
     videoId,
-    usersMood = 'true',
-    mostCommentedWords = 'true',
-    messages = 'true',
-    save = 'false'
-  } = request.query
+    type = 'default',
+    options,
+    save = false
+  } = request.body
 
-  // const { id: userId } = request.user
-  const userId = 1
+  if (typeof (videoId) !== 'string' || !options) {
+    throw new AppError('Invalid query')
+  }
 
-  const isToSave = save === 'true'
+  if (type === 'mining') {
+    const createAnalysis = new CreateMiningAnalysisService()
+    const analysis = await createAnalysis.execute({ videoId, userId: '2323', save, options })
 
-  if (typeof (videoId) === 'string') {
-    const { words = [] } = request.body
-
-    if (type === 'custom') {
-      const createAnalysis = new CreateCustomAnalysisService()
-
-      const getMood = usersMood === 'true'
-      const getMostCommentedWords = mostCommentedWords === 'true'
-      const getMessages = messages === 'true'
-
-      const analysis = await createAnalysis.execute({ videoId, requestedWords: words, getMood, getMessages, getMostCommentedWords, save: isToSave, userId })
-
-      return response.json(analysis)
-    }
-
-    if (type === 'mining') {
-      const createAnalysis = new CreateMiningAnalysisService()
-
-      const getMostCommentedWords = mostCommentedWords === 'true'
-
-      const analysis = await createAnalysis.execute({ videoId, requestedWords: words, getMostCommentedWords, save: isToSave, userId })
-
-      return response.json(analysis)
-    }
-
-    if (type === 'default') {
-      const createAnalysis = new CreateDefaultAnalysisService()
-
-      const getMood = usersMood === 'true'
-      const getMessages = messages === 'true'
-
-      const analysis = await createAnalysis.execute({ videoId, getMood, getMessages, save: isToSave, userId })
-
-      return response.json(analysis)
-    }
+    return response.json(analysis)
   }
 
   throw new AppError('Invalid query')

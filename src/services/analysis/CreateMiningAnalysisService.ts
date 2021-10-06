@@ -58,7 +58,8 @@ class CreateMiningAnalysisService {
         videoId,
         save
       },
-      videoData
+      videoData,
+      content: {}
     } as Response
 
     if (phrasesToFindComments) {
@@ -84,6 +85,8 @@ class CreateMiningAnalysisService {
       const { words: commentsWords } = getCommentsWords({ comments, videoId, includeReplies: filters.includeCommentReplies })
       const { joinedWords } = getJoinedWords({ videoId, words: commentsWords })
       const { dataFound: words } = getWords({ words: joinedWords, wordsToFind: content, filters })
+      console.log('aqui2')
+
       response.content.words = words
     }
 
