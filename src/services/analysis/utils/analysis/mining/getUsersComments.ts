@@ -1,27 +1,21 @@
-import { Comment, Reply } from '../../../../../interfaces/comment'
+import { Comment } from '../../../../../interfaces/comment'
+import { UserCommentsFilters } from '../../../../../interfaces/requestData'
+import { UserFromData } from '../../../../../interfaces/userFromData'
 
 interface Request {
   usersName: string[],
   comments: Comment[],
-  includeReplies: boolean
-}
-
-interface Data {
-  user: {
-    id: string,
-    name: string,
-    profileImage: string
-  },
-  commentsCount: number,
-  comments: (Comment | Reply)[]
+  filters: UserCommentsFilters
 }
 
 interface Response {
-  dataFound: Data[]
+  dataFound: UserFromData[]
 }
 
-const getUsersComments = ({ usersName, comments, includeReplies }: Request): Response => {
-  const dataFound = [] as Data[]
+const getUsersComments = ({ usersName, comments, filters }: Request): Response => {
+  const { includeCommentReplies } = filters
+
+  const dataFound = [] as UserFromData[]
 
   for (const comment of comments) {
     for (const userName of usersName) {
@@ -43,7 +37,7 @@ const getUsersComments = ({ usersName, comments, includeReplies }: Request): Res
           })
         }
       }
-      if (includeReplies) {
+      if (includeCommentReplies) {
         for (const reply of comment.replies) {
           if (reply.author.name.toLowerCase() === userName.toLowerCase()) {
             let authorAlreadyFound = false

@@ -1,14 +1,5 @@
-import { Prisma } from '@prisma/client'
-
 import { GetVideoCommentsService } from '../video/GetVideoCommentsService'
-import { getVideoData } from './utils/video/getVideoData'
-import { getWordsDetails } from './utils/word/getWordsDetails'
-import { getWordsFromComments } from './utils/word/getWordsFromComments'
-import { getUsersMood } from './utils/getUsersMood'
-import { getGeneratedMessages } from './utils/getGeneratedMessages'
-import { prisma } from '../../database/connection'
-import { WordDetails } from './types'
-import { VideoData } from '../../interfaces/videoData'
+import { Prisma } from '@prisma/client'
 
 interface Request {
   videoId: string;

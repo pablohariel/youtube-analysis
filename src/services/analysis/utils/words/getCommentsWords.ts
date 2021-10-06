@@ -14,7 +14,7 @@ interface Response {
   words: Word[]
 }
 
-const getWords = ({ comments, videoId, includeReplies = false }: Request): Response => {
+const getCommentsWords = ({ comments, videoId, includeReplies = false }: Request): Response => {
   const words = [] as Word[]
 
   for (const comment of comments) {
@@ -66,4 +66,4 @@ const getWords = ({ comments, videoId, includeReplies = false }: Request): Respo
   return { words }
 }
 
-export { getWords }
+export { getCommentsWords }

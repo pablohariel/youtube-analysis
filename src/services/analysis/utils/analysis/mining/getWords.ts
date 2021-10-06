@@ -1,8 +1,10 @@
+import { WordFilters } from '../../../../../interfaces/requestData'
 import { JoinedWord } from '../../../../../interfaces/word'
 
 interface Request {
   wordsToFind: string[],
-  words: JoinedWord[]
+  words: JoinedWord[],
+  filters: WordFilters
 }
 
 interface Response {

@@ -1,11 +1,12 @@
 import { Comment, Reply } from '../../../../../interfaces/comment'
+import { PhraseFilters } from '../../../../../interfaces/requestData'
 
 interface Request {
   wordsToFind?: string[],
   phrasesToFind?: string[],
   comments: Comment[],
   type: 'fromWords' | 'fromPhrases',
-  includeReplies: boolean
+  filters: PhraseFilters
 }
 
 interface Data {
@@ -19,7 +20,9 @@ interface Response {
   dataFound: Data[]
 }
 
-const getComments = ({ phrasesToFind, wordsToFind, comments, type, includeReplies = false }: Request): Response => {
+const getComments = ({ phrasesToFind, wordsToFind, comments, type, filters }: Request): Response => {
+  const { includeCommentReplies } = filters
+
   const dataFound = [] as Data[]
 
   switch (type) {
@@ -46,7 +49,7 @@ const getComments = ({ phrasesToFind, wordsToFind, comments, type, includeReplie
                 })
               }
             }
-            if (includeReplies) {
+            if (includeCommentReplies) {
               for (const reply of comment.replies) {
                 if (reply.content.toLowerCase().includes(wordToFind.toLowerCase())) {
                   let wordAlreadyCreated = false
@@ -97,7 +100,7 @@ const getComments = ({ phrasesToFind, wordsToFind, comments, type, includeReplie
                 })
               }
             }
-            if (includeReplies) {
+            if (includeCommentReplies) {
               for (const reply of comment.replies) {
                 if (reply.content.toLowerCase().includes(phraseToFind.toLowerCase())) {
                   let phraseAlreadyCreated = false

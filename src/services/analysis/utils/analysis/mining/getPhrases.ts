@@ -1,22 +1,20 @@
-import { Comment, Reply } from '../../../../../interfaces/comment'
-
-interface JoinedPhrase {
-  content: string,
-  timesUsed: number,
-  comments: (Comment | Reply)[]
-}
+import { Comment } from '../../../../../interfaces/comment'
+import { JoinedPhrase } from '../../../../../interfaces/joinedPhrase'
+import { PhraseFilters } from '../../../../../interfaces/requestData'
 
 interface Request {
   phrasesToFind: string[],
   comments: Comment[],
-  includeReplies: boolean
+  filters: PhraseFilters
 }
 
 interface Response {
   dataFound: JoinedPhrase[]
 }
 
-const getPhrases = ({ phrasesToFind, comments, includeReplies = false }: Request): Response => {
+const getPhrases = ({ phrasesToFind, comments, filters }: Request): Response => {
+  const { includeCommentReplies } = filters
+
   const dataFound = [] as JoinedPhrase[]
 
   for (const comment of comments) {
@@ -39,7 +37,7 @@ const getPhrases = ({ phrasesToFind, comments, includeReplies = false }: Request
           })
         }
       }
-      if (includeReplies) {
+      if (includeCommentReplies) {
         for (const reply of comment.replies) {
           if (reply.content.toLowerCase().includes(phrase.toLowerCase())) {
             let phraseAlreadyFound = false

@@ -1,4 +1,4 @@
-import { stopWords } from '../wordList'
+import { stopWords } from './wordList'
 
 interface Request {
   comment: String,
