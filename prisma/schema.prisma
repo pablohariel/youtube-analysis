@@ -43,3 +43,20 @@ enum Type {
   CUSTOM
 }
 
+model Dictionary {
+  id             String      @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  language       String      @unique
+  words          Word[]
+}
+
+model Word {
+  id             String      @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  dictionaryId   String      @db.ObjectId 
+  dictionary     Dictionary  @relation(fields: [dictionaryId], references: [id])
+  content        String      @unique
+  simplified     String
+  class          String
+  posScore       Float
+  negScore       Float
+} 
+

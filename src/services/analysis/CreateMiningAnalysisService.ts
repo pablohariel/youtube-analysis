@@ -8,6 +8,9 @@ import { getWords } from './utils/analysis/mining/getWords'
 import { getCommentsWords } from './utils/words/getCommentsWords'
 import { getJoinedWords } from './utils/words/getJoinedWords'
 
+// test
+import { analyzeComments, CommentAnalyzed } from './utils/analyzeComments'
+
 import { Prisma } from '@prisma/client'
 
 import { prisma } from '../../database/connection'
@@ -17,6 +20,7 @@ import { CommentFromData } from '../../interfaces/commentFromData'
 import { UserFromData } from '../../interfaces/userFromData'
 import { JoinedPhrase } from '../../interfaces/joinedPhrase'
 import { MiningRequestData } from '../../interfaces/requestData'
+import { Comment, Reply } from '../../interfaces/comment'
 
 interface Response {
   userId: string,
@@ -28,7 +32,8 @@ interface Response {
     phrases?: JoinedPhrase[],
     commentsFromWords?: CommentFromData[],
     commentsFromPhrases?: CommentFromData[],
-    commentsFromUser?: UserFromData[]
+    commentsFromUser?: UserFromData[],
+    commentsAnalyzed: CommentAnalyzed[]
   }
 }
 
@@ -85,8 +90,6 @@ class CreateMiningAnalysisService {
       const { words: commentsWords } = getCommentsWords({ comments, videoId, includeReplies: filters.includeCommentReplies })
       const { joinedWords } = getJoinedWords({ videoId, words: commentsWords })
       const { dataFound: words } = getWords({ words: joinedWords, wordsToFind: content, filters })
-      console.log('aqui2')
-
       response.content.words = words
     }
 
@@ -95,6 +98,30 @@ class CreateMiningAnalysisService {
       const { dataFound: phrases } = getPhrases({ comments, phrasesToFind: content, filters })
       response.content.phrases = phrases
     }
+
+    const commentsToAnalyze = [] as (Comment | Reply)[]
+
+    for (const comment of comments) {
+      commentsToAnalyze.push(comment)
+      // include replies
+      // for (const reply of comment.replies) {
+      //   commentsToAnalyze.push(reply)
+      // }
+    }
+
+    console.log('begin')
+    const { commentsAnalyzed } = await analyzeComments({ comments: commentsToAnalyze })
+    console.log('end')
+    let total = 0
+    for (const comment of commentsAnalyzed) {
+      total += comment.scores.rating
+    }
+
+    const avg = total / commentsAnalyzed.length
+
+    console.log(avg)
+
+    response.content.commentsAnalyzed = commentsAnalyzed
 
     // if (save) {
     //   await prisma.user.update({

@@ -9,6 +9,7 @@
     "skipLibCheck": true,   
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "noImplicitAny": false
   }
 }
