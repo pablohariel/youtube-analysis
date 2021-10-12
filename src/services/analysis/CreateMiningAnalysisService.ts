@@ -10,10 +10,11 @@ import { getJoinedWords } from './utils/words/getJoinedWords'
 
 // test
 import { analyzeComments, CommentAnalyzed } from './utils/analyzeComments'
+import { getLanguages } from './utils/getLanguages'
 
 import { Prisma } from '@prisma/client'
-
 import { prisma } from '../../database/connection'
+
 import { VideoData } from '../../interfaces/videoData'
 import { JoinedWord } from '../../interfaces/word'
 import { CommentFromData } from '../../interfaces/commentFromData'
@@ -114,14 +115,21 @@ class CreateMiningAnalysisService {
     console.log('end')
     let total = 0
     for (const comment of commentsAnalyzed) {
-      total += comment.scores.rating
+      if (comment.scores) {
+        total += comment.scores.rating
+      }
     }
 
     const avg = total / commentsAnalyzed.length
 
     console.log(avg)
 
-    response.content.commentsAnalyzed = commentsAnalyzed
+    const languages = getLanguages({ commentsAnalyzed })
+    console.log(languages)
+
+    const commentsAnalyzedFilter = commentsAnalyzed.filter(comment => comment.language === 'pt')
+
+    response.content.commentsAnalyzed = commentsAnalyzedFilter
 
     // if (save) {
     //   await prisma.user.update({

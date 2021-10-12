@@ -4,7 +4,7 @@ import its from 'wink-nlp/src/its.js'
 import { prisma } from '../../../database/connection'
 
 import { Comment, CommentNoReplies, Reply } from '../../../interfaces/comment'
-import { Languages } from '../../../interfaces/languages'
+import { Language } from '../../../interfaces/languages'
 
 import { classifyWords, ClassifiedWord } from './classifyWords'
 import { guessLanguage } from './guessLanguage'
@@ -15,13 +15,13 @@ interface Request {
 }
 
 export interface CommentAnalyzed extends CommentNoReplies {
-  scores: {
+  scores?: {
     posScore: number,
     negScore: number,
     rating: number
   },
-  polarity: 'positive' | 'negative' | 'neutral',
-  language: Languages
+  polarity?: 'positive' | 'negative' | 'neutral',
+  language: Language
 }
 
 interface Response {
@@ -59,6 +59,10 @@ const analyzeComments = async ({ comments }: Request): Promise<Response> => {
 
     // verifica se idioma é suportado
     if (language !== 'pt') {
+      commentsClassified.push({
+        ...comment,
+        language: language
+      })
       continue
     }
 

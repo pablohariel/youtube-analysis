@@ -1,12 +1,12 @@
 import { Language } from 'node-nlp'
-import { Languages } from '../../../interfaces/languages'
+import { Language } from '../../../interfaces/languages'
 
 interface Request {
   text: string
 }
 
 interface Response {
-  language: Languages
+  language: Language
 }
 
 const guessLanguage = ({ text }: Request): Response => {
@@ -15,7 +15,7 @@ const guessLanguage = ({ text }: Request): Response => {
   try {
     const guess = language.guess(text, ['pt', 'en', 'es', 'ru', 'fr'])
 
-    let languageFound = 'not found' as Languages
+    let languageFound = 'not found' as Language
 
     if (guess) {
       if (guess[0]) {
