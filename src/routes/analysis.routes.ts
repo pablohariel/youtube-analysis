@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { Analysis } from '@prisma/client'
 
 import { AppError } from '../errors/AppError'
-import { CreateCustomAnalysisService } from '../services/analysis/CreateCustomAnalysisService'
+// import { CreateCustomAnalysisService } from '../services/analysis/CreateCustomAnalysisService'
 import { CreateMiningAnalysisService } from '../services/analysis/CreateMiningAnalysisService'
 import { CreateDefaultAnalysisService } from '../services/analysis/CreateDefaultAnalysisService'
 import { GetAnalysisService } from '../services/analysis/GetAnalysisService'
@@ -49,6 +49,13 @@ analysisRouter.post('/', async (request, response) => {
 
   if (type === 'mining') {
     const createAnalysis = new CreateMiningAnalysisService()
+    const analysis = await createAnalysis.execute({ videoId, userId: '2323', save, options })
+
+    return response.json(analysis)
+  }
+
+  if (type === 'default') {
+    const createAnalysis = new CreateDefaultAnalysisService()
     const analysis = await createAnalysis.execute({ videoId, userId: '2323', save, options })
 
     return response.json(analysis)

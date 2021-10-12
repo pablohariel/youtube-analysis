@@ -8,15 +8,8 @@ import { getWords } from './utils/analysis/mining/getWords'
 import { getCommentsWords } from './utils/words/getCommentsWords'
 import { getJoinedWords } from './utils/words/getJoinedWords'
 
-// test
-import { analyzeComments } from './utils/analyzeComments'
-import { getLanguages } from './utils/getLanguages'
-import { groupCommentsByPolarity } from './utils/groupCommentsByPolarity'
-import { getTopComments } from './utils/getTopComments'
-import { getWorstComments } from './utils/getWorstComments'
-
-import { Prisma } from '@prisma/client'
-import { prisma } from '../../database/connection'
+// import { Prisma } from '@prisma/client'
+// import { prisma } from '../../database/connection'
 
 import { VideoData } from '../../interfaces/videoData'
 import { JoinedWord } from '../../interfaces/word'
@@ -37,9 +30,9 @@ interface Response {
     commentsFromWords?: CommentFromData[],
     commentsFromPhrases?: CommentFromData[],
     commentsFromUser?: UserFromData[],
-    commentsAnalyzed: CommentAnalyzed[],
-    topComments: CommentAnalyzed[],
-    worstComments: CommentAnalyzed[]
+    commentsAnalyzed?: CommentAnalyzed[],
+    topComments?: CommentAnalyzed[],
+    worstComments?: CommentAnalyzed[]
   }
 }
 
@@ -53,10 +46,8 @@ class CreateMiningAnalysisService {
       phrasesToFindPhrases
     } = options
 
-    // getting video data
     const { videoData } = await getVideoData(videoId)
 
-    // getting video comments
     const getVideoComments = new GetVideoCommentsService()
     const { comments } = await getVideoComments.execute({ videoId })
 
@@ -115,35 +106,6 @@ class CreateMiningAnalysisService {
       // }
     }
 
-    console.log('begin')
-    const { commentsAnalyzed } = await analyzeComments({ comments: commentsToAnalyze })
-    console.log('end')
-    let total = 0
-    for (const comment of commentsAnalyzed) {
-      if (comment.scores) {
-        total += comment.scores.rating
-      }
-    }
-
-    const avg = total / commentsAnalyzed.length
-
-    console.log(avg)
-
-    const { languages } = getLanguages({ comments: commentsAnalyzed })
-    console.log(languages)
-
-    const { commentsGrouped } = groupCommentsByPolarity({ comments: commentsAnalyzed })
-    console.log(commentsGrouped)
-
-    const commentsAnalyzedFilter = commentsAnalyzed.filter(comment => comment.language === 'pt')
-    response.content.commentsAnalyzed = commentsAnalyzedFilter
-
-    const { topComments } = getTopComments({ comments: commentsGrouped })
-    response.content.topComments = topComments.slice(0, 5)
-
-    const { worstComments } = getWorstComments({ comments: commentsGrouped })
-    response.content.worstComments = worstComments.slice(0, 5)
-
     // if (save) {
     //   await prisma.user.update({
     //     where: {
@@ -161,7 +123,7 @@ class CreateMiningAnalysisService {
     //       }
     //     }
     //   })
-    // }q
+    // }
 
     return response
   }

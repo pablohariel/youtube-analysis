@@ -6,7 +6,7 @@ interface Request {
   words: JoinedWord[]
 }
 
-interface WordRelatedToVideoTitle {
+export interface WordRelatedToVideoTitle {
   timesUsed: number,
   word: string,
   comments: (Comment | Reply)[]

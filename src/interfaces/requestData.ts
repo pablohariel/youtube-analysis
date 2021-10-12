@@ -45,4 +45,23 @@ interface MiningRequestData {
   save: true | false,
 }
 
-export { MiningRequestData, WordFilters, PhraseFilters, UserCommentsFilters }
+interface DefaultRequestData {
+  videoId: string,
+  userId: string,
+  options: {
+    commentsPolarity?: boolean,
+    positiveComments?: boolean,
+    negativeComments?: boolean,
+    topWords?: boolean,
+    mostLikedComment?: boolean,
+    wordsCount?: boolean,
+    topWordsUsedTogether?: boolean,
+    wordsRelatedToVideoTitle?: boolean,
+    mostRepliesComment?: boolean,
+    topComentingUser?: boolean,
+    commentsLanguage?: boolean,
+  },
+  save: true | false,
+}
+
+export { MiningRequestData, WordFilters, PhraseFilters, UserCommentsFilters, DefaultRequestData }
