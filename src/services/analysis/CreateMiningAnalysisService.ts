@@ -9,8 +9,9 @@ import { getCommentsWords } from './utils/words/getCommentsWords'
 import { getJoinedWords } from './utils/words/getJoinedWords'
 
 // test
-import { analyzeComments, CommentAnalyzed } from './utils/analyzeComments'
+import { analyzeComments } from './utils/analyzeComments'
 import { getLanguages } from './utils/getLanguages'
+import { groupCommentsByPolarity } from './utils/groupCommentsByPolarity'
 
 import { Prisma } from '@prisma/client'
 import { prisma } from '../../database/connection'
@@ -21,7 +22,7 @@ import { CommentFromData } from '../../interfaces/commentFromData'
 import { UserFromData } from '../../interfaces/userFromData'
 import { JoinedPhrase } from '../../interfaces/joinedPhrase'
 import { MiningRequestData } from '../../interfaces/requestData'
-import { Comment, Reply } from '../../interfaces/comment'
+import { Comment, Reply, CommentAnalyzed } from '../../interfaces/comment'
 
 interface Response {
   userId: string,
@@ -124,8 +125,11 @@ class CreateMiningAnalysisService {
 
     console.log(avg)
 
-    const languages = getLanguages({ commentsAnalyzed })
+    const { languages } = getLanguages({ comments: commentsAnalyzed })
     console.log(languages)
+
+    const { commentsGrouped } = groupCommentsByPolarity({ comments: commentsAnalyzed })
+    console.log(commentsGrouped)
 
     const commentsAnalyzedFilter = commentsAnalyzed.filter(comment => comment.language === 'pt')
 

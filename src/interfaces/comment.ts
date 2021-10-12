@@ -1,3 +1,5 @@
+import { Language } from './languages'
+
 interface Reply {
   content: string,
   author: {
@@ -42,4 +44,29 @@ interface Comment {
   published_at: string
 }
 
-export { Comment, Reply, CommentNoReplies }
+interface CommentAnalyzed extends CommentNoReplies {
+  scores?: {
+    posScore: number,
+    negScore: number,
+    rating: number
+  },
+  polarity?: 'positive' | 'negative' | 'neutral',
+  language: Language
+}
+
+interface CommentsGroupedByPolarity {
+  positive: {
+    count: number,
+    comments: CommentAnalyzed[]
+  },
+  neutral: {
+    count: number,
+    comments: CommentAnalyzed[]
+  },
+  negative: {
+    count: number,
+    comments: CommentAnalyzed[]
+  }
+}
+
+export { Comment, Reply, CommentNoReplies, CommentAnalyzed, CommentsGroupedByPolarity }

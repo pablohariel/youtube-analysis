@@ -2,14 +2,14 @@ import { CommentAnalyzed } from './analyzeComments'
 import { LanguagesCount } from '../../../interfaces/languages'
 
 interface Request {
-  commentsAnalyzed: CommentAnalyzed[]
+  comments: CommentAnalyzed[]
 }
 
 interface Response {
   languages: LanguagesCount
 }
 
-const getLanguages = ({ commentsAnalyzed }: Request): Response => {
+const getLanguages = ({ comments }: Request): Response => {
   const languages = {
     pt: {
       count: 0
@@ -31,7 +31,7 @@ const getLanguages = ({ commentsAnalyzed }: Request): Response => {
     }
   } as LanguagesCount
 
-  for (const comment of commentsAnalyzed) {
+  for (const comment of comments) {
     if (languages[comment.language]) {
       languages[comment.language].count++
     }

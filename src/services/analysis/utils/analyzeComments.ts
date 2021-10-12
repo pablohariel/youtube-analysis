@@ -3,8 +3,7 @@ import model from 'wink-eng-lite-model'
 import its from 'wink-nlp/src/its.js'
 import { prisma } from '../../../database/connection'
 
-import { Comment, CommentNoReplies, Reply } from '../../../interfaces/comment'
-import { Language } from '../../../interfaces/languages'
+import { Comment, CommentAnalyzed, Reply } from '../../../interfaces/comment'
 
 import { classifyWords, ClassifiedWord } from './classifyWords'
 import { guessLanguage } from './guessLanguage'
@@ -12,16 +11,6 @@ import { getSentiWordList } from './getSentiWordList'
 
 interface Request {
   comments: (Comment | Reply)[]
-}
-
-export interface CommentAnalyzed extends CommentNoReplies {
-  scores?: {
-    posScore: number,
-    negScore: number,
-    rating: number
-  },
-  polarity?: 'positive' | 'negative' | 'neutral',
-  language: Language
 }
 
 interface Response {
@@ -171,6 +160,17 @@ const analyzeComments = async ({ comments }: Request): Promise<Response> => {
 
     const { author, content, likeCount, published_at } = comment
 
+    let polarity = 'neutral' as 'positive' | 'neutral' | 'negative'
+    if (posScore > negScore) {
+      polarity = 'positive'
+    }
+    if (negScore > posScore) {
+      polarity = 'negative'
+    }
+    if (posScore === negScore) {
+      polarity = 'neutral'
+    }
+
     commentsClassified.push({
       author,
       content,
@@ -181,7 +181,7 @@ const analyzeComments = async ({ comments }: Request): Promise<Response> => {
         rating
       },
       language: language,
-      polarity: posScore >= negScore ? 'positive' : 'negative',
+      polarity,
       published_at
     })
   }
