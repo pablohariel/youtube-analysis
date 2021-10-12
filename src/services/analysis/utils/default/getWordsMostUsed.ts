@@ -1,4 +1,4 @@
-import { JoinedWord } from '../../../../../interfaces/word'
+import { JoinedWord } from '../../../../interfaces/word'
 
 interface Request {
   words: JoinedWord[]

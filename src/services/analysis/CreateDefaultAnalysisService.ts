@@ -3,26 +3,26 @@ import { GetVideoCommentsService } from '../video/GetVideoCommentsService'
 // import { prisma } from '../../database/connection'
 import { VideoData } from '../../interfaces/videoData'
 import { DefaultRequestData } from '../../interfaces/requestData'
-import { getVideoData } from './utils/analysis/getVideoData'
+import { getVideoData } from './utils/getVideoData'
 import { Comment, CommentAnalyzed, CommentsGroupedByPolarity } from '../../interfaces/comment'
 import { JoinedWord } from '../../interfaces/word'
 import { WordsTogether } from '../../interfaces/wordsTogether'
-import { getWordsRelatedToVideoTitle, WordRelatedToVideoTitle } from './utils/analysis/default/getWordsRelatedToVideoTitle'
+import { getWordsRelatedToVideoTitle, WordRelatedToVideoTitle } from './utils/default/getWordsRelatedToVideoTitle'
 import { CommentUser } from '../../interfaces/commentUser'
 import { LanguagesCount } from '../../interfaces/languages'
-import { analyzeComments } from './utils/analyzeComments'
-import { groupCommentsByPolarity } from './utils/groupCommentsByPolarity'
-import { getTopComments } from './utils/getTopComments'
-import { getWorstComments } from './utils/getWorstComments'
-import { getWordsMostUsed } from './utils/analysis/default/getWordsMostUsed'
+import { analyzeComments } from './utils/default/analyzeComments'
+import { groupCommentsByPolarity } from './utils/default/groupCommentsByPolarity'
+import { getTopPositiveComments } from './utils/default/getTopPositiveComments'
+import { getTopNegativeComments } from './utils/default/getTopNegativeComments'
+import { getWordsMostUsed } from './utils/default/getWordsMostUsed'
 import { getCommentsWords } from './utils/words/getCommentsWords'
 import { getJoinedWords } from './utils/words/getJoinedWords'
-import { getComment } from './utils/analysis/default/getComment'
-import { getWordCount } from './utils/analysis/default/getWordCount'
-import { getWordsMostUsedTogether } from './utils/analysis/default/getWordsMostUsedTogether'
-import { getUserWithMostComment } from './utils/analysis/default/getUserWithMostComment'
-import { getCommentsUsers } from './utils/analysis/default/getCommentsUsers'
-import { getLanguages } from './utils/getLanguages'
+import { getComment } from './utils/default/getComment'
+import { getWordCount } from './utils/default/getWordCount'
+import { getWordsMostUsedTogether } from './utils/default/getWordsMostUsedTogether'
+import { getUserWithMostComment } from './utils/default/getUserWithMostComment'
+import { getCommentsUsers } from './utils/default/getCommentsUsers'
+import { getLanguages } from './utils/default/getLanguages'
 
 interface Response {
   userId: string,
@@ -64,7 +64,7 @@ class CreateDefaultAnalysisService {
     const getVideoComments = new GetVideoCommentsService()
     const { comments } = await getVideoComments.execute({ videoId })
     const { commentsAnalyzed } = await analyzeComments({ comments })
-    const { commentsGrouped } = groupCommentsByPolarity({ comments: commentsAnalyzed })
+    const { commentsGroupedByPolarity } = groupCommentsByPolarity({ comments: commentsAnalyzed })
 
     const { words } = getCommentsWords({ comments, videoId, includeReplies: false })
     const { joinedWords } = getJoinedWords({ words, videoId })
@@ -85,17 +85,17 @@ class CreateDefaultAnalysisService {
     } as Response
 
     if (commentsPolarity) {
-      response.content.commentsPolarity = commentsGrouped
+      response.content.commentsPolarity = commentsGroupedByPolarity
     }
 
     if (positiveComments) {
-      const { topComments } = getTopComments({ comments: commentsGrouped })
-      response.content.positiveComments = topComments
+      const { topPositiveComments } = getTopPositiveComments({ comments: commentsGroupedByPolarity })
+      response.content.positiveComments = topPositiveComments
     }
 
     if (negativeComments) {
-      const { worstComments } = getWorstComments({ comments: commentsGrouped })
-      response.content.negativeComments = worstComments
+      const { topNegativeComments } = getTopNegativeComments({ comments: commentsGroupedByPolarity })
+      response.content.negativeComments = topNegativeComments
     }
 
     if (topWords) {

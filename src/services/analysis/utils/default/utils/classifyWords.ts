@@ -3,7 +3,7 @@ import { getSentiListWord } from './getSentiListWord'
 import { SentiWord } from './getSentiWordList'
 import { exec } from 'child_process'
 
-import { prisma } from '../../../database/connection'
+import { prisma } from '../../../../../database/connection'
 import { Word } from '@prisma/client'
 
 export interface ClassifiedWord {

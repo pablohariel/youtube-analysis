@@ -1,5 +1,5 @@
-import { Comment } from '../../../../../interfaces/comment'
-import { CommentUser } from '../../../../../interfaces/commentUser'
+import { Comment } from '../../../../interfaces/comment'
+import { CommentUser } from '../../../../interfaces/commentUser'
 
 interface Request {
   comments: Comment[]

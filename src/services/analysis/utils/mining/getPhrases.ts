@@ -1,6 +1,6 @@
-import { Comment } from '../../../../../interfaces/comment'
-import { JoinedPhrase } from '../../../../../interfaces/joinedPhrase'
-import { PhraseFilters } from '../../../../../interfaces/requestData'
+import { Comment } from '../../../../interfaces/comment'
+import { JoinedPhrase } from '../../../../interfaces/joinedPhrase'
+import { PhraseFilters } from '../../../../interfaces/requestData'
 
 interface Request {
   phrasesToFind: string[],

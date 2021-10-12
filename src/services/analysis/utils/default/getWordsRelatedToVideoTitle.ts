@@ -1,5 +1,5 @@
-import { Comment, Reply } from '../../../../../interfaces/comment'
-import { JoinedWord } from '../../../../../interfaces/word'
+import { Comment, Reply } from '../../../../interfaces/comment'
+import { JoinedWord } from '../../../../interfaces/word'
 
 interface Request {
   videoTitle: string,

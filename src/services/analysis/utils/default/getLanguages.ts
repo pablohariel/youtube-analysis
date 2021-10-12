@@ -1,5 +1,5 @@
-import { CommentAnalyzed } from './analyzeComments'
-import { LanguagesCount } from '../../../interfaces/languages'
+import { LanguagesCount } from '../../../../interfaces/languages'
+import { CommentAnalyzed } from '../../../../interfaces/comment'
 
 interface Request {
   comments: CommentAnalyzed[]

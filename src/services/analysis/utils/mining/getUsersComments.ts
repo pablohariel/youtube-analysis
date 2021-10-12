@@ -1,6 +1,6 @@
-import { Comment } from '../../../../../interfaces/comment'
-import { UserCommentsFilters } from '../../../../../interfaces/requestData'
-import { UserFromData } from '../../../../../interfaces/userFromData'
+import { Comment } from '../../../../interfaces/comment'
+import { UserCommentsFilters } from '../../../../interfaces/requestData'
+import { UserFromData } from '../../../../interfaces/userFromData'
 
 interface Request {
   usersName: string[],

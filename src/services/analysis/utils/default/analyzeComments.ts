@@ -1,13 +1,13 @@
 import winkNLP from 'wink-nlp'
 import model from 'wink-eng-lite-model'
 import its from 'wink-nlp/src/its.js'
-import { prisma } from '../../../database/connection'
+import { prisma } from '../../../../database/connection'
 
-import { Comment, CommentAnalyzed, Reply } from '../../../interfaces/comment'
+import { Comment, CommentAnalyzed, Reply } from '../../../../interfaces/comment'
 
-import { classifyWords, ClassifiedWord } from './classifyWords'
-import { guessLanguage } from './guessLanguage'
-import { getSentiWordList } from './getSentiWordList'
+import { classifyWords, ClassifiedWord } from './utils/classifyWords'
+import { guessLanguage } from './utils/guessLanguage'
+import { getSentiWordList } from './utils/getSentiWordList'
 
 interface Request {
   comments: (Comment | Reply)[]

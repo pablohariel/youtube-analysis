@@ -1,4 +1,4 @@
-import { Comment } from '../../../../../interfaces/comment'
+import { Comment } from '../../../../interfaces/comment'
 
 interface Request {
   comments: Comment[],

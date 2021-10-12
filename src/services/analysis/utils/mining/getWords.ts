@@ -1,5 +1,5 @@
-import { WordFilters } from '../../../../../interfaces/requestData'
-import { JoinedWord } from '../../../../../interfaces/word'
+import { WordFilters } from '../../../../interfaces/requestData'
+import { JoinedWord } from '../../../../interfaces/word'
 
 interface Request {
   wordsToFind: string[],

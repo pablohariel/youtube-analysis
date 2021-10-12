@@ -1,5 +1,5 @@
-import { Comment, Reply } from '../../../../../interfaces/comment'
-import { PhraseFilters } from '../../../../../interfaces/requestData'
+import { Comment, Reply } from '../../../../interfaces/comment'
+import { PhraseFilters } from '../../../../interfaces/requestData'
 
 interface Request {
   wordsToFind?: string[],

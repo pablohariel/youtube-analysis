@@ -1,4 +1,4 @@
-import { CommentUser } from '../../../../../interfaces/commentUser'
+import { CommentUser } from '../../../../interfaces/commentUser'
 
 interface Request {
   users: CommentUser[]

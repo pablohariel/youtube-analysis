@@ -1,11 +1,11 @@
-import { CommentsGroupedByPolarity, CommentAnalyzed } from '../../../interfaces/comment'
+import { CommentsGroupedByPolarity, CommentAnalyzed } from '../../../../interfaces/comment'
 
 interface Request {
   comments: CommentAnalyzed[]
 }
 
 interface Response {
-  commentsGrouped: CommentsGroupedByPolarity
+  commentsGroupedByPolarity: CommentsGroupedByPolarity
 }
 
 const groupCommentsByPolarity = ({ comments }: Request): Response => {
@@ -49,7 +49,7 @@ const groupCommentsByPolarity = ({ comments }: Request): Response => {
     }
   }
 
-  return { commentsGrouped }
+  return { commentsGroupedByPolarity: commentsGrouped }
 }
 
 export { groupCommentsByPolarity }
