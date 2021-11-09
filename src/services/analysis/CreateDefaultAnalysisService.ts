@@ -1,15 +1,12 @@
 import { GetVideoCommentsService } from '../video/GetVideoCommentsService'
 
-// import { prisma } from '../../database/connection'
-import { VideoData } from '../../interfaces/videoData'
-import { DefaultRequestData } from '../../interfaces/requestData'
+import { Prisma } from '@prisma/client'
+
+import { prisma } from '../../database/connection'
+import { DefaultRequest } from '../../interfaces/requestData'
 import { getVideoData } from './utils/getVideoData'
-import { Comment, CommentAnalyzed, CommentsGroupedByPolarity } from '../../interfaces/comment'
-import { JoinedWord } from '../../interfaces/word'
-import { WordsTogether } from '../../interfaces/wordsTogether'
-import { getWordsRelatedToVideoTitle, WordRelatedToVideoTitle } from './utils/default/getWordsRelatedToVideoTitle'
-import { CommentUser } from '../../interfaces/commentUser'
-import { LanguagesCount } from '../../interfaces/languages'
+import { CommentsGroupedByPolarityNoComments } from '../../interfaces/comment'
+import { getWordsRelatedToVideoTitle } from './utils/default/getWordsRelatedToVideoTitle'
 import { analyzeComments } from './utils/default/analyzeComments'
 import { groupCommentsByPolarity } from './utils/default/groupCommentsByPolarity'
 import { getTopPositiveComments } from './utils/default/getTopPositiveComments'
@@ -23,38 +20,22 @@ import { getWordsMostUsedTogether } from './utils/default/getWordsMostUsedTogeth
 import { getUserWithMostComment } from './utils/default/getUserWithMostComment'
 import { getCommentsUsers } from './utils/default/getCommentsUsers'
 import { getLanguages } from './utils/default/getLanguages'
-
-interface Response {
-  userId: string,
-  type: 'DEFAULT' | 'MINING' | 'CUSTOM',
-  videoData: VideoData,
-  content: {
-    commentsPolarity?: CommentsGroupedByPolarity,
-    positiveComments?: CommentAnalyzed[],
-    negativeComments?: CommentAnalyzed[],
-    topWords?: JoinedWord[],
-    mostLikedComment?: Comment,
-    wordsCount?: number,
-    topWordsUsedTogether?: WordsTogether[],
-    wordsRelatedToVideoTitle?: WordRelatedToVideoTitle[],
-    mostRepliesComment?: Comment,
-    topComentingUser?: CommentUser,
-    commentsLanguage?: LanguagesCount
-  }
-}
+import { getCommentCount } from './utils/default/getCommentCount'
+import { DefaultResponse } from '../../interfaces/responseData'
 
 class CreateDefaultAnalysisService {
-  public async execute ({ videoId, options, userId, save }: DefaultRequestData): Promise<Response> {
+  public async execute ({ videoId, options, userId, save }: DefaultRequest): Promise<DefaultResponse> {
     const {
+      commentCount,
       commentsPolarity,
-      positiveComments,
-      negativeComments,
-      topWords,
+      topPositiveComments,
+      topNegativeComments,
       mostLikedComment,
-      wordsCount,
+      mostRepliesComment,
+      wordCount,
+      topWords,
       topWordsUsedTogether,
       wordsRelatedToVideoTitle,
-      mostRepliesComment,
       topComentingUser,
       commentsLanguage
     } = options
@@ -72,70 +53,110 @@ class CreateDefaultAnalysisService {
     const { commentsUsers } = getCommentsUsers({ comments })
 
     const response = {
-      userId,
-      type: 'DEFAULT',
+      type: 'default',
       requestData: {
-        options,
-        userId,
         videoId,
+        userId,
+        type: 'default',
+        options: {},
         save
       },
       videoData,
       content: {}
-    } as Response
+    } as DefaultResponse
 
-    if (commentsPolarity) {
-      response.content.commentsPolarity = commentsGroupedByPolarity
+    if (commentCount && commentCount.checked) {
+      const { commentCount: commentCountResponse } = getCommentCount({ comments, includeReplies: commentCount.includeCommentReplies })
+      response.content.commentCount = commentCountResponse
+      response.requestData.options.commentCount = commentCount
     }
 
-    if (positiveComments) {
-      const { topPositiveComments } = getTopPositiveComments({ comments: commentsGroupedByPolarity })
-      response.content.positiveComments = topPositiveComments
+    if (commentsPolarity && commentsPolarity.checked) {
+      const commentsGroupedByPolarityNoComments = {
+        positive: {
+          count: commentsGroupedByPolarity.positive.count
+        },
+        neutral: {
+          count: commentsGroupedByPolarity.neutral.count
+        },
+        negative: {
+          count: commentsGroupedByPolarity.negative.count
+        }
+      } as CommentsGroupedByPolarityNoComments
+      response.content.commentsPolarity = commentsGroupedByPolarityNoComments
+      response.requestData.options.commentsPolarity = commentsPolarity
     }
 
-    if (negativeComments) {
-      const { topNegativeComments } = getTopNegativeComments({ comments: commentsGroupedByPolarity })
-      response.content.negativeComments = topNegativeComments
+    if (topPositiveComments && topPositiveComments.checked) {
+      const { topPositiveComments: topPositiveCommentsResult } = getTopPositiveComments({ comments: commentsGroupedByPolarity })
+      response.content.topPositiveComments = topPositiveCommentsResult.slice(0, 5)
+      response.requestData.options.topPositiveComments = topPositiveComments
     }
 
-    if (topWords) {
-      const { wordsMostUsed } = getWordsMostUsed({ words: joinedWords })
-      response.content.topWords = wordsMostUsed
+    if (topNegativeComments && topNegativeComments.checked) {
+      const { topNegativeComments: topPositiveCommentsResult } = getTopNegativeComments({ comments: commentsGroupedByPolarity })
+      response.content.topNegativeComments = topPositiveCommentsResult.slice(0, 5)
+      response.requestData.options.topNegativeComments = topNegativeComments
     }
 
-    if (mostLikedComment) {
+    if (mostLikedComment && mostLikedComment.checked) {
       const { comment } = getComment({ comments, filter: 'mostLikes' })
       response.content.mostLikedComment = comment
+      response.requestData.options.mostLikedComment = mostLikedComment
     }
 
-    if (wordsCount) {
-      const { wordCount } = getWordCount({ words })
-      response.content.wordsCount = wordCount
-    }
-
-    if (topWordsUsedTogether) {
-      const { wordsMostUsedTogether } = getWordsMostUsedTogether({ words: joinedWords })
-      response.content.topWordsUsedTogether = wordsMostUsedTogether
-    }
-
-    if (wordsRelatedToVideoTitle) {
-      const { wordsRelatedToVideoTitle } = getWordsRelatedToVideoTitle({ videoTitle: videoData.title, words: joinedWords })
-      response.content.wordsRelatedToVideoTitle = wordsRelatedToVideoTitle
-    }
-
-    if (mostRepliesComment) {
+    if (mostRepliesComment && mostRepliesComment.checked) {
       const { comment } = getComment({ comments, filter: 'mostReplies' })
       response.content.mostRepliesComment = comment
+      response.requestData.options.mostRepliesComment = mostRepliesComment
     }
 
-    if (topComentingUser) {
+    if (wordCount && wordCount.checked) {
+      const { wordCount: wordCountResult } = getWordCount({ words })
+      response.content.wordCount = wordCountResult
+      response.requestData.options.wordCount = wordCount
+    }
+
+    if (topWords && topWords.checked) {
+      const { wordsMostUsed } = getWordsMostUsed({ words: joinedWords })
+      response.content.topWords = wordsMostUsed.slice(0, 5)
+      response.requestData.options.topWords = topWords
+    }
+
+    if (topWordsUsedTogether && topWordsUsedTogether.checked) {
+      const { wordsMostUsedTogether } = getWordsMostUsedTogether({ words: joinedWords })
+      response.content.topWordsUsedTogether = wordsMostUsedTogether.slice(0, 10)
+      response.requestData.options.topWordsUsedTogether = topWordsUsedTogether
+    }
+
+    if (wordsRelatedToVideoTitle && wordsRelatedToVideoTitle.checked) {
+      const { wordsRelatedToVideoTitle: wordsRelatedToVideoTitleResult } = getWordsRelatedToVideoTitle({ videoTitle: videoData.title, words: joinedWords })
+      response.content.wordsRelatedToVideoTitle = wordsRelatedToVideoTitleResult
+      response.requestData.options.wordsRelatedToVideoTitle = wordsRelatedToVideoTitle
+    }
+
+    if (topComentingUser && topComentingUser.checked) {
       const { userWithMostComment } = getUserWithMostComment({ users: commentsUsers })
       response.content.topComentingUser = userWithMostComment
+      response.requestData.options.topComentingUser = topComentingUser
     }
 
-    if (commentsLanguage) {
+    if (commentsLanguage && commentsLanguage.checked) {
       const { languages } = getLanguages({ comments: commentsAnalyzed })
       response.content.commentsLanguage = languages
+      response.requestData.options.commentsLanguage = commentsLanguage
+    }
+
+    if (save) {
+      await prisma.analysis.create({
+        data: {
+          userId,
+          type: 'DEFAULT',
+          requestData: response.requestData as unknown as Prisma.JsonArray,
+          videoData: response.videoData as unknown as Prisma.JsonArray,
+          content: response.content as unknown as Prisma.JsonArray
+        }
+      })
     }
 
     return response

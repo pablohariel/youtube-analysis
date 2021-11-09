@@ -1,67 +1,85 @@
-interface WordFilters {
+interface MiningRequestWordFilters {
   avoidAccentuation: boolean,
   caseSensitive: boolean,
   includeCommentReplies: boolean,
-  polarity: 'good' | 'bad' | 'neutral' | 'all',
-  class: 'noun' | 'verb' | 'adverb' | 'all'
+  polarity: 'positive' | 'negative' | 'neutral' | 'all',
+  class: 'noun' | 'verb' | 'adjective' | 'all'
 }
 
-interface PhraseFilters {
+interface MiningRequestPhraseFilters {
   avoidAccentuation: boolean,
   caseSensitive: boolean,
   includeCommentReplies: boolean,
 }
 
-interface UserCommentsFilters {
+interface MiningRequestUserFilters {
+  avoidAccentuation: boolean,
   caseSensitive: boolean,
   includeCommentReplies: boolean
 }
 
-interface MiningRequestData {
+interface MiningRequest {
   videoId: string,
   userId: string,
+  type: 'default' | 'mining' | 'complete'
   options: {
     wordsToFindWords?: {
       content: string[],
-      filters: WordFilters
+      filters: MiningRequestWordFilters
     },
     wordsToFindComments?: {
       content: string[],
-      filters: WordFilters
+      filters: MiningRequestWordFilters
     },
     phrasesToFindPhrases?: {
       content: string[],
-      filters: PhraseFilters
+      filters: MiningRequestPhraseFilters
     },
     phrasesToFindComments?: {
       content: string[],
-      filters: PhraseFilters
+      filters: MiningRequestPhraseFilters
     },
     usersToFindComments?: {
       content: string[],
-      filters: UserCommentsFilters
+      filters: MiningRequestUserFilters
     },
   },
-  save: true | false,
+  save: boolean,
 }
 
-interface DefaultRequestData {
+interface DefaultRequestCommentFilters {
+  checked: boolean
+  includeCommentReplies: boolean
+}
+
+interface DefaultRequestWordFilters {
+  checked: boolean
+  includeCommentReplies: boolean,
+  avoidAccentuation: boolean,
+  caseSensitive: boolean
+}
+
+interface DefaultRequest {
   videoId: string,
   userId: string,
+  type: 'default' | 'mining' | 'complete'
   options: {
-    commentsPolarity?: boolean,
-    positiveComments?: boolean,
-    negativeComments?: boolean,
-    topWords?: boolean,
-    mostLikedComment?: boolean,
-    wordsCount?: boolean,
-    topWordsUsedTogether?: boolean,
-    wordsRelatedToVideoTitle?: boolean,
-    mostRepliesComment?: boolean,
-    topComentingUser?: boolean,
-    commentsLanguage?: boolean,
+    commentCount?: DefaultRequestCommentFilters,
+    commentsPolarity?: DefaultRequestCommentFilters,
+    topPositiveComments?: DefaultRequestCommentFilters,
+    topNegativeComments?: DefaultRequestCommentFilters,
+    mostLikedComment?: DefaultRequestCommentFilters,
+    mostRepliesComment?: {
+      checked: boolean
+    },
+    wordCount?: DefaultRequestWordFilters,
+    topWords?: DefaultRequestWordFilters,
+    topWordsUsedTogether?: DefaultRequestWordFilters,
+    wordsRelatedToVideoTitle?: DefaultRequestWordFilters,
+    topComentingUser?: DefaultRequestCommentFilters,
+    commentsLanguage?: DefaultRequestCommentFilters,
   },
-  save: true | false,
+  save: boolean
 }
 
-export { MiningRequestData, WordFilters, PhraseFilters, UserCommentsFilters, DefaultRequestData }
+export { DefaultRequest, MiningRequest }

@@ -1,10 +1,25 @@
 import { Comment, Reply } from './comment'
 
-interface CommentFromData {
-  word?: string,
-  phrase?: string,
+interface CommentsFromWord {
+  word: string,
   commentsCount: number,
   comments: (Comment | Reply)[]
 }
 
-export { CommentFromData }
+interface CommentsFromPhrase {
+  phrase: string,
+  commentsCount: number,
+  comments: (Comment | Reply)[]
+}
+
+interface CommentsFromUser {
+  user: {
+    id: string,
+    name: string,
+    profileImage: string
+  },
+  commentsCount: number,
+  comments: (Comment | Reply)[]
+}
+
+export { CommentsFromWord, CommentsFromPhrase, CommentsFromUser }

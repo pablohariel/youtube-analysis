@@ -11,7 +11,6 @@ interface VideoData {
   statistics: {
     viewCount: string,
     likeCount: string,
-    dislikeCount: string,
     commentCount: string,
     favoriteCount: string
   },

@@ -1,7 +1,5 @@
-import { Analysis } from '@prisma/client'
 import { prisma } from '../../database/connection'
-
-import { VideoData } from './types'
+import { IAnalysis } from '../../interfaces/analysis'
 
 interface Request {
   videoTitle?: string;
@@ -10,12 +8,27 @@ interface Request {
 }
 
 class ListAnalysisService {
-  public async execute ({ videoId, videoTitle, channelTitle } : Request): Promise<Analysis[]> {
-    const analysis = await prisma.analysis.findMany()
+  public async execute ({ videoId, videoTitle, channelTitle } : Request): Promise<IAnalysis[]> {
+    const analysis = await prisma.analysis.findMany() as unknown as IAnalysis[]
+
+    // {
+    //   select: {
+    //     id: true,
+    //     userId: true,
+    //     user: true,
+    //     requestData: true,
+    //     content: true,
+    //     videoData: true,
+    //     viewCount: true,
+    //     privacy: true,
+    //     created_at: true,
+    //     updated_at: true
+    //   }
+    // }
 
     if (videoId) {
       const result = analysis.filter(item => {
-        if (item.videoId === videoId) {
+        if (item.videoData.id === videoId) {
           return true
         } else {
           return false
@@ -25,29 +38,23 @@ class ListAnalysisService {
       return result
     } else if (videoTitle) {
       const result = analysis.filter(item => {
-        if (typeof (item.videoData) === 'object') {
-          const videoData = { ...item.videoData } as VideoData
-          if (videoData.videoTitle === videoTitle) {
-            return true
-          } else {
-            return false
-          }
+        const { videoData } = item
+        if (videoData.title === videoTitle) {
+          return true
+        } else {
+          return false
         }
-        return false
       })
 
       return result
     } else if (channelTitle) {
       const result = analysis.filter(item => {
-        if (typeof (item.videoData) === 'object') {
-          const videoData = { ...item.videoData } as VideoData
-          if (videoData.channelTitle === channelTitle) {
-            return true
-          } else {
-            return false
-          }
+        const { videoData } = item
+        if (videoData.title === channelTitle) {
+          return true
+        } else {
+          return false
         }
-        return false
       })
 
       return result

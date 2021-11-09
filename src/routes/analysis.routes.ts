@@ -1,5 +1,4 @@
 import { Router } from 'express'
-import { Analysis } from '@prisma/client'
 
 import { AppError } from '../errors/AppError'
 // import { CreateCustomAnalysisService } from '../services/analysis/CreateCustomAnalysisService'
@@ -11,6 +10,7 @@ import { GetAnalysisHistoryService } from '../services/analysis/GetAnalysisHisto
 import { ListAnalysisService } from '../services/analysis/ListAnalysisService'
 
 import { ensureAuthenticated, ensureCanDeleteAnalysis } from '../middlewares/usersAuth'
+import { IAnalysis } from '../interfaces/analysis'
 
 const analysisRouter = Router()
 
@@ -18,7 +18,7 @@ analysisRouter.get('/', async (request, response) => {
   const { videoId, videoTitle, channelTitle } = request.query
   const listAnalysis = new ListAnalysisService()
 
-  let analysis: Analysis[] = []
+  let analysis: IAnalysis[] = []
   if (typeof (videoId) === 'string' || typeof (videoId) === 'undefined') {
     if (typeof (videoTitle) === 'string' || typeof (videoTitle) === 'undefined') {
       if (typeof (channelTitle) === 'string' || typeof (channelTitle) === 'undefined') {
@@ -49,14 +49,14 @@ analysisRouter.post('/', async (request, response) => {
 
   if (type === 'mining') {
     const createAnalysis = new CreateMiningAnalysisService()
-    const analysis = await createAnalysis.execute({ videoId, userId: '2323', save, options })
+    const analysis = await createAnalysis.execute({ videoId, userId: '613201b800bb0e8800464192', save, options, type: 'mining' })
 
     return response.json(analysis)
   }
 
   if (type === 'default') {
     const createAnalysis = new CreateDefaultAnalysisService()
-    const analysis = await createAnalysis.execute({ videoId, userId: '2323', save, options })
+    const analysis = await createAnalysis.execute({ videoId, userId: '613201b800bb0e8800464192', save, options, type: 'default' })
 
     return response.json(analysis)
   }

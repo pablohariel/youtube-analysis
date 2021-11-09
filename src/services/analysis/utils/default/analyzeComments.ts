@@ -69,7 +69,9 @@ const analyzeComments = async ({ comments }: Request): Promise<Response> => {
       const sentenceDoc = nlp.readDoc(sentence)
       const sentencesWords = sentenceDoc.tokens().filter((t) => t.out(its.type) === 'word' && !t.out(its.stopWordFlag) && !stopWordsPtBr.includes(t.out())).out()
 
-      const { classifiedWords } = await classifyWords({ words: sentencesWords, language, dbWords, sentiWordList })
+      const { classifiedWords, newDbWords } = await classifyWords({ words: sentencesWords, language, dbWords, sentiWordList })
+
+      dbWords.push(...newDbWords)
 
       commentWords.push(...classifiedWords)
 

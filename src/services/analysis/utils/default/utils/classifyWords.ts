@@ -22,7 +22,8 @@ interface Request {
 }
 
 interface Response {
-  classifiedWords: ClassifiedWord[]
+  classifiedWords: ClassifiedWord[],
+  newDbWords: Word[]
 }
 
 const classifyWords = async ({ words, language, dbWords, sentiWordList }: Request): Promise<Response> => {
@@ -31,9 +32,10 @@ const classifyWords = async ({ words, language, dbWords, sentiWordList }: Reques
       const execAsync = util.promisify(exec) // 0.04ms
       const treeTaggerPath = '/home/pablohariel/TreeTagger/cmd/tree-tagger-portuguese'
 
+      const newDbWords = [] as Word[]
       const wordsFound = [] as ClassifiedWord[]
       for (const word of words) {
-        const wordFound = dbWords.filter(dbWord => dbWord.content === word) // 0.2ms
+        const wordFound = dbWords.filter(dbWord => dbWord.content.toLowerCase() === word.toLowerCase()) // 0.2ms
 
         if (wordFound.length < 1) {
           console.log('--------')
@@ -59,7 +61,7 @@ const classifyWords = async ({ words, language, dbWords, sentiWordList }: Reques
 
           const wordCreated = await prisma.word.create({
             data: {
-              content: word,
+              content: word.toLowerCase(),
               class: tag,
               simplified: wordSimplified,
               posScore,
@@ -75,17 +77,17 @@ const classifyWords = async ({ words, language, dbWords, sentiWordList }: Reques
 
           console.log('Created: ', wordCreated, '\n')
           console.log('--------\n')
-
+          newDbWords.push(wordCreated)
           wordsFound.push(wordCreated)
         } else {
           wordsFound.push(wordFound[0])
         }
       }
 
-      return { classifiedWords: wordsFound }
+      return { classifiedWords: wordsFound, newDbWords }
     }
     default:
-      return { classifiedWords: [] }
+      return { classifiedWords: [], newDbWords: [] }
   }
 }
 

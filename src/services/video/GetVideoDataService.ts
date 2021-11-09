@@ -26,13 +26,14 @@ class GetVideoDataService {
 
       if (videoReponse.data.items !== undefined) {
         const video = videoReponse.data.items[0]
+        console.log(video)
         const { snippet, statistics, contentDetails } = video
         const videoData = {} as VideoData
 
         if (snippet && contentDetails && statistics) {
           const { title, publishedAt, channelId, description, defaultLanguage, thumbnails, channelTitle } = snippet
           const { caption, duration, definition } = contentDetails
-          const { viewCount, likeCount, dislikeCount, commentCount, favoriteCount } = statistics
+          const { viewCount, likeCount, commentCount, favoriteCount } = statistics
 
           videoData.title = title || ''
           videoData.description = description || undefined
@@ -49,14 +50,12 @@ class GetVideoDataService {
 
           videoData.statistics = {
             commentCount: '',
-            dislikeCount: '',
             favoriteCount: '',
             likeCount: '',
             viewCount: ''
           }
           videoData.statistics.viewCount = viewCount || ''
           videoData.statistics.likeCount = likeCount || ''
-          videoData.statistics.dislikeCount = dislikeCount || ''
           videoData.statistics.commentCount = commentCount || ''
           videoData.statistics.favoriteCount = favoriteCount || ''
 

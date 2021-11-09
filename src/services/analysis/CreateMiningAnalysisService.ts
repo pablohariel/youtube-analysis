@@ -13,37 +13,20 @@ import { getJoinedWords } from './utils/words/getJoinedWords'
 
 import { VideoData } from '../../interfaces/videoData'
 import { JoinedWord } from '../../interfaces/word'
-import { CommentFromData } from '../../interfaces/commentFromData'
-import { UserFromData } from '../../interfaces/userFromData'
+import { CommentsFromPhrase, CommentsFromWord, CommentsFromUser } from '../../interfaces/commentFromData'
 import { JoinedPhrase } from '../../interfaces/joinedPhrase'
-import { MiningRequestData } from '../../interfaces/requestData'
-import { Comment, Reply, CommentAnalyzed } from '../../interfaces/comment'
-
-interface Response {
-  userId: string,
-  type: 'DEFAULT' | 'MINING' | 'CUSTOM',
-  requestData: MiningRequestData
-  videoData: VideoData,
-  content: {
-    words?: JoinedWord[],
-    phrases?: JoinedPhrase[],
-    commentsFromWords?: CommentFromData[],
-    commentsFromPhrases?: CommentFromData[],
-    commentsFromUser?: UserFromData[],
-    commentsAnalyzed?: CommentAnalyzed[],
-    topComments?: CommentAnalyzed[],
-    worstComments?: CommentAnalyzed[]
-  }
-}
+import { MiningRequest } from '../../interfaces/requestData'
+import { Comment, Reply } from '../../interfaces/comment'
+import { MiningResponse } from '../../interfaces/responseData'
 
 class CreateMiningAnalysisService {
-  public async execute ({ videoId, options, userId, save }: MiningRequestData): Promise<Response> {
+  public async execute ({ videoId, options, userId, save, visibility = 'public' }: MiningRequest): Promise<MiningResponse> {
     const {
-      phrasesToFindComments,
-      usersToFindComments,
-      wordsToFindComments,
       wordsToFindWords,
-      phrasesToFindPhrases
+      phrasesToFindPhrases,
+      wordsToFindComments,
+      phrasesToFindComments,
+      usersToFindComments
     } = options
 
     const { videoData } = await getVideoData(videoId)
@@ -52,35 +35,17 @@ class CreateMiningAnalysisService {
     const { comments } = await getVideoComments.execute({ videoId })
 
     const response = {
-      userId,
-      type: 'MINING',
+      type: 'mining',
       requestData: {
         options,
         userId,
         videoId,
-        save
+        save,
+        visibility
       },
       videoData,
       content: {}
-    } as Response
-
-    if (phrasesToFindComments) {
-      const { content, filters } = phrasesToFindComments
-      const { dataFound: commentsFromPhrases } = getComments({ type: 'fromPhrases', comments, phrasesToFind: content, filters })
-      response.content.commentsFromPhrases = commentsFromPhrases
-    }
-
-    if (usersToFindComments) {
-      const { content, filters } = usersToFindComments
-      const { dataFound: commentsFromUser } = getUsersComments({ comments, usersName: content, filters })
-      response.content.commentsFromUser = commentsFromUser
-    }
-
-    if (wordsToFindComments) {
-      const { content, filters } = wordsToFindComments
-      const { dataFound: commentsFromWords } = getComments({ type: 'fromWords', comments, wordsToFind: content, filters })
-      response.content.commentsFromWords = commentsFromWords
-    }
+    } as MiningResponse
 
     if (wordsToFindWords) {
       const { content, filters } = wordsToFindWords
@@ -94,6 +59,24 @@ class CreateMiningAnalysisService {
       const { content, filters } = phrasesToFindPhrases
       const { dataFound: phrases } = getPhrases({ comments, phrasesToFind: content, filters })
       response.content.phrases = phrases
+    }
+
+    if (wordsToFindComments) {
+      const { content, filters } = wordsToFindComments
+      const { dataFound: commentsFromWords } = getComments({ type: 'fromWords', comments, wordsToFind: content, filters })
+      response.content.commentsFromWords = commentsFromWords
+    }
+
+    if (phrasesToFindComments) {
+      const { content, filters } = phrasesToFindComments
+      const { dataFound: commentsFromPhrases } = getComments({ type: 'fromPhrases', comments, phrasesToFind: content, filters })
+      response.content.commentsFromPhrases = commentsFromPhrases
+    }
+
+    if (usersToFindComments) {
+      const { content, filters } = usersToFindComments
+      const { dataFound: commentsFromUser } = getUsersComments({ comments, usersName: content, filters })
+      response.content.commentsFromUser = commentsFromUser
     }
 
     const commentsToAnalyze = [] as (Comment | Reply)[]

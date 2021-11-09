@@ -54,6 +54,18 @@ interface CommentAnalyzed extends CommentNoReplies {
   language: Language
 }
 
+interface CommentsGroupedByPolarityNoComments {
+  positive: {
+    count: number
+  },
+  neutral: {
+    count: number
+  },
+  negative: {
+    count: number
+  }
+}
+
 interface CommentsGroupedByPolarity {
   positive: {
     count: number,
@@ -69,4 +81,4 @@ interface CommentsGroupedByPolarity {
   }
 }
 
-export { Comment, Reply, CommentNoReplies, CommentAnalyzed, CommentsGroupedByPolarity }
+export { Comment, Reply, CommentNoReplies, CommentAnalyzed, CommentsGroupedByPolarity, CommentsGroupedByPolarityNoComments }

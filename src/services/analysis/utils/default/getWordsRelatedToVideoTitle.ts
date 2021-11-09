@@ -2,13 +2,13 @@ import { Comment, Reply } from '../../../../interfaces/comment'
 import { JoinedWord } from '../../../../interfaces/word'
 
 interface Request {
-  videoTitle: string,
+  videoTitle: string
   words: JoinedWord[]
 }
 
 export interface WordRelatedToVideoTitle {
-  timesUsed: number,
-  word: string,
+  word: string
+  timesUsed: number
   comments: (Comment | Reply)[]
 }
 
