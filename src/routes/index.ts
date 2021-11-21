@@ -12,4 +12,9 @@ routes.use('/sessions', sessionsRouter)
 routes.use('/analysis', analysisRouter)
 routes.use('/videos', videosRouter)
 
+routes.post('/contact', (request, response) => {
+  console.log(request.body)
+  return response.send()
+})
+
 export { routes }

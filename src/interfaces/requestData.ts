@@ -24,23 +24,28 @@ interface MiningRequest {
   type: 'default' | 'mining' | 'complete'
   options: {
     wordsToFindWords?: {
-      content: string[],
+      checked: boolean
+      content: string[]
       filters: MiningRequestWordFilters
     },
     wordsToFindComments?: {
-      content: string[],
+      checked: boolean
+      content: string[]
       filters: MiningRequestWordFilters
     },
     phrasesToFindPhrases?: {
-      content: string[],
+      checked: boolean
+      content: string[]
       filters: MiningRequestPhraseFilters
     },
     phrasesToFindComments?: {
-      content: string[],
+      checked: boolean
+      content: string[]
       filters: MiningRequestPhraseFilters
     },
     usersToFindComments?: {
-      content: string[],
+      checked: boolean
+      content: string[]
       filters: MiningRequestUserFilters
     },
   },

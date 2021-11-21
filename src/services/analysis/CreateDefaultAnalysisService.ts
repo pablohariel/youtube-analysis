@@ -53,7 +53,6 @@ class CreateDefaultAnalysisService {
     const { commentsUsers } = getCommentsUsers({ comments })
 
     const response = {
-      type: 'default',
       requestData: {
         videoId,
         userId,

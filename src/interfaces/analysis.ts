@@ -10,11 +10,11 @@ import { LanguagesCount } from './languages'
 import { JoinedPhrase } from './joinedPhrase'
 import { CommentsFromPhrase, CommentsFromUser, CommentsFromWord } from './commentFromData'
 
-interface IAnalysis {
+interface IDefaultAnalysis {
   id: string
   userId: string
   user: User
-  requestData: DefaultRequest | MiningRequest
+  requestData: DefaultRequest
   videoData: VideoData
   content: {
     commentCount?: number
@@ -30,6 +30,20 @@ interface IAnalysis {
     topComentingUser?: User
     commentsLanguage?: LanguagesCount
     commentsPublicationData?: string[]
+  }
+  viewCount: number
+  privacy: 'private' | 'public'
+  created_at: string
+  updated_at: string
+}
+
+interface IMiningAnalysis {
+  id: string
+  userId: string
+  user: User
+  requestData: MiningRequest
+  videoData: VideoData
+  content: {
     words?: JoinedWord[]
     phrases?: JoinedPhrase[]
     commentsFromWords?: CommentsFromWord[]
@@ -42,4 +56,4 @@ interface IAnalysis {
   updated_at: string
 }
 
-export { IAnalysis }
+export { IDefaultAnalysis, IMiningAnalysis }

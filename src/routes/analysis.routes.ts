@@ -10,7 +10,7 @@ import { GetAnalysisHistoryService } from '../services/analysis/GetAnalysisHisto
 import { ListAnalysisService } from '../services/analysis/ListAnalysisService'
 
 import { ensureAuthenticated, ensureCanDeleteAnalysis } from '../middlewares/usersAuth'
-import { IAnalysis } from '../interfaces/analysis'
+import { IDefaultAnalysis, IMiningAnalysis } from '../interfaces/analysis'
 
 const analysisRouter = Router()
 
@@ -18,7 +18,7 @@ analysisRouter.get('/', async (request, response) => {
   const { videoId, videoTitle, channelTitle } = request.query
   const listAnalysis = new ListAnalysisService()
 
-  let analysis: IAnalysis[] = []
+  let analysis: (IDefaultAnalysis | IMiningAnalysis)[] = []
   if (typeof (videoId) === 'string' || typeof (videoId) === 'undefined') {
     if (typeof (videoTitle) === 'string' || typeof (videoTitle) === 'undefined') {
       if (typeof (channelTitle) === 'string' || typeof (channelTitle) === 'undefined') {

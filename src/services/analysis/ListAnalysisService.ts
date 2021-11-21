@@ -1,5 +1,5 @@
 import { prisma } from '../../database/connection'
-import { IAnalysis } from '../../interfaces/analysis'
+import { IDefaultAnalysis, IMiningAnalysis } from '../../interfaces/analysis'
 
 interface Request {
   videoTitle?: string;
@@ -8,8 +8,8 @@ interface Request {
 }
 
 class ListAnalysisService {
-  public async execute ({ videoId, videoTitle, channelTitle } : Request): Promise<IAnalysis[]> {
-    const analysis = await prisma.analysis.findMany() as unknown as IAnalysis[]
+  public async execute ({ videoId, videoTitle, channelTitle } : Request): Promise<(IDefaultAnalysis | IMiningAnalysis)[]> {
+    const analysis = await prisma.analysis.findMany() as unknown as (IDefaultAnalysis | IMiningAnalysis)[]
 
     // {
     //   select: {

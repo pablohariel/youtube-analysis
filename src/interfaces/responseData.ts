@@ -10,7 +10,6 @@ import { JoinedWord } from './word'
 import { WordsTogether } from './wordsTogether'
 
 interface MiningResponse {
-  type: 'default' | 'mining' | 'complete',
   requestData: MiningRequest,
   videoData: VideoData,
   content: {
@@ -23,7 +22,6 @@ interface MiningResponse {
 }
 
 interface DefaultResponse {
-  type: 'default' | 'mining' | 'complete',
   requestData: DefaultRequest,
   videoData: VideoData,
   content: {
