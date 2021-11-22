@@ -83,6 +83,7 @@ interface DefaultRequest {
     wordsRelatedToVideoTitle?: DefaultRequestWordFilters,
     topComentingUser?: DefaultRequestCommentFilters,
     commentsLanguage?: DefaultRequestCommentFilters,
+    commentsPublicationDate?: DefaultRequestCommentFilters
   },
   save: boolean
 }

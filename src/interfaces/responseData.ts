@@ -37,6 +37,7 @@ interface DefaultResponse {
     wordsRelatedToVideoTitle?: WordRelatedToVideoTitle[],
     topComentingUser?: CommentUser,
     commentsLanguage?: LanguagesCount,
+    commentsPublicationDate?: string[]
   }
 }
 

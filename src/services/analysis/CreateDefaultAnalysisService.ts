@@ -22,6 +22,7 @@ import { getCommentsUsers } from './utils/default/getCommentsUsers'
 import { getLanguages } from './utils/default/getLanguages'
 import { getCommentCount } from './utils/default/getCommentCount'
 import { DefaultResponse } from '../../interfaces/responseData'
+import { getPublicationDate } from './utils/default/getPublicationDate'
 
 class CreateDefaultAnalysisService {
   public async execute ({ videoId, options, userId, save }: DefaultRequest): Promise<DefaultResponse> {
@@ -37,7 +38,8 @@ class CreateDefaultAnalysisService {
       topWordsUsedTogether,
       wordsRelatedToVideoTitle,
       topComentingUser,
-      commentsLanguage
+      commentsLanguage,
+      commentsPublicationDate
     } = options
 
     const { videoData } = await getVideoData(videoId)
@@ -144,6 +146,13 @@ class CreateDefaultAnalysisService {
       const { languages } = getLanguages({ comments: commentsAnalyzed })
       response.content.commentsLanguage = languages
       response.requestData.options.commentsLanguage = commentsLanguage
+    }
+
+    if (commentsPublicationDate && commentsPublicationDate.checked) {
+      const { includeCommentReplies } = commentsPublicationDate
+      const { commentsPublicationDate: content } = getPublicationDate({ comments, includeReplies: includeCommentReplies })
+      response.content.commentsPublicationDate = content
+      response.requestData.options.commentsPublicationDate = commentsPublicationDate
     }
 
     if (save) {
