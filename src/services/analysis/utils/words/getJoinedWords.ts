@@ -90,6 +90,10 @@ const getJoinedWords = ({ words, videoId }: Request): Response => {
     }
   }
 
+  for (const joinedWord of joinedWords) {
+    joinedWord.brothers = joinedWord.brothers.slice(0, 10)
+  }
+
   return { joinedWords }
 }
 

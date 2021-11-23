@@ -90,6 +90,9 @@ const ensureCanDeleteAnalysis = async (request: Request, response: Response, nex
     throw new AppError('Analysis not found')
   }
 
+  console.log(userId)
+  console.log(analysis.userId)
+
   if (analysis.userId !== userId && !isAdmin) {
     throw new AppError('Access denied', 401)
   }

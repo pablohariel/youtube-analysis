@@ -11,6 +11,7 @@ import { ListAnalysisService } from '../services/analysis/ListAnalysisService'
 
 import { ensureAuthenticated, ensureCanDeleteAnalysis } from '../middlewares/usersAuth'
 import { IDefaultAnalysis, IMiningAnalysis } from '../interfaces/analysis'
+import { prisma } from '../database/connection'
 
 const analysisRouter = Router()
 
@@ -71,6 +72,76 @@ analysisRouter.post('/', ensureAuthenticated, async (request, response) => {
   }
 
   throw new AppError('Invalid query')
+})
+
+analysisRouter.patch('/:id/privacy', ensureAuthenticated, ensureCanDeleteAnalysis, async (request, response) => {
+  const { id: analysisId } = request.params
+  const { privacy } = request.body
+
+  const result = await prisma.analysis.update({
+    where: {
+      id: analysisId
+    },
+    data: {
+      privacy: privacy === 'private' ? 'public' : 'private'
+    },
+    select: {
+      id: true,
+      userId: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          isAdmin: true
+        }
+      },
+      requestData: true,
+      videoData: true,
+      content: true,
+      viewCount: true,
+      privacy: true,
+      created_at: true,
+      updated_at: true
+    }
+  })
+
+  return response.json(result)
+})
+
+analysisRouter.patch('/:id/views', async (request, response) => {
+  const { id: analysisId } = request.params
+  const { views } = request.body
+
+  const result = await prisma.analysis.update({
+    where: {
+      id: analysisId
+    },
+    data: {
+      viewCount: parseInt(views) + 1
+    },
+    select: {
+      id: true,
+      userId: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          isAdmin: true
+        }
+      },
+      requestData: true,
+      videoData: true,
+      content: true,
+      viewCount: true,
+      privacy: true,
+      created_at: true,
+      updated_at: true
+    }
+  })
+
+  return response.json(result)
 })
 
 analysisRouter.get('/history', ensureAuthenticated, async (request, response) => {

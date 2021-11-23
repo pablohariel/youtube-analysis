@@ -5,6 +5,7 @@ import { UpdateUserService } from '../services/user/UpdateUserService'
 import { GetUserService } from '../services/user/GetUserService'
 import { ListUserService } from '../services/user/ListUserService'
 import { DeleteUserService } from '../services/user/DeleteUserService'
+import { AuthenticateUserService } from '../services/user/AuthenticateUserService'
 
 import { ensureAuthenticated, ensureIsTheUser, ensureIsAdmin } from '../middlewares/usersAuth'
 
@@ -53,6 +54,11 @@ usersRouter.put('/:id', ensureAuthenticated, ensureIsTheUser, async (request, re
 
 usersRouter.delete('/:id', ensureAuthenticated, ensureIsTheUser, async (request, response) => {
   const { id } = request.params
+  const { email, password } = request.body
+
+  const authenticateUser = new AuthenticateUserService()
+
+  await authenticateUser.execute({ email, password })
 
   const deleteUser = new DeleteUserService()
 
