@@ -16,7 +16,7 @@ import { MiningRequest } from '../../interfaces/requestData'
 import { MiningResponse } from '../../interfaces/responseData'
 
 class CreateMiningAnalysisService {
-  public async execute ({ videoId, options, userId, save }: MiningRequest): Promise<MiningResponse> {
+  public async execute ({ videoId, options, userId, save, privacy }: MiningRequest): Promise<MiningResponse> {
     const {
       wordsToFindWords,
       phrasesToFindPhrases,
@@ -36,6 +36,7 @@ class CreateMiningAnalysisService {
         userId,
         type: 'mining',
         options: {},
+        privacy,
         save
       },
       videoData,
@@ -96,7 +97,8 @@ class CreateMiningAnalysisService {
           type: 'MINING',
           requestData: response.requestData as unknown as Prisma.JsonArray,
           videoData: response.videoData as unknown as Prisma.JsonArray,
-          content: response.content as unknown as Prisma.JsonArray
+          content: response.content as unknown as Prisma.JsonArray,
+          privacy
         }
       })
     }

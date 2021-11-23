@@ -3,7 +3,9 @@ import { GetVideoCommentsService } from '../video/GetVideoCommentsService'
 import { Prisma } from '@prisma/client'
 
 import { prisma } from '../../database/connection'
-import { DefaultRequest } from '../../interfaces/requestData'
+import { CompleteRequest } from '../../interfaces/requestData'
+import { CompleteResponse } from '../../interfaces/responseData'
+
 import { getVideoData } from './utils/getVideoData'
 import { CommentsGroupedByPolarityNoComments } from '../../interfaces/comment'
 import { getWordsRelatedToVideoTitle } from './utils/default/getWordsRelatedToVideoTitle'
@@ -21,11 +23,15 @@ import { getUserWithMostComment } from './utils/default/getUserWithMostComment'
 import { getCommentsUsers } from './utils/default/getCommentsUsers'
 import { getLanguages } from './utils/default/getLanguages'
 import { getCommentCount } from './utils/default/getCommentCount'
-import { DefaultResponse } from '../../interfaces/responseData'
 import { getPublicationDate } from './utils/default/getPublicationDate'
+import { CommentsFromPhrase, CommentsFromWord, CommentsFromUser } from '../../interfaces/commentFromData'
+import { getComments } from './utils/mining/getComments'
+import { getPhrases } from './utils/mining/getPhrases'
+import { getUsersComments } from './utils/mining/getUsersComments'
+import { getWords } from './utils/mining/getWords'
 
-class CreateDefaultAnalysisService {
-  public async execute ({ videoId, options, userId, save, privacy }: DefaultRequest): Promise<DefaultResponse> {
+class CreateCompleteAnalysisService {
+  public async execute ({ videoId, options, userId, save, privacy }: CompleteRequest): Promise<CompleteResponse> {
     const {
       commentCount,
       commentsPolarity,
@@ -39,7 +45,12 @@ class CreateDefaultAnalysisService {
       wordsRelatedToVideoTitle,
       topComentingUser,
       commentsLanguage,
-      commentsPublicationDate
+      commentsPublicationDate,
+      wordsToFindWords,
+      phrasesToFindPhrases,
+      wordsToFindComments,
+      phrasesToFindComments,
+      usersToFindComments
     } = options
 
     const { videoData } = await getVideoData(videoId)
@@ -58,14 +69,14 @@ class CreateDefaultAnalysisService {
       requestData: {
         videoId,
         userId,
-        type: 'default',
+        type: 'complete',
         options: {},
         privacy,
         save
       },
       videoData,
       content: {}
-    } as DefaultResponse
+    } as CompleteResponse
 
     if (commentCount && commentCount.checked) {
       const { commentCount: commentCountResponse } = getCommentCount({ comments, includeReplies: commentCount.includeCommentReplies })
@@ -156,11 +167,48 @@ class CreateDefaultAnalysisService {
       response.requestData.options.commentsPublicationDate = commentsPublicationDate
     }
 
+    if (wordsToFindWords && wordsToFindWords.checked) {
+      const { content, filters } = wordsToFindWords
+      const { words: commentsWords } = getCommentsWords({ comments, videoId, includeReplies: filters.includeCommentReplies })
+      const { joinedWords } = getJoinedWords({ videoId, words: commentsWords })
+      const { dataFound: words } = getWords({ words: joinedWords, wordsToFind: content, filters })
+      response.content.words = words
+      response.requestData.options.wordsToFindWords = wordsToFindWords
+    }
+
+    if (phrasesToFindPhrases && phrasesToFindPhrases.checked) {
+      const { content, filters } = phrasesToFindPhrases
+      const { dataFound: phrases } = getPhrases({ comments, phrasesToFind: content, filters })
+      response.content.phrases = phrases
+      response.requestData.options.phrasesToFindPhrases = phrasesToFindPhrases
+    }
+
+    if (wordsToFindComments && wordsToFindComments.checked) {
+      const { content, filters } = wordsToFindComments
+      const { dataFound: commentsFromWords } = getComments({ type: 'fromWords', comments, wordsToFind: content, filters })
+      response.content.commentsFromWords = [...commentsFromWords] as unknown as CommentsFromWord[]
+      response.requestData.options.wordsToFindComments = wordsToFindComments
+    }
+
+    if (phrasesToFindComments && phrasesToFindComments.checked) {
+      const { content, filters } = phrasesToFindComments
+      const { dataFound: commentsFromPhrases } = getComments({ type: 'fromPhrases', comments, phrasesToFind: content, filters })
+      response.content.commentsFromPhrases = [...commentsFromPhrases] as unknown as CommentsFromPhrase[]
+      response.requestData.options.phrasesToFindComments = phrasesToFindComments
+    }
+
+    if (usersToFindComments && usersToFindComments.checked) {
+      const { content, filters } = usersToFindComments
+      const { dataFound: commentsFromUser } = getUsersComments({ comments, usersName: content, filters })
+      response.content.commentsFromUsers = [...commentsFromUser] as unknown as CommentsFromUser[]
+      response.requestData.options.usersToFindComments = usersToFindComments
+    }
+
     if (save) {
       await prisma.analysis.create({
         data: {
           userId,
-          type: 'DEFAULT',
+          type: 'COMPLETE',
           requestData: response.requestData as unknown as Prisma.JsonArray,
           videoData: response.videoData as unknown as Prisma.JsonArray,
           content: response.content as unknown as Prisma.JsonArray,
@@ -173,4 +221,4 @@ class CreateDefaultAnalysisService {
   }
 }
 
-export { CreateDefaultAnalysisService }
+export { CreateCompleteAnalysisService }

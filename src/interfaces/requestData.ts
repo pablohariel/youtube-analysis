@@ -49,6 +49,7 @@ interface MiningRequest {
       filters: MiningRequestUserFilters
     },
   },
+  privacy: 'public' | 'private'
   save: boolean,
 }
 
@@ -85,7 +86,58 @@ interface DefaultRequest {
     commentsLanguage?: DefaultRequestCommentFilters,
     commentsPublicationDate?: DefaultRequestCommentFilters
   },
+  privacy: 'public' | 'private'
   save: boolean
 }
 
-export { DefaultRequest, MiningRequest }
+interface CompleteRequest {
+  videoId: string,
+  userId: string,
+  type: 'default' | 'mining' | 'complete'
+  options: {
+    commentCount?: DefaultRequestCommentFilters,
+    commentsPolarity?: DefaultRequestCommentFilters,
+    topPositiveComments?: DefaultRequestCommentFilters,
+    topNegativeComments?: DefaultRequestCommentFilters,
+    mostLikedComment?: DefaultRequestCommentFilters,
+    mostRepliesComment?: {
+      checked: boolean
+    },
+    wordCount?: DefaultRequestWordFilters,
+    topWords?: DefaultRequestWordFilters,
+    topWordsUsedTogether?: DefaultRequestWordFilters,
+    wordsRelatedToVideoTitle?: DefaultRequestWordFilters,
+    topComentingUser?: DefaultRequestCommentFilters,
+    commentsLanguage?: DefaultRequestCommentFilters,
+    commentsPublicationDate?: DefaultRequestCommentFilters,
+    wordsToFindWords?: {
+      checked: boolean
+      content: string[]
+      filters: MiningRequestWordFilters
+    },
+    wordsToFindComments?: {
+      checked: boolean
+      content: string[]
+      filters: MiningRequestWordFilters
+    },
+    phrasesToFindPhrases?: {
+      checked: boolean
+      content: string[]
+      filters: MiningRequestPhraseFilters
+    },
+    phrasesToFindComments?: {
+      checked: boolean
+      content: string[]
+      filters: MiningRequestPhraseFilters
+    },
+    usersToFindComments?: {
+      checked: boolean
+      content: string[]
+      filters: MiningRequestUserFilters
+    },
+  },
+  privacy: 'public' | 'private'
+  save: boolean
+}
+
+export { DefaultRequest, MiningRequest, CompleteRequest }

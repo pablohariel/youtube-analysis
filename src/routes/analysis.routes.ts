@@ -1,7 +1,7 @@
 import { Router } from 'express'
 
 import { AppError } from '../errors/AppError'
-// import { CreateCustomAnalysisService } from '../services/analysis/CreateCustomAnalysisService'
+import { CreateCompleteAnalysisService } from '../services/analysis/CreateCompleteAnalysisService'
 import { CreateMiningAnalysisService } from '../services/analysis/CreateMiningAnalysisService'
 import { CreateDefaultAnalysisService } from '../services/analysis/CreateDefaultAnalysisService'
 import { GetAnalysisService } from '../services/analysis/GetAnalysisService'
@@ -35,13 +35,15 @@ analysisRouter.get('/', async (request, response) => {
 })
 
 // put ensureAuthenticated on release
-analysisRouter.post('/', async (request, response) => {
+analysisRouter.post('/', ensureAuthenticated, async (request, response) => {
   const {
     videoId,
     type = 'default',
     options,
+    privacy,
     save = false
   } = request.body
+  const { id } = request.user
 
   if (typeof (videoId) !== 'string' || !options) {
     throw new AppError('Invalid query')
@@ -49,14 +51,21 @@ analysisRouter.post('/', async (request, response) => {
 
   if (type === 'mining') {
     const createAnalysis = new CreateMiningAnalysisService()
-    const analysis = await createAnalysis.execute({ videoId, userId: '613201b800bb0e8800464192', save, options, type: 'mining' })
+    const analysis = await createAnalysis.execute({ videoId, userId: id, save, options, type: 'mining', privacy })
 
     return response.json(analysis)
   }
 
   if (type === 'default') {
     const createAnalysis = new CreateDefaultAnalysisService()
-    const analysis = await createAnalysis.execute({ videoId, userId: '613201b800bb0e8800464192', save, options, type: 'default' })
+    const analysis = await createAnalysis.execute({ videoId, userId: id, save, options, type: 'default', privacy })
+
+    return response.json(analysis)
+  }
+
+  if (type === 'complete') {
+    const createAnalysis = new CreateCompleteAnalysisService()
+    const analysis = await createAnalysis.execute({ videoId, userId: id, save, options, type: 'complete', privacy })
 
     return response.json(analysis)
   }
