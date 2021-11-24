@@ -13,6 +13,7 @@ class ListAnalysisService {
       select: {
         id: true,
         userId: true,
+        type: true,
         user: {
           select: {
             id: true,

@@ -40,6 +40,26 @@ class UpdateAnalysisService {
             data: {
               content: content as unknown as Prisma.JsonArray,
               videoData: videoData as unknown as Prisma.JsonArray
+            },
+            select: {
+              id: true,
+              userId: true,
+              type: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  isAdmin: true
+                }
+              },
+              requestData: true,
+              videoData: true,
+              content: true,
+              viewCount: true,
+              privacy: true,
+              created_at: true,
+              updated_at: true
             }
           })
 
@@ -58,6 +78,26 @@ class UpdateAnalysisService {
             data: {
               content: content as unknown as Prisma.JsonArray,
               videoData: videoData as unknown as Prisma.JsonArray
+            },
+            select: {
+              id: true,
+              userId: true,
+              type: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  isAdmin: true
+                }
+              },
+              requestData: true,
+              videoData: true,
+              content: true,
+              viewCount: true,
+              privacy: true,
+              created_at: true,
+              updated_at: true
             }
           })
 
@@ -76,6 +116,26 @@ class UpdateAnalysisService {
             data: {
               content: content as unknown as Prisma.JsonArray,
               videoData: videoData as unknown as Prisma.JsonArray
+            },
+            select: {
+              id: true,
+              userId: true,
+              type: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  isAdmin: true
+                }
+              },
+              requestData: true,
+              videoData: true,
+              content: true,
+              viewCount: true,
+              privacy: true,
+              created_at: true,
+              updated_at: true
             }
           })
 
