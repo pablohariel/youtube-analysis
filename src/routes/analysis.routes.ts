@@ -8,6 +8,7 @@ import { GetAnalysisService } from '../services/analysis/GetAnalysisService'
 import { DeleteAnalysisService } from '../services/analysis/DeleteAnalysisService'
 import { GetAnalysisHistoryService } from '../services/analysis/GetAnalysisHistoryService'
 import { ListAnalysisService } from '../services/analysis/ListAnalysisService'
+import { UpdateAnalysisService } from '../services/analysis/UpdateAnalysisService'
 
 import { ensureAuthenticated, ensureCanDeleteAnalysis } from '../middlewares/usersAuth'
 import { IDefaultAnalysis, IMiningAnalysis } from '../interfaces/analysis'
@@ -163,6 +164,18 @@ analysisRouter.get('/:id', async (request, response) => {
   const analysis = await getAnalysis.execute({ id })
 
   return response.json(analysis)
+})
+
+analysisRouter.put('/:id', ensureAuthenticated, ensureAuthenticated, async (request, response) => {
+  const { id } = request.params
+
+  const updateAnalysis = new UpdateAnalysisService()
+
+  const { updatedAnalysis } = await updateAnalysis.execute({ id })
+
+  console.log('updated analysis', updatedAnalysis)
+
+  return response.json(updatedAnalysis)
 })
 
 analysisRouter.delete('/:id', ensureAuthenticated, ensureCanDeleteAnalysis, async (request, response) => {

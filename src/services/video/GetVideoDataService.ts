@@ -22,11 +22,8 @@ class GetVideoDataService {
         id: [videoId]
       })
 
-      console.log(videoReponse.data.pageInfo)
-
       if (videoReponse.data.items !== undefined) {
         const video = videoReponse.data.items[0]
-        console.log(video)
         const { snippet, statistics, contentDetails } = video
         const videoData = {} as VideoData
 
