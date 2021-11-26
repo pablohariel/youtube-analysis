@@ -14,6 +14,7 @@ interface IDefaultAnalysis {
   id: string
   userId: string
   user: User
+  videoTitle
   requestData: DefaultRequest
   videoData: VideoData
   content: {
@@ -41,6 +42,7 @@ interface IMiningAnalysis {
   id: string
   userId: string
   user: User
+  videoTitle: string
   requestData: MiningRequest
   videoData: VideoData
   content: {
@@ -60,6 +62,7 @@ interface ICompleteAnalysis {
   id: string
   userId: string
   user: User
+  videoTitle
   requestData: CompleteRequest
   videoData: VideoData
   content: {

@@ -1,36 +1,141 @@
 import { prisma } from '../../database/connection'
+import { AppError } from '../../errors/AppError'
 import { IDefaultAnalysis, IMiningAnalysis, ICompleteAnalysis } from '../../interfaces/analysis'
 
 interface Request {
-  videoTitle?: string;
-  videoId?: string;
-  channelTitle?: string;
+  videoTitle?: string
+  searchBy: 'videoTitle' | 'all'
+  orderBy: 'created_at' | 'updated_at' | 'viewCount' | 'videoTitle'
+  direction: 'desc' | 'asc'
+  analysisType?: 'DEFAULT' | 'MINING' | 'COMPLETE'
+  pageNumber: number
+}
+
+interface Response {
+  analysisCount: number
+  analysis: (IDefaultAnalysis | IMiningAnalysis | ICompleteAnalysis)[]
 }
 
 class ListAnalysisService {
-  public async execute ({ videoId, videoTitle, channelTitle } : Request): Promise<(IDefaultAnalysis | IMiningAnalysis | ICompleteAnalysis)[]> {
-    const analysis = await prisma.analysis.findMany({
-      select: {
-        id: true,
-        userId: true,
-        type: true,
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            isAdmin: true
-          }
-        },
-        requestData: true,
-        videoData: true,
-        content: true,
-        viewCount: true,
-        privacy: true,
-        created_at: true,
-        updated_at: true
+  public async execute ({
+    videoTitle = '',
+    searchBy = 'all',
+    pageNumber = 1,
+    orderBy = 'created_at',
+    analysisType, direction = 'desc'
+  } : Request): Promise<Response> {
+    const orderByData = {} as {
+      created_at?: 'desc' | 'asc'
+      updated_at?: 'desc' | 'asc'
+      viewCount?: 'desc' | 'asc'
+      videoTitle?: 'desc' | 'asc'
+    }
+
+    switch (orderBy) {
+      case 'created_at': {
+        orderByData.created_at = direction
+        break
       }
-    }) as unknown as (IDefaultAnalysis | IMiningAnalysis | ICompleteAnalysis)[]
+      case 'updated_at': {
+        orderByData.updated_at = direction
+        break
+      }
+      case 'viewCount': {
+        orderByData.viewCount = direction
+        break
+      }
+      default:
+        orderByData.created_at = 'desc'
+        break
+    }
+
+    const whereData = {
+      privacy: 'public'
+    } as {
+      privacy: 'public'
+      type?: 'DEFAULT' | 'MINING' | 'COMPLETE'
+    }
+
+    if (analysisType) {
+      switch (analysisType) {
+        case 'DEFAULT': {
+          whereData.type = 'DEFAULT'
+          break
+        }
+        case 'MINING': {
+          whereData.type = 'MINING'
+          break
+        }
+        case 'COMPLETE': {
+          whereData.type = 'COMPLETE'
+          break
+        }
+        default:
+          break
+      }
+    }
+
+    switch (searchBy) {
+      case 'all': {
+        const analysisCount = await prisma.analysis.count({
+          where: whereData
+        })
+
+        const analysis = await prisma.analysis.findMany({
+          orderBy: orderByData,
+          where: whereData,
+          skip: (pageNumber - 1) * 10,
+          take: 10,
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
+          }
+        }
+        ) as unknown as (IDefaultAnalysis | IMiningAnalysis | ICompleteAnalysis)[]
+
+        return { analysisCount, analysis }
+      }
+      case 'videoTitle': {
+        const analysisCount = await prisma.analysis.count({
+          where: {
+            videoTitle: {
+              contains: videoTitle,
+              mode: 'insensitive'
+            }
+          }
+        })
+
+        const analysis = await prisma.analysis.findMany({
+          orderBy: orderByData,
+          where: {
+            videoTitle: {
+              contains: videoTitle,
+              mode: 'insensitive'
+            }
+          },
+          skip: (pageNumber - 1) * 10,
+          take: 10,
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
+          }
+        }
+        ) as unknown as (IDefaultAnalysis | IMiningAnalysis | ICompleteAnalysis)[]
+
+        return { analysisCount, analysis }
+      }
+      default: {
+        throw new AppError('Analysis not found')
+      }
+    }
 
     // {
     //   select: {
@@ -46,42 +151,6 @@ class ListAnalysisService {
     //     updated_at: true
     //   }
     // }
-
-    if (videoId) {
-      const result = analysis.filter(item => {
-        if (item.videoData.id === videoId) {
-          return true
-        } else {
-          return false
-        }
-      })
-
-      return result
-    } else if (videoTitle) {
-      const result = analysis.filter(item => {
-        const { videoData } = item
-        if (videoData.title === videoTitle) {
-          return true
-        } else {
-          return false
-        }
-      })
-
-      return result
-    } else if (channelTitle) {
-      const result = analysis.filter(item => {
-        const { videoData } = item
-        if (videoData.title === channelTitle) {
-          return true
-        } else {
-          return false
-        }
-      })
-
-      return result
-    }
-
-    return analysis
   }
 }
 

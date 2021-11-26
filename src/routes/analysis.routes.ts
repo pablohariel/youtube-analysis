@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Request, Router } from 'express'
 
 import { AppError } from '../errors/AppError'
 import { CreateCompleteAnalysisService } from '../services/analysis/CreateCompleteAnalysisService'
@@ -11,29 +11,27 @@ import { ListAnalysisService } from '../services/analysis/ListAnalysisService'
 import { UpdateAnalysisService } from '../services/analysis/UpdateAnalysisService'
 
 import { ensureAuthenticated, ensureCanDeleteAnalysis } from '../middlewares/usersAuth'
-import { IDefaultAnalysis, IMiningAnalysis } from '../interfaces/analysis'
+import { ICompleteAnalysis, IDefaultAnalysis, IMiningAnalysis } from '../interfaces/analysis'
 import { prisma } from '../database/connection'
 
 const analysisRouter = Router()
 
-analysisRouter.get('/', async (request, response) => {
-  const { videoId, videoTitle, channelTitle } = request.query
+interface IQueries {
+  videoTitle?: string
+  searchBy: 'videoTitle' | 'all'
+  orderBy: 'created_at' | 'updated_at' | 'viewCount' | 'videoTitle'
+  direction: 'desc' | 'asc'
+  analysisType?: 'DEFAULT' | 'MINING' | 'COMPLETE'
+  pageNumber: number
+}
+
+analysisRouter.get('/', async (request: Request<{}, {}, {}, IQueries>, response) => {
+  const { searchBy, orderBy, direction, pageNumber, analysisType, videoTitle } = request.query
+
   const listAnalysis = new ListAnalysisService()
+  const result = await listAnalysis.execute({ searchBy, orderBy, pageNumber, direction, analysisType, videoTitle })
 
-  let analysis: (IDefaultAnalysis | IMiningAnalysis)[] = []
-  if (typeof (videoId) === 'string' || typeof (videoId) === 'undefined') {
-    if (typeof (videoTitle) === 'string' || typeof (videoTitle) === 'undefined') {
-      if (typeof (channelTitle) === 'string' || typeof (channelTitle) === 'undefined') {
-        analysis = await listAnalysis.execute({ videoId, videoTitle, channelTitle })
-      }
-    }
-  }
-
-  if (analysis.length < 1) {
-    throw new AppError('No analysis found', 404)
-  }
-
-  return response.json(analysis)
+  return response.json(result)
 })
 
 // put ensureAuthenticated on release
@@ -145,16 +143,14 @@ analysisRouter.patch('/:id/views', async (request, response) => {
   return response.json(result)
 })
 
-analysisRouter.get('/history', ensureAuthenticated, async (request, response) => {
+analysisRouter.get('/history', ensureAuthenticated, async (request: Request<{}, {}, {}, IQueries>, response) => {
+  const { searchBy, orderBy, direction, pageNumber, analysisType } = request.query
   const { id } = request.user
 
   const getHistory = new GetAnalysisHistoryService()
+  const result = await getHistory.execute({ userId: id, searchBy, orderBy, pageNumber, direction, analysisType })
 
-  const history = await getHistory.execute({
-    userId: id
-  })
-
-  return response.json(history)
+  return response.json(result)
 })
 
 analysisRouter.get('/:id', async (request, response) => {

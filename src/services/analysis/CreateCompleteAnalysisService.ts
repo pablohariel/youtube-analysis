@@ -54,6 +54,7 @@ class CreateCompleteAnalysisService {
     } = options
 
     const { videoData } = await getVideoData(videoId)
+    const { title } = videoData
 
     const getVideoComments = new GetVideoCommentsService()
     const { comments } = await getVideoComments.execute({ videoId })
@@ -209,6 +210,7 @@ class CreateCompleteAnalysisService {
         data: {
           userId,
           type: 'COMPLETE',
+          videoTitle: title,
           requestData: response.requestData as unknown as Prisma.JsonArray,
           videoData: response.videoData as unknown as Prisma.JsonArray,
           content: response.content as unknown as Prisma.JsonArray,
