@@ -11,16 +11,25 @@ interface Response {
 const groupCommentsByPolarity = ({ comments }: Request): Response => {
   const commentsGrouped = {
     positive: {
-      count: 0,
-      comments: []
+      totalCount: 0,
+      commentCount: 0,
+      replyCount: 0,
+      comments: [],
+      replies: []
     },
     neutral: {
-      count: 0,
-      comments: []
+      totalCount: 0,
+      commentCount: 0,
+      replyCount: 0,
+      comments: [],
+      replies: []
     },
     negative: {
-      count: 0,
-      comments: []
+      totalCount: 0,
+      commentCount: 0,
+      replyCount: 0,
+      comments: [],
+      replies: []
     }
   } as CommentsGroupedByPolarity
 
@@ -29,22 +38,47 @@ const groupCommentsByPolarity = ({ comments }: Request): Response => {
     if (polarity) {
       switch (polarity) {
         case 'positive': {
-          commentsGrouped.positive.count++
-          commentsGrouped.positive.comments.push(comment)
+          commentsGrouped.positive.totalCount++
+          switch (comment.type) {
+            case 'comment':
+              commentsGrouped.positive.commentCount++
+              commentsGrouped.positive.comments.push(comment)
+              break
+            case 'reply':
+              commentsGrouped.positive.replyCount++
+              commentsGrouped.positive.replies.push(comment)
+              break
+          }
           break
         }
         case 'neutral': {
-          commentsGrouped.neutral.count++
-          commentsGrouped.neutral.comments.push(comment)
+          commentsGrouped.neutral.totalCount++
+          switch (comment.type) {
+            case 'comment':
+              commentsGrouped.neutral.commentCount++
+              commentsGrouped.neutral.comments.push(comment)
+              break
+            case 'reply':
+              commentsGrouped.neutral.replyCount++
+              commentsGrouped.neutral.replies.push(comment)
+              break
+          }
           break
         }
         case 'negative': {
-          commentsGrouped.negative.count++
-          commentsGrouped.negative.comments.push(comment)
+          commentsGrouped.negative.totalCount++
+          switch (comment.type) {
+            case 'comment':
+              commentsGrouped.negative.commentCount++
+              commentsGrouped.negative.comments.push(comment)
+              break
+            case 'reply':
+              commentsGrouped.negative.replyCount++
+              commentsGrouped.negative.replies.push(comment)
+              break
+          }
           break
         }
-        default:
-          break
       }
     }
   }

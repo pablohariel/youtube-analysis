@@ -10,14 +10,14 @@ import { guessLanguage } from './utils/guessLanguage'
 import { getSentiWordList } from './utils/getSentiWordList'
 
 interface Request {
-  comments: (Comment | Reply)[]
+  comments: Comment[]
 }
 
 interface Response {
   commentsAnalyzed: CommentAnalyzed[]
 }
 
-const analyzeComments = async ({ comments }: Request): Promise<Response> => {
+const analyzeComments = async ({ comments }: { comments: (Comment | Reply)[] }): Promise<Response> => {
   const nlp = winkNLP(model)
 
   const commentsClassified = [] as CommentAnalyzed[]
@@ -40,15 +40,14 @@ const analyzeComments = async ({ comments }: Request): Promise<Response> => {
 
   const dbWords = dictionaryPtBr.words
 
-  const test = dbWords.filter(word => word.content === 'legal')
-  console.log(test)
-
   for (const comment of comments) {
     const { language } = guessLanguage({ text: comment.content })
+    const type = 'replyCount' in comment ? 'comment' : 'reply'
 
     // verifica se idioma é suportado
     if (language !== 'pt') {
       commentsClassified.push({
+        type,
         ...comment,
         language: language
       })
@@ -174,6 +173,7 @@ const analyzeComments = async ({ comments }: Request): Promise<Response> => {
     }
 
     commentsClassified.push({
+      type,
       author,
       content,
       likeCount,
@@ -182,6 +182,8 @@ const analyzeComments = async ({ comments }: Request): Promise<Response> => {
         negScore,
         rating
       },
+      replyCount: 'replyCount' in comment ? comment.replyCount : undefined,
+      replies: 'replies' in comment ? comment.replies : undefined,
       language: language,
       polarity,
       published_at
@@ -191,4 +193,21 @@ const analyzeComments = async ({ comments }: Request): Promise<Response> => {
   return { commentsAnalyzed: commentsClassified }
 }
 
-export { analyzeComments }
+const analyzeCommentsAndReplies = async ({ comments }: Request): Promise<Response> => {
+  const { commentsAnalyzed } = await analyzeComments({ comments })
+
+  let repliesToAnalyze = [] as Reply[]
+  for (const comment of comments) {
+    if (comment.replyCount > 0) {
+      repliesToAnalyze = [...repliesToAnalyze, ...comment.replies]
+    }
+  }
+
+  const { commentsAnalyzed: repliesAnalyzed } = await analyzeComments({ comments: repliesToAnalyze })
+
+  const allAnalyzedComments = [...commentsAnalyzed, ...repliesAnalyzed]
+
+  return { commentsAnalyzed: allAnalyzedComments }
+}
+
+export { analyzeComments, analyzeCommentsAndReplies }

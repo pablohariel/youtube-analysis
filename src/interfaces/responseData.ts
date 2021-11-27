@@ -1,5 +1,5 @@
 import { WordRelatedToVideoTitle } from '../services/analysis/utils/default/getWordsRelatedToVideoTitle'
-import { Comment, CommentAnalyzed, CommentsGroupedByPolarityNoComments } from './comment'
+import { Comment, CommentAnalyzed, CommentsGroupedByPolarityNoComments, Reply } from './comment'
 import { CommentsFromWord, CommentsFromPhrase, CommentsFromUser } from './commentFromData'
 import { CommentUser } from './commentUser'
 import { JoinedPhrase } from './joinedPhrase'
@@ -10,59 +10,59 @@ import { JoinedWord } from './word'
 import { WordsTogether } from './wordsTogether'
 
 interface MiningResponse {
-  requestData: MiningRequest,
-  videoData: VideoData,
+  requestData: MiningRequest
+  videoData: VideoData
   content: {
-    words?: JoinedWord[],
-    phrases?: JoinedPhrase[],
-    commentsFromWords?: CommentsFromWord[],
-    commentsFromPhrases?: CommentsFromPhrase[],
-    commentsFromUsers?: CommentsFromUser[],
+    words?: JoinedWord[]
+    phrases?: JoinedPhrase[]
+    commentsFromWords?: CommentsFromWord[]
+    commentsFromPhrases?: CommentsFromPhrase[]
+    commentsFromUsers?: CommentsFromUser[]
   }
 }
 
 interface DefaultResponse {
-  requestData: DefaultRequest,
-  videoData: VideoData,
+  requestData: DefaultRequest
+  videoData: VideoData
   content: {
-    commentCount?: number,
-    commentsPolarity?: CommentsGroupedByPolarityNoComments,
-    topPositiveComments?: CommentAnalyzed[],
-    topNegativeComments?: CommentAnalyzed[],
-    mostLikedComment?: Comment,
-    mostRepliesComment?: Comment,
-    wordCount?: number,
-    topWords?: JoinedWord[],
-    topWordsUsedTogether?: WordsTogether[],
-    wordsRelatedToVideoTitle?: WordRelatedToVideoTitle[],
-    topComentingUser?: CommentUser,
-    commentsLanguage?: LanguagesCount,
+    commentCount?: number
+    commentsPolarity?: CommentsGroupedByPolarityNoComments
+    topPositiveComments?: CommentAnalyzed[]
+    topNegativeComments?: CommentAnalyzed[]
+    mostLikedComment?: Comment | Reply
+    mostRepliesComment?: Comment | Reply
+    wordCount?: number
+    topWords?: JoinedWord[]
+    topWordsUsedTogether?: WordsTogether[]
+    wordsRelatedToVideoTitle?: WordRelatedToVideoTitle[]
+    topComentingUser?: CommentUser
+    commentsLanguage?: LanguagesCount
     commentsPublicationDate?: string[]
   }
 }
 
 interface CompleteResponse {
-  requestData: CompleteRequest,
-  videoData: VideoData,
+  requestData: CompleteRequest
+  videoData: VideoData
   content: {
-    commentCount?: number,
-    commentsPolarity?: CommentsGroupedByPolarityNoComments,
-    topPositiveComments?: CommentAnalyzed[],
-    topNegativeComments?: CommentAnalyzed[],
-    mostLikedComment?: Comment,
-    mostRepliesComment?: Comment,
-    wordCount?: number,
-    topWords?: JoinedWord[],
-    topWordsUsedTogether?: WordsTogether[],
-    wordsRelatedToVideoTitle?: WordRelatedToVideoTitle[],
-    topComentingUser?: CommentUser,
-    commentsLanguage?: LanguagesCount,
-    commentsPublicationDate?: string[],
-    words?: JoinedWord[],
-    phrases?: JoinedPhrase[],
-    commentsFromWords?: CommentsFromWord[],
-    commentsFromPhrases?: CommentsFromPhrase[],
-    commentsFromUsers?: CommentsFromUser[],
+    commentCount?: number
+    commentsPolarity?: CommentsGroupedByPolarityNoComments
+    topPositiveComments?: CommentAnalyzed[]
+    topNegativeComments?: CommentAnalyzed[]
+    mostLikedComment?: Comment | Reply
+    mostRepliesComment?: Comment | Reply
+    wordCount?: number
+    topWords?: JoinedWord[]
+    topWordsUsedTogether?: WordsTogether[]
+    wordsRelatedToVideoTitle?: WordRelatedToVideoTitle[]
+    topComentingUser?: CommentUser
+    commentsLanguage?: LanguagesCount
+    commentsPublicationDate?: string[]
+    words?: JoinedWord[]
+    phrases?: JoinedPhrase[]
+    commentsFromWords?: CommentsFromWord[]
+    commentsFromPhrases?: CommentsFromPhrase[]
+    commentsFromUsers?: CommentsFromUser[]
   }
 }
 

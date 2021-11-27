@@ -14,8 +14,9 @@ const getJoinedWords = ({ words, videoId }: Request): Response => {
   const joinedWords = [] as JoinedWord[]
 
   for (const word of words) {
-    const { words: commentWords } = getCommentWords({ comment: word.comment.content, videoId })
-    const uniqueCommentWords = [...new Set(commentWords)]
+    // const { words: commentWords } = getCommentWords({ comment: word.comment.content, videoId })
+
+    // const uniqueCommentWords = [...new Set(commentWords)]
     let wordFound = false
 
     for (const joinedWord of joinedWords) {
@@ -33,26 +34,26 @@ const getJoinedWords = ({ words, videoId }: Request): Response => {
         if (!joinedWordCommentFound) {
           joinedWord.comments.push(word.comment)
 
-          for (const commentWord of uniqueCommentWords) {
-            let brotherFound = false
-            if (commentWord !== joinedWord.content) {
-              for (const brother of joinedWord.brothers) {
-                if (brother.content === commentWord) {
-                  brotherFound = true
-                  brother.timesUsed++
-                }
-              }
-              if (!brotherFound) {
-                joinedWord.brothers.push({
-                  content: commentWord,
-                  timesUsed: 1,
-                  class: '',
-                  languages: [],
-                  polarity: ''
-                })
-              }
-            }
-          }
+          // for (const commentWord of uniqueCommentWords) {
+          //   let brotherFound = false
+          //   if (commentWord !== joinedWord.content) {
+          //     for (const brother of joinedWord.brothers) {
+          //       if (brother.content === commentWord) {
+          //         brotherFound = true
+          //         brother.timesUsed++
+          //       }
+          //     }
+          //     if (!brotherFound) {
+          //       joinedWord.brothers.push({
+          //         content: commentWord,
+          //         timesUsed: 1,
+          //         class: '',
+          //         languages: [],
+          //         polarity: ''
+          //       })
+          //     }
+          //   }
+          // }
         }
       }
     }
@@ -66,25 +67,25 @@ const getJoinedWords = ({ words, videoId }: Request): Response => {
       newJoinedWord.comments = [word.comment]
       newJoinedWord.brothers = []
 
-      for (const commentWord of uniqueCommentWords) {
-        let brotherFound = false
-        if (commentWord !== newJoinedWord.content) {
-          for (const brother of newJoinedWord.brothers) {
-            if (brother.content === commentWord) {
-              brotherFound = true
-            }
-          }
-          if (!brotherFound) {
-            newJoinedWord.brothers.push({
-              content: commentWord,
-              timesUsed: 1,
-              class: '',
-              languages: [],
-              polarity: ''
-            })
-          }
-        }
-      }
+      // for (const commentWord of uniqueCommentWords) {
+      //   let brotherFound = false
+      //   if (commentWord !== newJoinedWord.content) {
+      //     for (const brother of newJoinedWord.brothers) {
+      //       if (brother.content === commentWord) {
+      //         brotherFound = true
+      //       }
+      //     }
+      //     if (!brotherFound) {
+      //       newJoinedWord.brothers.push({
+      //         content: commentWord,
+      //         timesUsed: 1,
+      //         class: '',
+      //         languages: [],
+      //         polarity: ''
+      //       })
+      //     }
+      //   }
+      // }
 
       joinedWords.push(newJoinedWord)
     }

@@ -1,83 +1,99 @@
 import { Language } from './languages'
 
 interface Reply {
-  content: string,
+  content: string
   author: {
-    id: string,
-    name: string,
+    id: string
+    name: string
     profileImage: string
-  },
-  likeCount: number,
+  }
+  likeCount: number
   published_at: string
 }
 
 interface CommentNoReplies {
-  content: string,
+  content: string
   author: {
-    id: string,
-    name: string,
+    id: string
+    name: string
     profileImage: string
-  },
-  likeCount: number,
+  }
+  likeCount: number
   published_at: string
 }
 
 interface Comment {
-  content: string,
+  content: string
   author: {
-    id: string,
-    name: string,
+    id: string
+    name: string
     profileImage: string
-  },
-  likeCount: number,
-  replyCount: number,
+  }
+  likeCount: number
+  replyCount: number
   replies: {
-    content: string,
+    content: string
     author: {
-      id: string,
-      name: string,
+      id: string
+      name: string
       profileImage: string
-    },
-    likeCount: number,
+    }
+    likeCount: number
     published_at: string
-  }[],
+  }[]
   published_at: string
 }
 
 interface CommentAnalyzed extends CommentNoReplies {
+  type: 'comment' | 'reply'
   scores?: {
-    posScore: number,
-    negScore: number,
+    posScore: number
+    negScore: number
     rating: number
-  },
-  polarity?: 'positive' | 'negative' | 'neutral',
+  }
+  polarity?: 'positive' | 'negative' | 'neutral'
   language: Language
 }
 
 interface CommentsGroupedByPolarityNoComments {
   positive: {
-    count: number
-  },
+    totalCount: number
+    commentCount: number
+    replyCount: number
+  }
   neutral: {
-    count: number
-  },
+    totalCount: number
+    commentCount: number
+    replyCount: number
+  }
   negative: {
-    count: number
+    totalCount: number
+    commentCount: number
+    replyCount: number
   }
 }
 
 interface CommentsGroupedByPolarity {
   positive: {
-    count: number,
+    totalCount: number
+    commentCount: number
+    replyCount: number
     comments: CommentAnalyzed[]
-  },
+    replies: CommentAnalyzed[]
+  }
   neutral: {
-    count: number,
+    totalCount: number
+    commentCount: number
+    replyCount: number
     comments: CommentAnalyzed[]
-  },
+    replies: CommentAnalyzed[]
+  }
   negative: {
-    count: number,
+    totalCount: number
+    commentCount: number
+    replyCount: number
     comments: CommentAnalyzed[]
+    replies: CommentAnalyzed[]
   }
 }
 

@@ -1,25 +1,25 @@
 interface VideoData {
-  id: string,
-  title: string,
-  description?: string,
-  thumbnail: string,
+  id: string
+  title: string
+  description?: string
+  thumbnail: string
   details: {
-    duration: string,
-    definition: string,
+    duration: string
+    definition: string
     caption: string
-  },
+  }
   statistics: {
-    viewCount: string,
-    likeCount: string,
-    commentCount: string,
+    viewCount: string
+    likeCount: string
+    commentCount: string
     favoriteCount: string
-  },
+  }
   channelDetails: {
-    id: string,
-    title: string,
+    id: string
+    title: string
     thumbnail: string
-  },
-  defaultLanguage: string,
+  }
+  defaultLanguage: string
   published_at: string
 }
 

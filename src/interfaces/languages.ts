@@ -1,28 +1,28 @@
 interface LanguagesCount {
   pt: {
-    language: 'pt',
+    language: 'pt'
     count: number
-  },
+  }
   en: {
-    language: 'en',
+    language: 'en'
     count: number
-  },
+  }
   es: {
-    language: 'es',
+    language: 'es'
     count: number
-  },
+  }
   ru: {
-    language: 'ru',
+    language: 'ru'
     count: number
-  },
+  }
   fr: {
-    language: 'fr',
+    language: 'fr'
     count: number
-  },
+  }
   notFound: {
-    language: 'not found',
+    language: 'not found'
     count: number
-  },
+  }
 }
 
 type Language = 'pt' | 'en' | 'es' | 'ru' | 'fr' | 'not found'

@@ -67,7 +67,7 @@ interface ICompleteAnalysis {
   videoData: VideoData
   content: {
     commentCount?: number
-    commentsPolarity?: CommentsGroupedByPolarityNoComments,
+    commentsPolarity?: CommentsGroupedByPolarityNoComments
     topPositiveComments?: CommentAnalyzed[]
     topNegativeComments?: CommentAnalyzed[]
     mostLikedComment?: Comment

@@ -3,13 +3,18 @@ import { CommentUser } from '../../../../interfaces/commentUser'
 
 interface Request {
   comments: Comment[]
+  filters: {
+    includeCommentReplies: boolean
+  }
 }
 
 interface Response {
   commentsUsers: CommentUser[]
 }
 
-const getCommentsUsers = ({ comments }: Request): Response => {
+const getCommentsUsers = ({ comments, filters }: Request): Response => {
+  const { includeCommentReplies } = filters
+
   const commentsUsers = [] as CommentUser[]
 
   for (const comment of comments) {
@@ -30,6 +35,28 @@ const getCommentsUsers = ({ comments }: Request): Response => {
         commentCount: 1,
         comments: [comment]
       })
+    }
+
+    if (includeCommentReplies) {
+      for (const reply of comment.replies) {
+        let replyUserFound = false
+        for (const user of commentsUsers) {
+          if (user.id === reply.author.id) {
+            replyUserFound = true
+            user.commentCount++
+            user.comments.push(reply)
+          }
+        }
+        if (!replyUserFound) {
+          commentsUsers.push({
+            id: reply.author.id,
+            name: reply.author.name,
+            profileImage: reply.author.profileImage,
+            commentCount: 1,
+            comments: [reply]
+          })
+        }
+      }
     }
   }
 

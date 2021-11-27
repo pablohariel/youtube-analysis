@@ -45,11 +45,22 @@ class CreateMiningAnalysisService {
     } as MiningResponse
 
     if (wordsToFindWords && wordsToFindWords.checked) {
+      const { includeCommentReplies, caseSensitive, avoidAccentuation } = wordsToFindWords.filters
+
       const { content, filters } = wordsToFindWords
-      const { words: commentsWords } = getCommentsWords({ comments, videoId, includeReplies: filters.includeCommentReplies })
+      const { words: commentsWords } = getCommentsWords({
+        comments,
+        videoId,
+        filters: {
+          includeCommentReplies,
+          caseSensitive,
+          avoidAccentuation
+        }
+      })
+
       const { joinedWords } = getJoinedWords({ videoId, words: commentsWords })
-      const { dataFound: words } = getWords({ words: joinedWords, wordsToFind: content, filters })
-      response.content.words = words
+      const { dataFound: wordsAgain } = getWords({ words: joinedWords, wordsToFind: content, filters })
+      response.content.words = wordsAgain
       response.requestData.options.wordsToFindWords = wordsToFindWords
     }
 
@@ -80,16 +91,6 @@ class CreateMiningAnalysisService {
       response.content.commentsFromUsers = [...commentsFromUser] as unknown as CommentsFromUser[]
       response.requestData.options.usersToFindComments = usersToFindComments
     }
-
-    // const commentsToAnalyze = [] as (Comment | Reply)[]
-
-    // for (const comment of comments) {
-    //   commentsToAnalyze.push(comment)
-    // include replies
-    // for (const reply of comment.replies) {
-    //   commentsToAnalyze.push(reply)
-    // }
-    // }
 
     if (save) {
       await prisma.analysis.create({

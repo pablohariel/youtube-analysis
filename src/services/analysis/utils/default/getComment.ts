@@ -1,18 +1,33 @@
-import { Comment } from '../../../../interfaces/comment'
+import { Comment, Reply } from '../../../../interfaces/comment'
 
 interface Request {
-  comments: Comment[],
+  comments: Comment[]
   filter: 'mostLikes' | 'mostDislikes' | 'mostReplies' | 'oldest' | 'newest'
+  filters: {
+    includeCommentReplies: boolean
+  }
 }
 
 interface Response {
-  comment?: Comment
+  comment?: Comment | Reply
 }
 
-const getComment = ({ comments, filter = 'mostLikes' } : Request): Response => {
+const getComment = ({ comments, filter = 'mostLikes', filters } : Request): Response => {
+  const { includeCommentReplies } = filters
+
+  let commentsToFilter = [...comments] as (Comment | Reply)[]
+
+  if (includeCommentReplies) {
+    for (const comment of comments) {
+      if ('replies' in comment) {
+        commentsToFilter = [...commentsToFilter, ...comment.replies]
+      }
+    }
+  }
+
   switch (filter) {
     case 'mostLikes': {
-      const comment = comments.sort((commentL, commentR) => {
+      const comment = commentsToFilter.sort((commentL, commentR) => {
         if (commentL.likeCount > commentR.likeCount) {
           return -1
         }
@@ -26,7 +41,7 @@ const getComment = ({ comments, filter = 'mostLikes' } : Request): Response => {
     }
 
     case 'oldest': {
-      const comment = comments.sort((commentL, commentR) => {
+      const comment = commentsToFilter.sort((commentL, commentR) => {
         const dateL = new Date(commentL.published_at as string)
         const dateR = new Date(commentR.published_at as string)
 
@@ -43,7 +58,7 @@ const getComment = ({ comments, filter = 'mostLikes' } : Request): Response => {
     }
 
     case 'newest': {
-      const comment = comments.sort((commentL, commentR) => {
+      const comment = commentsToFilter.sort((commentL, commentR) => {
         const dateL = new Date(commentL.published_at as string)
         const dateR = new Date(commentR.published_at as string)
 
