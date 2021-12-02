@@ -45,50 +45,54 @@ class CreateMiningAnalysisService {
     } as MiningResponse
 
     if (wordsToFindWords && wordsToFindWords.checked) {
-      const { includeCommentReplies, caseSensitive, avoidAccentuation } = wordsToFindWords.filters
-
       const { content, filters } = wordsToFindWords
+
       const { words: commentsWords } = getCommentsWords({
         comments,
         videoId,
-        filters: {
-          includeCommentReplies,
-          caseSensitive,
-          avoidAccentuation
-        }
+        filters
       })
 
       const { joinedWords } = getJoinedWords({ videoId, words: commentsWords })
       const { dataFound: wordsAgain } = getWords({ words: joinedWords, wordsToFind: content, filters })
+      
       response.content.words = wordsAgain
       response.requestData.options.wordsToFindWords = wordsToFindWords
     }
 
     if (phrasesToFindPhrases && phrasesToFindPhrases.checked) {
       const { content, filters } = phrasesToFindPhrases
+
       const { dataFound: phrases } = getPhrases({ comments, phrasesToFind: content, filters })
+
       response.content.phrases = phrases
       response.requestData.options.phrasesToFindPhrases = phrasesToFindPhrases
     }
 
     if (wordsToFindComments && wordsToFindComments.checked) {
       const { content, filters } = wordsToFindComments
+
       const { dataFound: commentsFromWords } = getComments({ type: 'fromWords', comments, wordsToFind: content, filters })
+
       response.content.commentsFromWords = [...commentsFromWords] as unknown as CommentsFromWord[]
       response.requestData.options.wordsToFindComments = wordsToFindComments
     }
 
     if (phrasesToFindComments && phrasesToFindComments.checked) {
       const { content, filters } = phrasesToFindComments
+
       const { dataFound: commentsFromPhrases } = getComments({ type: 'fromPhrases', comments, phrasesToFind: content, filters })
+
       response.content.commentsFromPhrases = [...commentsFromPhrases] as unknown as CommentsFromPhrase[]
       response.requestData.options.phrasesToFindComments = phrasesToFindComments
     }
 
     if (usersToFindComments && usersToFindComments.checked) {
       const { content, filters } = usersToFindComments
-      const { dataFound: commentsFromUser } = getUsersComments({ comments, usersName: content, filters })
-      response.content.commentsFromUsers = [...commentsFromUser] as unknown as CommentsFromUser[]
+
+      const { commentsFromUsers } = getUsersComments({ comments, usersName: content, filters })
+      
+      response.content.commentsFromUsers = [...commentsFromUsers] as unknown as CommentsFromUser[]
       response.requestData.options.usersToFindComments = usersToFindComments
     }
 

@@ -1,21 +1,28 @@
-import { WordFilters } from '../../../../interfaces/requestData'
 import { JoinedWord } from '../../../../interfaces/word'
 
 interface Request {
   wordsToFind: string[],
   words: JoinedWord[],
-  filters: WordFilters
+  filters: {
+    avoidAccentuation: boolean
+    caseSensitive: boolean
+  }
 }
 
 interface Response {
   dataFound: JoinedWord[]
 }
 
-const getWords = ({ wordsToFind, words }: Request): Response => {
+const getWords = ({ wordsToFind, words, filters }: Request): Response => {
+  const { avoidAccentuation, caseSensitive } = filters
+
   const dataFound = [] as JoinedWord[]
 
-  for (const wordToFind of wordsToFind) {
-    const wordFound = words.filter(word => word.content === wordToFind.toLocaleLowerCase())[0]
+  for (let wordToFind of wordsToFind) {
+    wordToFind = avoidAccentuation ? wordToFind.normalize('NFD').replace(/[^A-Za-z0-9- ]/g, '') : wordToFind
+    wordToFind = caseSensitive ? wordToFind : wordToFind.toLocaleLowerCase()
+
+    const wordFound = words.filter(word => word.content === wordToFind)[0]
     if (wordFound) {
       dataFound.push(wordFound)
     }

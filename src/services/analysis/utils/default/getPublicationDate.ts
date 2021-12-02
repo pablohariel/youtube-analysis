@@ -2,19 +2,22 @@ import { Comment } from '../../../../interfaces/comment'
 
 interface Request {
   comments: Comment[]
-  includeReplies: boolean
+  filters: {
+    includeCommentReplies: boolean
+  }
 }
 
 interface Response {
   commentsPublicationDate: string[]
 }
 
-const getPublicationDate = ({ comments, includeReplies }: Request): Response => {
+const getPublicationDate = ({ comments, filters }: Request): Response => {
+  const { includeCommentReplies } = filters
   const commentsPublicationDate = [] as string[]
 
   for (const comment of comments) {
     commentsPublicationDate.push(comment.published_at)
-    if (includeReplies) {
+    if (includeCommentReplies) {
       for (const reply of comment.replies) {
         commentsPublicationDate.push(reply.published_at)
       }

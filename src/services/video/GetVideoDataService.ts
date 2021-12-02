@@ -34,7 +34,7 @@ class GetVideoDataService {
 
           videoData.title = title || ''
           videoData.description = description || undefined
-          videoData.thumbnail = thumbnails?.high?.url || ''
+          videoData.thumbnail = thumbnails?.maxres?.url || ''
 
           videoData.details = {
             caption: '',

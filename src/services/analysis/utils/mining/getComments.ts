@@ -1,12 +1,15 @@
 import { Comment, Reply } from '../../../../interfaces/comment'
-import { PhraseFilters } from '../../../../interfaces/requestData'
 
 interface Request {
   wordsToFind?: string[],
   phrasesToFind?: string[],
   comments: Comment[],
   type: 'fromWords' | 'fromPhrases',
-  filters: PhraseFilters
+  filters: {
+    includeCommentReplies: boolean
+    avoidAccentuation: boolean
+    caseSensitive: boolean
+  }
 }
 
 interface Data {
@@ -21,53 +24,204 @@ interface Response {
 }
 
 const getComments = ({ phrasesToFind, wordsToFind, comments, type, filters }: Request): Response => {
-  const { includeCommentReplies } = filters
+  const { includeCommentReplies, avoidAccentuation, caseSensitive } = filters
 
   const dataFound = [] as Data[]
 
   switch (type) {
     case 'fromWords': {
       if (wordsToFind) {
-        for (const comment of comments) {
-          for (const wordToFind of wordsToFind) {
-            if (comment.content.toLowerCase().includes(wordToFind.toLowerCase())) {
-              let wordAlreadyCreated = false
-
-              for (const item of dataFound) {
-                if (item.word === wordToFind.toLowerCase()) {
-                  wordAlreadyCreated = true
-                  item.commentsCount++
-                  item.comments.push(comment)
-                }
-              }
-
-              if (!wordAlreadyCreated) {
-                dataFound.push({
-                  word: wordToFind.toLowerCase(),
-                  commentsCount: 1,
-                  comments: [comment]
-                })
-              }
-            }
-            if (includeCommentReplies) {
-              for (const reply of comment.replies) {
-                if (reply.content.toLowerCase().includes(wordToFind.toLowerCase())) {
+        if(caseSensitive) {
+          if(avoidAccentuation) {
+            for (const comment of comments) {
+              for (let wordToFind of wordsToFind) {
+                wordToFind = wordToFind.normalize('NFD').replace(/[^A-Za-z0-9- ]/g, '')
+                if (comment.content.normalize('NFD').replace(/[^A-Za-z0-9- ]/g, '').includes(wordToFind)) {
                   let wordAlreadyCreated = false
 
                   for (const item of dataFound) {
-                    if (item.word === wordToFind.toLowerCase()) {
+                    if (item.word === wordToFind) {
                       wordAlreadyCreated = true
                       item.commentsCount++
-                      item.comments.push(reply)
+                      item.comments.push(comment)
                     }
                   }
 
                   if (!wordAlreadyCreated) {
                     dataFound.push({
-                      word: wordToFind.toLowerCase(),
+                      word: wordToFind,
                       commentsCount: 1,
-                      comments: [reply]
+                      comments: [comment]
                     })
+                  }
+                }
+                if (includeCommentReplies) {
+                  for (const reply of comment.replies) {
+                    if (reply.content.normalize('NFD').replace(/[^A-Za-z0-9- ]/g, '').includes(wordToFind)) {
+                      let wordAlreadyCreated = false
+
+                      for (const item of dataFound) {
+                        if (item.word === wordToFind) {
+                          wordAlreadyCreated = true
+                          item.commentsCount++
+                          item.comments.push(reply)
+                        }
+                      }
+
+                      if (!wordAlreadyCreated) {
+                        dataFound.push({
+                          word: wordToFind,
+                          commentsCount: 1,
+                          comments: [reply]
+                        })
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          } else {
+            for (const comment of comments) {
+              for (let wordToFind of wordsToFind) {
+                wordToFind = wordToFind.normalize('NFD').replace(/[^A-Za-z0-9- ]/g, '')
+                if (comment.content.normalize('NFD').replace(/[^A-Za-z0-9- ]/g, '').includes(wordToFind)) {
+                  let wordAlreadyCreated = false
+
+                  for (const item of dataFound) {
+                    if (item.word === wordToFind) {
+                      wordAlreadyCreated = true
+                      item.commentsCount++
+                      item.comments.push(comment)
+                    }
+                  }
+
+                  if (!wordAlreadyCreated) {
+                    dataFound.push({
+                      word: wordToFind,
+                      commentsCount: 1,
+                      comments: [comment]
+                    })
+                  }
+                }
+                if (includeCommentReplies) {
+                  for (const reply of comment.replies) {
+                    if (reply.content.normalize('NFD').replace(/[^A-Za-z0-9- ]/g, '').includes(wordToFind)) {
+                      let wordAlreadyCreated = false
+
+                      for (const item of dataFound) {
+                        if (item.word === wordToFind) {
+                          wordAlreadyCreated = true
+                          item.commentsCount++
+                          item.comments.push(reply)
+                        }
+                      }
+
+                      if (!wordAlreadyCreated) {
+                        dataFound.push({
+                          word: wordToFind,
+                          commentsCount: 1,
+                          comments: [reply]
+                        })
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        } else {
+          if(avoidAccentuation) {
+            for (const comment of comments) {
+              for (let wordToFind of wordsToFind) {
+                wordToFind = wordToFind.normalize('NFD').replace(/[^A-Za-z0-9- ]/g, '').toLowerCase()
+                if (comment.content.normalize('NFD').replace(/[^A-Za-z0-9- ]/g, '').toLowerCase().includes(wordToFind)) {
+                  let wordAlreadyCreated = false
+
+                  for (const item of dataFound) {
+                    if (item.word === wordToFind) {
+                      wordAlreadyCreated = true
+                      item.commentsCount++
+                      item.comments.push(comment)
+                    }
+                  }
+
+                  if (!wordAlreadyCreated) {
+                    dataFound.push({
+                      word: wordToFind,
+                      commentsCount: 1,
+                      comments: [comment]
+                    })
+                  }
+                }
+                if (includeCommentReplies) {
+                  for (const reply of comment.replies) {
+                    if (reply.content.normalize('NFD').replace(/[^A-Za-z0-9- ]/g, '').toLowerCase().includes(wordToFind)) {
+                      let wordAlreadyCreated = false
+
+                      for (const item of dataFound) {
+                        if (item.word === wordToFind) {
+                          wordAlreadyCreated = true
+                          item.commentsCount++
+                          item.comments.push(reply)
+                        }
+                      }
+
+                      if (!wordAlreadyCreated) {
+                        dataFound.push({
+                          word: wordToFind,
+                          commentsCount: 1,
+                          comments: [reply]
+                        })
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          } else {
+            for (const comment of comments) {
+              for (let wordToFind of wordsToFind) {
+                wordToFind = wordToFind.toLowerCase()
+                if (comment.content.toLowerCase().includes(wordToFind)) {
+                  let wordAlreadyCreated = false
+
+                  for (const item of dataFound) {
+                    if (item.word === wordToFind) {
+                      wordAlreadyCreated = true
+                      item.commentsCount++
+                      item.comments.push(comment)
+                    }
+                  }
+
+                  if (!wordAlreadyCreated) {
+                    dataFound.push({
+                      word: wordToFind,
+                      commentsCount: 1,
+                      comments: [comment]
+                    })
+                  }
+                }
+                if (includeCommentReplies) {
+                  for (const reply of comment.replies) {
+                    if (reply.content.toLowerCase().includes(wordToFind)) {
+                      let wordAlreadyCreated = false
+
+                      for (const item of dataFound) {
+                        if (item.word === wordToFind) {
+                          wordAlreadyCreated = true
+                          item.commentsCount++
+                          item.comments.push(reply)
+                        }
+                      }
+
+                      if (!wordAlreadyCreated) {
+                        dataFound.push({
+                          word: wordToFind,
+                          commentsCount: 1,
+                          comments: [reply]
+                        })
+                      }
+                    }
                   }
                 }
               }
@@ -79,13 +233,19 @@ const getComments = ({ phrasesToFind, wordsToFind, comments, type, filters }: Re
     }
     case 'fromPhrases': {
       if (phrasesToFind) {
-        for (const comment of comments) {
-          for (const phraseToFind of phrasesToFind) {
-            if (comment.content.toLowerCase().includes(phraseToFind.toLowerCase())) {
+        for (let comment of comments) {
+          comment.content = avoidAccentuation ? comment.content.normalize('NFD').replace(/[^A-Za-z0-9- ]/g, '') : comment.content
+          comment.content = caseSensitive ? comment.content : comment.content.toLocaleLowerCase()
+
+          for (let phraseToFind of phrasesToFind) {
+            phraseToFind = avoidAccentuation ? phraseToFind.normalize('NFD').replace(/[^A-Za-z0-9- ]/g, '') : phraseToFind
+            phraseToFind = caseSensitive ? phraseToFind : phraseToFind.toLocaleLowerCase()
+
+            if (comment.content.includes(phraseToFind)) {
               let phraseAlreadyCreated = false
 
               for (const item of dataFound) {
-                if (item.phrase === phraseToFind.toLowerCase()) {
+                if (item.phrase === phraseToFind) {
                   phraseAlreadyCreated = true
                   item.commentsCount++
                   item.comments.push(comment)
@@ -94,19 +254,22 @@ const getComments = ({ phrasesToFind, wordsToFind, comments, type, filters }: Re
 
               if (!phraseAlreadyCreated) {
                 dataFound.push({
-                  phrase: phraseToFind.toLowerCase(),
+                  phrase: phraseToFind,
                   commentsCount: 1,
                   comments: [comment]
                 })
               }
             }
             if (includeCommentReplies) {
-              for (const reply of comment.replies) {
-                if (reply.content.toLowerCase().includes(phraseToFind.toLowerCase())) {
+              for (let reply of comment.replies) {
+                reply.content = avoidAccentuation ? reply.content.normalize('NFD').replace(/[^A-Za-z0-9- ]/g, '') : reply.content
+                reply.content = caseSensitive ? reply.content : reply.content.toLocaleLowerCase()
+
+                if (reply.content.includes(phraseToFind)) {
                   let phraseAlreadyCreated = false
 
                   for (const item of dataFound) {
-                    if (item.phrase === phraseToFind.toLowerCase()) {
+                    if (item.phrase === phraseToFind) {
                       phraseAlreadyCreated = true
                       item.commentsCount++
                       item.comments.push(reply)
@@ -115,7 +278,7 @@ const getComments = ({ phrasesToFind, wordsToFind, comments, type, filters }: Re
 
                   if (!phraseAlreadyCreated) {
                     dataFound.push({
-                      phrase: phraseToFind.toLowerCase(),
+                      phrase: phraseToFind,
                       commentsCount: 1,
                       comments: [reply]
                     })

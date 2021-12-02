@@ -88,10 +88,12 @@ class CreateCompleteAnalysisService {
 
     if (commentCount && commentCount.checked) {
       const { includeCommentReplies } = commentCount
+
       const { commentCount: commentCountResponse } = getCommentCount({
         comments,
         includeReplies: includeCommentReplies
       })
+
       response.content.commentCount = commentCountResponse
       response.requestData.options.commentCount = commentCount
     }
@@ -116,30 +118,35 @@ class CreateCompleteAnalysisService {
           replyCount: negative.replyCount
         }
       } as CommentsGroupedByPolarityNoComments
+
       response.content.commentsPolarity = commentsGroupedByPolarityNoComments
       response.requestData.options.commentsPolarity = commentsPolarity
     }
 
     if (topPositiveComments && topPositiveComments.checked) {
       const { includeCommentReplies } = topPositiveComments
+
       const { topPositiveComments: topPositiveCommentsResult } = getTopPositiveComments({
         comments: commentsGroupedByPolarity,
         filters: {
           includeCommentReplies
         }
       })
+
       response.content.topPositiveComments = topPositiveCommentsResult.slice(0, 5)
       response.requestData.options.topPositiveComments = topPositiveComments
     }
 
     if (topNegativeComments && topNegativeComments.checked) {
       const { includeCommentReplies } = topNegativeComments
+
       const { topNegativeComments: topPositiveCommentsResult } = getTopNegativeComments({
         comments: commentsGroupedByPolarity,
         filters: {
           includeCommentReplies
         }
       })
+
       response.content.topNegativeComments = topPositiveCommentsResult.slice(0, 5)
       response.requestData.options.topNegativeComments = topNegativeComments
     }
@@ -195,6 +202,7 @@ class CreateCompleteAnalysisService {
       response.requestData.options.wordCount = wordCount
     }
 
+    // UNFINISHED (MISSING WORD POLARITY AND CLASS)
     if (topWords && topWords.checked) {
       const { includeCommentReplies, avoidAccentuation, caseSensitive } = topWords
 
@@ -227,11 +235,17 @@ class CreateCompleteAnalysisService {
           avoidAccentuation
         }
       })
-      const { joinedWords } = getJoinedWords({ words, videoId })
 
-      const { wordsMostUsedTogether } = getWordsMostUsedTogether({ words: joinedWords })
+      const { wordsMostUsedTogether } = getWordsMostUsedTogether({
+        words,
+        videoId,
+        filters: {
+          avoidAccentuation,
+          caseSensitive
+        }
+      })
 
-      response.content.topWordsUsedTogether = wordsMostUsedTogether.slice(0, 10)
+      response.content.topWordsUsedTogether = wordsMostUsedTogether
       response.requestData.options.topWordsUsedTogether = topWordsUsedTogether
     }
 
@@ -249,7 +263,14 @@ class CreateCompleteAnalysisService {
       })
       const { joinedWords } = getJoinedWords({ words, videoId })
 
-      const { wordsRelatedToVideoTitle: wordsRelatedToVideoTitleResult } = getWordsRelatedToVideoTitle({ videoTitle: videoData.title, words: joinedWords })
+      const { wordsRelatedToVideoTitle: wordsRelatedToVideoTitleResult } = getWordsRelatedToVideoTitle({
+        videoTitle: videoData.title,
+        words: joinedWords,
+        filters: {
+          avoidAccentuation,
+          caseSensitive
+        }
+      })
 
       response.content.wordsRelatedToVideoTitle = wordsRelatedToVideoTitleResult
       response.requestData.options.wordsRelatedToVideoTitle = wordsRelatedToVideoTitle
@@ -272,69 +293,82 @@ class CreateCompleteAnalysisService {
     }
 
     if (commentsLanguage && commentsLanguage.checked) {
-      console.time('commentsLanguage')
-      const { languages } = getLanguages({ comments: commentsAnalyzed })
-      console.timeEnd('commentsLanguage')
+      const { includeCommentReplies } = commentsLanguage
+
+      const { languages } = getLanguages({
+        comments: commentsAnalyzed,
+        filters: {
+          includeCommentReplies
+        }
+      })
+      
       response.content.commentsLanguage = languages
       response.requestData.options.commentsLanguage = commentsLanguage
     }
 
     if (commentsPublicationDate && commentsPublicationDate.checked) {
       const { includeCommentReplies } = commentsPublicationDate
-      console.time('getPublicationDate')
-      const { commentsPublicationDate: content } = getPublicationDate({ comments, includeReplies: includeCommentReplies })
-      console.timeEnd('getPublicationDate')
+
+      const { commentsPublicationDate: content } = getPublicationDate({
+        comments,
+        filters: {
+          includeCommentReplies
+        }
+      })
+
       response.content.commentsPublicationDate = content
       response.requestData.options.commentsPublicationDate = commentsPublicationDate
     }
 
     if (wordsToFindWords && wordsToFindWords.checked) {
-      const { includeCommentReplies, caseSensitive, avoidAccentuation } = wordsToFindWords.filters
-
       const { content, filters } = wordsToFindWords
+
       const { words: commentsWords } = getCommentsWords({
         comments,
         videoId,
-        filters: {
-          includeCommentReplies,
-          caseSensitive,
-          avoidAccentuation
-        }
+        filters
       })
 
       const { joinedWords } = getJoinedWords({ videoId, words: commentsWords })
       const { dataFound: wordsAgain } = getWords({ words: joinedWords, wordsToFind: content, filters })
+      
       response.content.words = wordsAgain
       response.requestData.options.wordsToFindWords = wordsToFindWords
     }
 
     if (phrasesToFindPhrases && phrasesToFindPhrases.checked) {
       const { content, filters } = phrasesToFindPhrases
-      console.time('getPhrases')
+
       const { dataFound: phrases } = getPhrases({ comments, phrasesToFind: content, filters })
-      console.timeEnd('getPhrases')
+
       response.content.phrases = phrases
       response.requestData.options.phrasesToFindPhrases = phrasesToFindPhrases
     }
 
     if (wordsToFindComments && wordsToFindComments.checked) {
       const { content, filters } = wordsToFindComments
+
       const { dataFound: commentsFromWords } = getComments({ type: 'fromWords', comments, wordsToFind: content, filters })
+
       response.content.commentsFromWords = [...commentsFromWords] as unknown as CommentsFromWord[]
       response.requestData.options.wordsToFindComments = wordsToFindComments
     }
 
     if (phrasesToFindComments && phrasesToFindComments.checked) {
       const { content, filters } = phrasesToFindComments
+
       const { dataFound: commentsFromPhrases } = getComments({ type: 'fromPhrases', comments, phrasesToFind: content, filters })
+
       response.content.commentsFromPhrases = [...commentsFromPhrases] as unknown as CommentsFromPhrase[]
       response.requestData.options.phrasesToFindComments = phrasesToFindComments
     }
 
     if (usersToFindComments && usersToFindComments.checked) {
       const { content, filters } = usersToFindComments
-      const { dataFound: commentsFromUser } = getUsersComments({ comments, usersName: content, filters })
-      response.content.commentsFromUsers = [...commentsFromUser] as unknown as CommentsFromUser[]
+
+      const { commentsFromUsers } = getUsersComments({ comments, usersName: content, filters })
+      
+      response.content.commentsFromUsers = [...commentsFromUsers] as unknown as CommentsFromUser[]
       response.requestData.options.usersToFindComments = usersToFindComments
     }
 

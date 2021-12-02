@@ -46,8 +46,11 @@ class CreateDefaultAnalysisService {
     const { title } = videoData
 
     const getVideoComments = new GetVideoCommentsService()
+
     const { comments } = await getVideoComments.execute({ videoId })
+
     const { commentsAnalyzed } = await analyzeCommentsAndReplies({ comments })
+
     const { commentsGroupedByPolarity } = groupCommentsByPolarity({ comments: commentsAnalyzed })
 
     const response = {
@@ -65,10 +68,12 @@ class CreateDefaultAnalysisService {
 
     if (commentCount && commentCount.checked) {
       const { includeCommentReplies } = commentCount
+
       const { commentCount: commentCountResponse } = getCommentCount({
         comments,
         includeReplies: includeCommentReplies
       })
+
       response.content.commentCount = commentCountResponse
       response.requestData.options.commentCount = commentCount
     }
@@ -93,30 +98,35 @@ class CreateDefaultAnalysisService {
           replyCount: negative.replyCount
         }
       } as CommentsGroupedByPolarityNoComments
+
       response.content.commentsPolarity = commentsGroupedByPolarityNoComments
       response.requestData.options.commentsPolarity = commentsPolarity
     }
 
     if (topPositiveComments && topPositiveComments.checked) {
       const { includeCommentReplies } = topPositiveComments
+
       const { topPositiveComments: topPositiveCommentsResult } = getTopPositiveComments({
         comments: commentsGroupedByPolarity,
         filters: {
           includeCommentReplies
         }
       })
+
       response.content.topPositiveComments = topPositiveCommentsResult.slice(0, 5)
       response.requestData.options.topPositiveComments = topPositiveComments
     }
 
     if (topNegativeComments && topNegativeComments.checked) {
       const { includeCommentReplies } = topNegativeComments
+
       const { topNegativeComments: topPositiveCommentsResult } = getTopNegativeComments({
         comments: commentsGroupedByPolarity,
         filters: {
           includeCommentReplies
         }
       })
+
       response.content.topNegativeComments = topPositiveCommentsResult.slice(0, 5)
       response.requestData.options.topNegativeComments = topNegativeComments
     }
@@ -172,6 +182,7 @@ class CreateDefaultAnalysisService {
       response.requestData.options.wordCount = wordCount
     }
 
+    // UNFINISHED (MISSING WORD POLARITY AND CLASS)
     if (topWords && topWords.checked) {
       const { includeCommentReplies, avoidAccentuation, caseSensitive } = topWords
 
@@ -204,11 +215,17 @@ class CreateDefaultAnalysisService {
           avoidAccentuation
         }
       })
-      const { joinedWords } = getJoinedWords({ words, videoId })
 
-      const { wordsMostUsedTogether } = getWordsMostUsedTogether({ words: joinedWords })
+      const { wordsMostUsedTogether } = getWordsMostUsedTogether({
+        words,
+        videoId,
+        filters: {
+          avoidAccentuation,
+          caseSensitive
+        }
+      })
 
-      response.content.topWordsUsedTogether = wordsMostUsedTogether.slice(0, 10)
+      response.content.topWordsUsedTogether = wordsMostUsedTogether
       response.requestData.options.topWordsUsedTogether = topWordsUsedTogether
     }
 
@@ -226,7 +243,14 @@ class CreateDefaultAnalysisService {
       })
       const { joinedWords } = getJoinedWords({ words, videoId })
 
-      const { wordsRelatedToVideoTitle: wordsRelatedToVideoTitleResult } = getWordsRelatedToVideoTitle({ videoTitle: videoData.title, words: joinedWords })
+      const { wordsRelatedToVideoTitle: wordsRelatedToVideoTitleResult } = getWordsRelatedToVideoTitle({
+        videoTitle: videoData.title,
+        words: joinedWords,
+        filters: {
+          avoidAccentuation,
+          caseSensitive
+        }
+      })
 
       response.content.wordsRelatedToVideoTitle = wordsRelatedToVideoTitleResult
       response.requestData.options.wordsRelatedToVideoTitle = wordsRelatedToVideoTitle
@@ -249,14 +273,29 @@ class CreateDefaultAnalysisService {
     }
 
     if (commentsLanguage && commentsLanguage.checked) {
-      const { languages } = getLanguages({ comments: commentsAnalyzed })
+      const { includeCommentReplies } = commentsLanguage
+
+      const { languages } = getLanguages({
+        comments: commentsAnalyzed,
+        filters: {
+          includeCommentReplies
+        }
+      })
+      
       response.content.commentsLanguage = languages
       response.requestData.options.commentsLanguage = commentsLanguage
     }
 
     if (commentsPublicationDate && commentsPublicationDate.checked) {
       const { includeCommentReplies } = commentsPublicationDate
-      const { commentsPublicationDate: content } = getPublicationDate({ comments, includeReplies: includeCommentReplies })
+
+      const { commentsPublicationDate: content } = getPublicationDate({
+        comments,
+        filters: {
+          includeCommentReplies
+        }
+      })
+
       response.content.commentsPublicationDate = content
       response.requestData.options.commentsPublicationDate = commentsPublicationDate
     }

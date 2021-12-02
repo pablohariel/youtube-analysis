@@ -51,6 +51,17 @@ interface CommentAnalyzed extends CommentNoReplies {
     negScore: number
     rating: number
   }
+  replyCount?: number
+  replies?: {
+    content: string
+    author: {
+      id: string
+      name: string
+      profileImage: string
+    }
+    likeCount: number
+    published_at: string
+  }[]
   polarity?: 'positive' | 'negative' | 'neutral'
   language: Language
 }

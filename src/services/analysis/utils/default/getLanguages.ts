@@ -3,13 +3,18 @@ import { CommentAnalyzed } from '../../../../interfaces/comment'
 
 interface Request {
   comments: CommentAnalyzed[]
+  filters: {
+    includeCommentReplies: boolean
+  }
 }
 
 interface Response {
   languages: LanguagesCount
 }
 
-const getLanguages = ({ comments }: Request): Response => {
+const getLanguages = ({ comments, filters }: Request): Response => {
+  const { includeCommentReplies } = filters
+
   const languages = {
     pt: {
       count: 0
@@ -31,16 +36,31 @@ const getLanguages = ({ comments }: Request): Response => {
     }
   } as LanguagesCount
 
-  for (const comment of comments) {
-    if (languages[comment.language]) {
-      languages[comment.language].count++
+  if (includeCommentReplies) {
+    for (const comment of comments) {
+      if (languages[comment.language]) {
+        languages[comment.language].count++
+      }
+      if (comment.language === 'not found') {
+        languages.notFound.count++
+      }
     }
-    if (comment.language === 'not found') {
-      languages.notFound.count++
-    }
-  }
 
-  return { languages }
+    return { languages }
+  } else {
+    for (const comment of comments) {
+      if (comment.type === 'comment') {
+        if (languages[comment.language]) {
+          languages[comment.language].count++
+        }
+        if (comment.language === 'not found') {
+          languages.notFound.count++
+        }
+      }
+    }
+
+    return { languages }
+  }
 }
 
 export { getLanguages }

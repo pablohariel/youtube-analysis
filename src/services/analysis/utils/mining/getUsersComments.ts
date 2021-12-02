@@ -1,36 +1,46 @@
-import { Comment } from '../../../../interfaces/comment'
-import { UserCommentsFilters } from '../../../../interfaces/requestData'
-import { UserFromData } from '../../../../interfaces/userFromData'
+import { Comment, Reply } from '../../../../interfaces/comment'
+import { CommentsFromUser } from '../../../../interfaces/commentFromData'
 
 interface Request {
   usersName: string[],
   comments: Comment[],
-  filters: UserCommentsFilters
+  filters: {
+    includeCommentReplies: boolean
+    avoidAccentuation: boolean
+    caseSensitive: boolean
+  }
 }
 
 interface Response {
-  dataFound: UserFromData[]
+  commentsFromUsers: CommentsFromUser[]
+
 }
 
 const getUsersComments = ({ usersName, comments, filters }: Request): Response => {
-  const { includeCommentReplies } = filters
+  const { includeCommentReplies, avoidAccentuation, caseSensitive } = filters
 
-  const dataFound = [] as UserFromData[]
+  const commentsFromUsers = [] as CommentsFromUser[]
 
-  for (const comment of comments) {
-    for (const userName of usersName) {
-      if (comment.author.name.toLowerCase() === userName.toLowerCase()) {
+  for (let comment of comments) {
+    comment.author.name = avoidAccentuation ? comment.author.name.normalize('NFD').replace(/[^A-Za-z0-9- ]/g, '') : comment.author.name
+    comment.author.name = caseSensitive ? comment.author.name : comment.author.name.toLocaleLowerCase()
+
+    for (let userName of usersName) {
+      userName = avoidAccentuation ? userName.normalize('NFD').replace(/[^A-Za-z0-9- ]/g, '') : userName
+      userName = caseSensitive ? userName : userName.toLocaleLowerCase()
+
+      if (comment.author.name === userName) {
         let authorAlreadyFound = false
 
-        for (const item of dataFound) {
-          if (item.user.name.toLowerCase() === userName.toLowerCase()) {
+        for (const item of commentsFromUsers) {
+          if (item.user.name === userName) {
             authorAlreadyFound = true
             item.commentsCount++
             item.comments.push(comment)
           }
         }
         if (!authorAlreadyFound) {
-          dataFound.push({
+          commentsFromUsers.push({
             user: comment.author,
             commentsCount: 1,
             comments: [comment]
@@ -38,19 +48,22 @@ const getUsersComments = ({ usersName, comments, filters }: Request): Response =
         }
       }
       if (includeCommentReplies) {
-        for (const reply of comment.replies) {
-          if (reply.author.name.toLowerCase() === userName.toLowerCase()) {
+        for (let reply of comment.replies) {
+          reply.author.name = avoidAccentuation ? reply.author.name.normalize('NFD').replace(/[^A-Za-z0-9- ]/g, '') : reply.author.name
+          reply.author.name = caseSensitive ? reply.author.name : reply.author.name.toLocaleLowerCase()
+
+          if (reply.author.name === userName) {
             let authorAlreadyFound = false
 
-            for (const item of dataFound) {
-              if (item.user.name.toLowerCase() === userName.toLowerCase()) {
+            for (const item of commentsFromUsers) {
+              if (item.user.name === userName) {
                 authorAlreadyFound = true
                 item.commentsCount++
                 item.comments.push(reply)
               }
             }
             if (!authorAlreadyFound) {
-              dataFound.push({
+              commentsFromUsers.push({
                 user: reply.author,
                 commentsCount: 1,
                 comments: [reply]
@@ -62,7 +75,7 @@ const getUsersComments = ({ usersName, comments, filters }: Request): Response =
     }
   }
 
-  return { dataFound }
+  return { commentsFromUsers }
 }
 
 export { getUsersComments }
