@@ -134,6 +134,7 @@ class CreateDefaultAnalysisService {
     if (mostLikedComment && mostLikedComment.checked) {
       const { includeCommentReplies } = mostLikedComment
 
+      
       const { comment } = getComment({
         comments,
         filter: 'mostLikes',
@@ -141,6 +142,7 @@ class CreateDefaultAnalysisService {
           includeCommentReplies
         }
       })
+
       response.content.mostLikedComment = comment
       response.requestData.options.mostLikedComment = mostLikedComment
     }
@@ -169,6 +171,7 @@ class CreateDefaultAnalysisService {
           avoidAccentuation: true
         }
       })
+
       const { joinedWords } = getJoinedWords({ words, videoId })
 
       const { wordCount: wordCountResult } = getWordCount({
@@ -182,7 +185,6 @@ class CreateDefaultAnalysisService {
       response.requestData.options.wordCount = wordCount
     }
 
-    // UNFINISHED (MISSING WORD POLARITY AND CLASS)
     if (topWords && topWords.checked) {
       const { includeCommentReplies, avoidAccentuation, caseSensitive } = topWords
 
@@ -195,6 +197,7 @@ class CreateDefaultAnalysisService {
           avoidAccentuation
         }
       })
+
       const { joinedWords } = getJoinedWords({ words, videoId })
 
       const { wordsMostUsed } = getWordsMostUsed({ words: joinedWords })
@@ -281,7 +284,7 @@ class CreateDefaultAnalysisService {
           includeCommentReplies
         }
       })
-      
+
       response.content.commentsLanguage = languages
       response.requestData.options.commentsLanguage = commentsLanguage
     }

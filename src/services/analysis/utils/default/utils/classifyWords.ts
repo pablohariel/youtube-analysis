@@ -29,15 +29,16 @@ interface Response {
 const classifyWords = async ({ words, language, dbWords, sentiWordList }: Request): Promise<Response> => {
   switch (language) {
     case 'pt': {
-      const execAsync = util.promisify(exec) // 0.04ms
+      const execAsync = util.promisify(exec)
       const treeTaggerPath = '/home/pablohariel/TreeTagger/cmd/tree-tagger-portuguese'
 
       const newDbWords = [] as Word[]
       const wordsFound = [] as ClassifiedWord[]
-      for (const word of words) {
-        const wordFound = dbWords.filter(dbWord => dbWord.content.toLowerCase() === word.toLowerCase()) // 0.2ms
 
-        if (wordFound.length < 1) {
+      for (const word of words) {
+        const wordFound = dbWords.filter(dbWord => dbWord.content.toLowerCase() === word.toLowerCase())
+
+        if (wordFound.length < -1) {
           console.log('--------')
           console.log(`word ${word} not found in database`)
 
@@ -79,7 +80,7 @@ const classifyWords = async ({ words, language, dbWords, sentiWordList }: Reques
           console.log('--------\n')
           newDbWords.push(wordCreated)
           wordsFound.push(wordCreated)
-        } else {
+        } else if(wordFound.length > 0) {
           wordsFound.push(wordFound[0])
         }
       }

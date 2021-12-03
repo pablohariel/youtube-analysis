@@ -12,7 +12,53 @@ interface TokenPayload {
   id: string;
 }
 
+interface IQueries {
+  videoTitle?: string
+  searchBy: 'videoTitle' | 'all'
+  orderBy: 'created_at' | 'updated_at' | 'viewCount' | 'videoTitle'
+  direction: 'desc' | 'asc'
+  analysisType?: 'DEFAULT' | 'MINING' | 'COMPLETE'
+  pageNumber: number
+}
+
 const ensureAuthenticated = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+  const authHeader = request.headers.authorization
+
+  if (!authHeader) {
+    throw new AppError('JWT token is missing', 401)
+  }
+
+  const [, token] = authHeader.split(' ')
+
+  const { secret = '' } = authConfig.jwt
+
+  try {
+    const decode = verify(token, secret)
+
+    const { id } = decode as TokenPayload
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id
+      }
+    })
+
+    if (!user) {
+      throw new AppError('Invalid JWT token', 401)
+    }
+
+    request.user = {
+      id: String(id),
+      isAdmin: user.isAdmin
+    }
+
+    return next()
+  } catch {
+    throw new AppError('Invalid JWT token', 401)
+  }
+}
+
+const ensureAuthenticatedHistory = async (request: Request<{}, {}, {}, IQueries>, response: Response, next: NextFunction): Promise<void> => {
   const authHeader = request.headers.authorization
 
   if (!authHeader) {
@@ -97,4 +143,4 @@ const ensureCanDeleteAnalysis = async (request: Request, response: Response, nex
   return next()
 }
 
-export { ensureAuthenticated, ensureIsAdmin, ensureIsTheUser, ensureCanDeleteAnalysis }
+export { ensureAuthenticated, ensureIsAdmin, ensureIsTheUser, ensureCanDeleteAnalysis, ensureAuthenticatedHistory }

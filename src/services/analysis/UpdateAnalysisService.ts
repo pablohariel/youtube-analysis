@@ -45,6 +45,7 @@ class UpdateAnalysisService {
               id: true,
               userId: true,
               type: true,
+              videoTitle: true,
               user: {
                 select: {
                   id: true,
@@ -83,6 +84,7 @@ class UpdateAnalysisService {
               id: true,
               userId: true,
               type: true,
+              videoTitle: true,
               user: {
                 select: {
                   id: true,
@@ -121,6 +123,7 @@ class UpdateAnalysisService {
               id: true,
               userId: true,
               type: true,
+              videoTitle: true,
               user: {
                 select: {
                   id: true,

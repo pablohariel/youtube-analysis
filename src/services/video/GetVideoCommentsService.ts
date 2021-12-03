@@ -62,14 +62,14 @@ class GetVideoCommentsService {
         const snippet = item.snippet
 
         if (commentData && snippet) {
-          const { textDisplay, likeCount, viewerRating, authorDisplayName, authorProfileImageUrl, authorChannelId, publishedAt } = commentData
+          const { textDisplay, likeCount, viewerRating, textOriginal, authorDisplayName, authorProfileImageUrl, authorChannelId, publishedAt } = commentData
           const { totalReplyCount } = snippet
           const { replies } = item
 
           const filteredReplies = replies?.comments || []
           const finalReplies = filteredReplies.map(reply => {
             return {
-              content: reply.snippet?.textDisplay || '',
+              content: reply.snippet?.textOriginal || '',
               author: {
                 id: reply.snippet?.authorChannelId || '',
                 name: reply.snippet?.authorDisplayName || '',
@@ -81,7 +81,7 @@ class GetVideoCommentsService {
           })
 
           const comment = {
-            content: textDisplay || '',
+            content: textOriginal || '',
             author: {
               id: authorChannelId?.value || '',
               name: authorDisplayName || '',

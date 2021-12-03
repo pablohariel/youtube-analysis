@@ -32,9 +32,13 @@ class GetVideoDataService {
           const { caption, duration, definition } = contentDetails
           const { viewCount, likeCount, commentCount, favoriteCount } = statistics
 
+          if(!commentCount || Number(commentCount) < 1) {
+            throw new AppError('Video has no comments.')
+          }
+
           videoData.title = title || ''
           videoData.description = description || undefined
-          videoData.thumbnail = thumbnails?.maxres?.url || ''
+          videoData.thumbnail = thumbnails?.maxres?.url || thumbnails?.high?.url || ''
 
           videoData.details = {
             caption: '',

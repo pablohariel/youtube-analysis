@@ -43,7 +43,6 @@ const guessLanguage = ({ text }: Request): Response => {
 
     return { language: languageFound }
   } catch (err) {
-    console.log('erro aqui')
     return { language: 'not found' }
   }
 }

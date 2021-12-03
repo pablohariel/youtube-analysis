@@ -10,8 +10,7 @@ import { GetAnalysisHistoryService } from '../services/analysis/GetAnalysisHisto
 import { ListAnalysisService } from '../services/analysis/ListAnalysisService'
 import { UpdateAnalysisService } from '../services/analysis/UpdateAnalysisService'
 
-import { ensureAuthenticated, ensureCanDeleteAnalysis } from '../middlewares/usersAuth'
-import { ICompleteAnalysis, IDefaultAnalysis, IMiningAnalysis } from '../interfaces/analysis'
+import { ensureAuthenticated, ensureCanDeleteAnalysis, ensureAuthenticatedHistory } from '../middlewares/usersAuth'
 import { prisma } from '../database/connection'
 
 const analysisRouter = Router()
@@ -34,7 +33,6 @@ analysisRouter.get('/', async (request: Request<{}, {}, {}, IQueries>, response)
   return response.json(result)
 })
 
-// put ensureAuthenticated on release
 analysisRouter.post('/', ensureAuthenticated, async (request, response) => {
   const {
     videoId,
@@ -143,7 +141,7 @@ analysisRouter.patch('/:id/views', async (request, response) => {
   return response.json(result)
 })
 
-analysisRouter.get('/history', ensureAuthenticated, async (request: Request<{}, {}, {}, IQueries>, response) => {
+analysisRouter.get('/history', ensureAuthenticatedHistory, async (request: Request<{}, {}, {}, IQueries>, response) => {
   const { searchBy, orderBy, direction, pageNumber, analysisType } = request.query
   const { id } = request.user
 
@@ -162,7 +160,7 @@ analysisRouter.get('/:id', async (request, response) => {
   return response.json(analysis)
 })
 
-analysisRouter.put('/:id', ensureAuthenticated, ensureAuthenticated, async (request, response) => {
+analysisRouter.put('/:id', ensureAuthenticated, async (request, response) => {
   const { id } = request.params
 
   const updateAnalysis = new UpdateAnalysisService()
